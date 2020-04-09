@@ -1,0 +1,21 @@
+= OpenWMS.org TMS: RESTful API (Movements Service)
+({bversion}-{bnumber})
+Heiko Scherrer;
+:doctype: book
+:icons: font
+:toc:
+:sectanchors:
+:sectlinks:
+:toclevels: 2
+:source-highlighter: highlightjs
+
+Copyright © 2005-2020
+
+Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies
+and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically.
+
+[[overview]]
+= Overview
+
+This guide describes the RESTful API of the OpenWMS.org Movements module and its usage. Some general terms and definitions are explained and
+declared in the first part of the document whereas in the second part the usage of the API is shown in a more use-case-driven approach.
