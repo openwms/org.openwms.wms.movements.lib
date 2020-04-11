@@ -13,31 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openwms.wms;
+package org.openwms.wms.app;
 
-import org.ameba.app.BaseConfiguration;
-import org.ameba.app.SolutionApp;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.ameba.mapping.BeanMapper;
+import org.ameba.mapping.DozerMapperImpl;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 /**
- * A MovementsRunner is the Spring Boot starter class of the microservice component.
+ * A MovementConfiguration.
  *
  * @author Heiko Scherrer
  */
-@SpringBootApplication(scanBasePackageClasses = {
-        BaseConfiguration.class,
-        MovementsRunner.class,
-        SolutionApp.class
-})
-public class MovementsRunner {
+//@EnableJpaRepositories
+@EnableJpaAuditing
+@Configuration
+class MovementConfiguration {
 
-    /**
-     * Boot up!
-     *
-     * @param args Some args
-     */
-    public static void main(String[] args) {
-        SpringApplication.run(MovementsRunner.class, args);
+    public
+    @Bean
+    BeanMapper beanMapper() {
+        return new DozerMapperImpl("META-INF/dozer/movements-bean-mappings.xml");
     }
 }

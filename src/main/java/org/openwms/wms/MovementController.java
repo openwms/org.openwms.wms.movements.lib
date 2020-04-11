@@ -21,8 +21,10 @@ import org.openwms.wms.api.MovementVO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 /**
  * A MovementController.
@@ -39,8 +41,13 @@ public class MovementController extends AbstractWebController {
     }
 
     @PostMapping("/v1/transport-units/{bk}/movements")
-    public ResponseEntity<Void> create(@PathVariable("bk") String bk, MovementVO movement, HttpServletRequest req) {
-        MovementVO created = service.create(bk, movement);
-        return ResponseEntity.created(getLocationURIForCreatedResource(req, created.getPersistentKey())).build();
+    public ResponseEntity<Void> create(@PathVariable("bk") String bk, @Valid @RequestBody MovementVO movement, HttpServletRequest req) {
+        try {
+            MovementVO created = service.create(bk, movement);
+            return ResponseEntity.created(getLocationURIForCreatedResource(req, created.getPersistentKey())).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 }

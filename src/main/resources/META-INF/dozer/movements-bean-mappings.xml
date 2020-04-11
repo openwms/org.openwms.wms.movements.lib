@@ -19,4 +19,13 @@
         </custom-converters>
 	</configuration>
 
+	<mapping>
+		<class-a>org.openwms.wms.api.MovementVO</class-a>
+		<class-b>org.openwms.wms.impl.Movement</class-b>
+		<field>
+			<a is-accessible="true">transportUnitBk</a>
+			<b is-accessible="true">transportUnitBk.value</b>
+		</field>
+	</mapping>
+
 </mappings>

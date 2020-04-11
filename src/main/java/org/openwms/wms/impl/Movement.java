@@ -19,13 +19,16 @@ import org.ameba.integration.jpa.ApplicationEntity;
 import org.openwms.common.transport.Barcode;
 import org.openwms.wms.Message;
 import org.openwms.wms.api.MovementType;
+import org.openwms.wms.api.StartMode;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 
@@ -36,12 +39,16 @@ import java.time.ZonedDateTime;
  */
 @Entity
 @Table(name = "MVM_MOVEMENT")
-class Movement extends ApplicationEntity implements Serializable {
+public class Movement extends ApplicationEntity implements Serializable {
 
     /** The business key of the {@code TransportUnit} to move. */
+    @NotNull
+    @Column(name = "C_TRANSPORT_UNIT_BK")
     private Barcode transportUnitBk;
 
     /** Type of movement. */
+    @Column(name = "C_TYPE")
+    @Enumerated(EnumType.STRING)
     private MovementType type;
 
     /**
@@ -52,12 +59,17 @@ class Movement extends ApplicationEntity implements Serializable {
     @Enumerated(EnumType.STRING)
     private PriorityLevel priority = PriorityLevel.NORMAL;
 
+    /** Defines how the resulting {@code TransportOrder} is started. */
+    @Column(name = "C_MODE")
+    @Enumerated(EnumType.STRING)
+    private StartMode mode;
+
     /** A message with the reason for this {@code Movement}. */
     @Embedded
     private Message message;
 
     /** Reported problems on the {@code Movement}. */
-    @Embedded
+    @OneToOne
     private ProblemHistory problem;
 
     /** The target {@code Location} of the {@code Movement}. This property is set before the {@code Movement} is started. */
@@ -83,4 +95,59 @@ class Movement extends ApplicationEntity implements Serializable {
     /** Date when the {@code Movement} ended. */
     @Column(name = "C_END_DATE")
     private ZonedDateTime endDate;
+
+    public Movement() {
+    }
+
+    public Barcode getTransportUnitBk() {
+        return transportUnitBk;
+    }
+
+    public MovementType getType() {
+        return type;
+    }
+
+    public PriorityLevel getPriority() {
+        return priority;
+    }
+
+    public StartMode getMode() {
+        return mode;
+    }
+
+    public void setMode(StartMode mode) {
+        this.mode = mode;
+    }
+
+    public Message getMessage() {
+        return message;
+    }
+
+    public ProblemHistory getProblem() {
+        return problem;
+    }
+
+    public Location getTargetLocation() {
+        return targetLocation;
+    }
+
+    public String getTargetLocationGroup() {
+        return targetLocationGroup;
+    }
+
+    public ZonedDateTime getStartEarliestDate() {
+        return startEarliestDate;
+    }
+
+    public ZonedDateTime getStartDate() {
+        return startDate;
+    }
+
+    public ZonedDateTime getLatestDueDate() {
+        return latestDueDate;
+    }
+
+    public ZonedDateTime getEndDate() {
+        return endDate;
+    }
 }

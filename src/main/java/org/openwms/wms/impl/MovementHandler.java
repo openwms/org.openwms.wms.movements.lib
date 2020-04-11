@@ -13,16 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openwms.wms.api;
+package org.openwms.wms.impl;
+
+import org.openwms.wms.api.MovementType;
 
 /**
- * A ValidationGroups is a marker interface collection to aggregate all types used for Bean validation groups.
+ * A MovementHandler.
  *
  * @author Heiko Scherrer
  */
-public interface ValidationGroups {
+public interface MovementHandler {
 
-    interface Movement {
-        interface Create{}
-    }
+    /**
+     * Return the type the handler implementation can handle.
+     *
+     * @return The type
+     */
+    MovementType getType();
+
+    /**
+     * Create and return a {@code Movement}.
+     *
+     * @param movement The Movement to create
+     * @return The created instance
+     */
+    Movement create(Movement movement);
 }

@@ -15,6 +15,12 @@
  */
 package org.openwms.wms.api;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.openwms.wms.impl.ValidationGroups;
+
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
@@ -23,20 +29,20 @@ import javax.validation.constraints.NotNull;
  *
  * @author Heiko Scherrer
  */
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Builder
 public class MovementVO {
 
     /** The persistent key is returned from the service as soon as the resource has been created. */
     private String persistentKey;
     /** The business key of the TransportUnit is returned from the service. */
-    private String transportUnitBK;
+    private String transportUnitBk;
     /** The type of Movement must be passed by the caller. */
-    @NotNull(groups = ValidationGroups.Movement.Create.class)
+    @NotNull//(groups = ValidationGroups.Movement.Create.class)
     private MovementType type;
     /** The target where to move the TransportUnit to must be passed by the caller. */
     @NotEmpty(groups = ValidationGroups.Movement.Create.class)
     private String target;
-
-    public String getPersistentKey() {
-        return persistentKey;
-    }
 }

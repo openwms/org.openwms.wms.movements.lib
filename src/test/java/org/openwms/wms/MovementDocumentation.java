@@ -1,0 +1,89 @@
+/*
+ * Copyright 2005-2020 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.openwms.wms;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.openwms.common.transport.api.TransportUnitApi;
+import org.openwms.common.transport.api.TransportUnitVO;
+import org.openwms.wms.api.MovementType;
+import org.openwms.wms.api.MovementVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.filter.CharacterEncodingFilter;
+
+import static org.mockito.BDDMockito.given;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+/**
+ * A AddProblemDocumentation.
+ *
+ * @author Heiko Scherrer
+ */
+@MovementsApplicationTest
+public class MovementDocumentation {
+
+    protected MockMvc mockMvc;
+    @Autowired
+    protected ObjectMapper objectMapper;
+    @MockBean
+    protected TransportUnitApi transportUnitApi;
+
+    /**
+     * Do something before each test method.
+     */
+    @BeforeEach
+    void setUp(RestDocumentationContextProvider restDocumentation, WebApplicationContext context) {
+        mockMvc = MockMvcBuilders.webAppContextSetup(context)
+                .apply(documentationConfiguration(restDocumentation))
+                .addFilters(new CharacterEncodingFilter("UTF-8", true))
+                .build();
+    }
+
+    @AfterEach
+    public void reset_mocks() {
+        Mockito.reset(transportUnitApi);
+    }
+
+    @Test
+    void testCreate() throws Exception {
+        TransportUnitVO transportUnit = TransportUnitVO.newBuilder().barcode("4711").build();
+        given(transportUnitApi.findTransportUnit("4711")).willReturn(transportUnit);
+
+        MovementVO m = MovementVO.builder().transportUnitBk("4711").type(MovementType.MANUAL).target("EXT_/0000/0000/0000/0000").build();
+        mockMvc.perform(
+                post("/v1/transport-units/4711/movements")
+                .content(objectMapper.writeValueAsString(m)).contentType(MediaType.APPLICATION_JSON)
+        )
+                .andExpect(status().isCreated())
+                .andExpect(header().exists(HttpHeaders.LOCATION))
+                .andDo(document("move-create"))
+        ;
+    }
+}
