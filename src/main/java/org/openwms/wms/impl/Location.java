@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openwms.tms.impl;
+package org.openwms.wms.impl;
 
 import org.ameba.integration.jpa.ApplicationEntity;
 import org.openwms.common.location.LocationPK;

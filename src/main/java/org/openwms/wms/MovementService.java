@@ -13,7 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.openwms.wms;
+
+import org.openwms.wms.api.MovementVO;
+
 /**
- * This package contains representations of Common service transport package.
+ * A MovementService.
+ *
+ * @author Heiko Scherrer
  */
-package org.openwms.common.transport;
+public interface MovementService {
+
+    /**
+     * Create a new {@code Movement} for a {@code TransportUnit}.
+     *
+     * @param bk The identifying business key of the TransportUnit to move
+     * @param movement Detailed Movement information
+     * @return The created Movement instance
+     */
+    MovementVO create(String bk, MovementVO movement);
+}

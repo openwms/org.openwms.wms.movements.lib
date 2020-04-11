@@ -13,7 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.openwms.wms.api;
+
 /**
- * This package contains representations of Common service transport package.
+ * A ValidationGroups is a marker interface collection to aggregate all types used for Bean validation groups.
+ *
+ * @author Heiko Scherrer
  */
-package org.openwms.common.transport;
+public interface ValidationGroups {
+
+    interface Movement {
+        interface Create{}
+    }
+}

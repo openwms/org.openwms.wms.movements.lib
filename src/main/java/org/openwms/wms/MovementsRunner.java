@@ -13,7 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.openwms.wms;
+
+import org.ameba.app.SolutionApp;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
 /**
- * This package contains representations of Common service transport package.
+ * A MovementsRunner is the Spring Boot starter class of the microservice component.
+ *
+ * @author Heiko Scherrer
  */
-package org.openwms.common.transport;
+@SpringBootApplication(scanBasePackageClasses = {
+        MovementsRunner.class,
+        SolutionApp.class
+})
+public class MovementsRunner {
+
+    /**
+     * Boot up!
+     *
+     * @param args Some args
+     */
+    public static void main(String[] args) {
+        SpringApplication.run(MovementsRunner.class, args);
+    }
+}

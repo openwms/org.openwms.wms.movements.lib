@@ -8,14 +8,29 @@ Heiko Scherrer;
 :sectlinks:
 :toclevels: 2
 :source-highlighter: highlightjs
+:operation-curl-request-title: Example request
+:operation-http-response-title: Example response
 
 Copyright © 2005-2020
 
 Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies
 and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically.
 
+:numbered:
+
 [[overview]]
 = Overview
 
 This guide describes the RESTful API of the OpenWMS.org Movements module and its usage. Some general terms and definitions are explained and
 declared in the first part of the document whereas in the second part the usage of the API is shown in a more use-case-driven approach.
+
+A description of all used API resources.
+
+include::0-preambel.adoc[]
+
+[[resources-prg]]
+= Resources
+
+include::1-index.adoc[]
+
+include::2-receiving-order.adoc[]

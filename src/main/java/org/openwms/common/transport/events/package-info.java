@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 /**
- * This package contains all types required for asynchronous Event handling.
+ * This package contains all types required for asynchronous event handling.
  */
 package org.openwms.common.transport.events;

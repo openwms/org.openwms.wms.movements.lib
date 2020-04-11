@@ -13,12 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openwms.tms.api;
-
 /**
- * A MovementVO.
- *
- * @author Heiko Scherrer
+ * This package contains public api of the microservice.
  */
-public class MovementVO {
-}
+package org.openwms.wms.api;

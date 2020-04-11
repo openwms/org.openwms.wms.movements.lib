@@ -16,6 +16,7 @@
 package org.openwms.tms;
 
 import org.ameba.test.categories.SpringTestSupport;
+import org.openwms.wms.MovementsRunner;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.aspectj.EnableSpringConfigured;
 

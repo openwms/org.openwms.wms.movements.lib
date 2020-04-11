@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openwms.tms.impl;
+package org.openwms.wms.impl;
 
 import org.ameba.integration.jpa.ApplicationEntity;
 import org.openwms.common.transport.Barcode;
-import org.openwms.tms.Message;
+import org.openwms.wms.Message;
+import org.openwms.wms.api.MovementType;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -37,8 +38,10 @@ import java.time.ZonedDateTime;
 @Table(name = "MVM_MOVEMENT")
 class Movement extends ApplicationEntity implements Serializable {
 
+    /** The business key of the {@code TransportUnit} to move. */
     private Barcode transportUnitBk;
 
+    /** Type of movement. */
     private MovementType type;
 
     /**

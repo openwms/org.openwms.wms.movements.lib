@@ -13,33 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openwms.tms.impl;
-
 /**
- * A MovementType.
- *
- * @author Heiko Scherrer
+ * This package contains the core types microservice implementation.
  */
-public enum MovementType {
-
-    /** Some arbitrary kind of movement, not defined elsewhere. */
-    UNDEFINED,
-
-    /** Manual order movement. */
-    MANUAL,
-
-    /** Movement based on a stock check procedure. */
-    STOCK_CHECK,
-
-    /** Movement order to clearing. */
-    CLEARING,
-
-    /** Movement order for an empty {@literal TransportUnit}. */
-    EMPTIES,
-
-    /** Movement for replenishment. */
-    REPLENISHMENT,
-
-    /** Movement for inventory control procedure. */
-    INVENTORY
-}
+package org.openwms.wms;

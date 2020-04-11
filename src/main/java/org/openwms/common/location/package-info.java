@@ -13,14 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openwms.tms.api;
-
 /**
- * A MovementsApi.
- *
- * @author Heiko Scherrer
+ * This package contains representations of Common service location package.
  */
-public interface MovementsApi {
-
-    void create(MovementVO movement);
-}
+package org.openwms.common.location;

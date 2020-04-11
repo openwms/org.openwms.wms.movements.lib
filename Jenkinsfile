@@ -4,7 +4,7 @@ node {
   try {
     def mvnHome
     stage('\u27A1 Preparation') {
-      git 'git@github.com:openwms/org.openwms.tms.movements.git'
+      git 'git@github.com:openwms/org.openwms.wms.movements.git'
       mvnHome = tool 'M3'
     }
     stage('\u27A1 Build') {
@@ -18,7 +18,7 @@ node {
         if git remote | grep heroku > /dev/null; then
            git remote rm heroku
         fi
-        git remote add heroku https://:${HEROKU_API_KEY}@git.heroku.com/openwms-tms-movements.git
+        git remote add heroku https://:${HEROKU_API_KEY}@git.heroku.com/openwms-wms-movements.git
         git push heroku master -f
       '''
     }
