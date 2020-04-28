@@ -2,3 +2,9 @@ eureka:
   client:
     healthcheck:
       enabled: true
+
+owms:
+  events:
+    wms:
+      movements:
+        exchange-name: wms.events
