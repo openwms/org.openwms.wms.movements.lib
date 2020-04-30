@@ -23,6 +23,8 @@ import org.openwms.common.transport.api.TransportUnitVO;
 import org.openwms.wms.MovementService;
 import org.openwms.wms.api.MovementType;
 import org.openwms.wms.api.MovementVO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -38,6 +40,7 @@ import static java.lang.String.format;
 @TxService
 class MovementServiceImpl implements MovementService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MovementServiceImpl.class);
     private final TransportUnitApi transportUnitApi;
     private final BeanMapper mapper;
     private final Map<MovementType, MovementHandler> handlers;
@@ -58,6 +61,7 @@ class MovementServiceImpl implements MovementService {
             throw new NotFoundException(format("TransportUnit with BK [%s] does not exist", bk));
         }
         Movement movement = mapper.map(vo, Movement.class);
+        LOGGER.debug("Create a Movement [{}]", movement);
         Movement result = handlers.get(vo.getType()).create(movement);
         return mapper.map(result, MovementVO.class);
     }

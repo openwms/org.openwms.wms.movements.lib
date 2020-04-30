@@ -31,6 +31,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
+import java.util.Objects;
 
 /**
  * A Movement.
@@ -149,5 +150,47 @@ public class Movement extends ApplicationEntity implements Serializable {
 
     public ZonedDateTime getEndDate() {
         return endDate;
+    }
+
+    @Override
+    public String toString() {
+        return "Movement{" +
+                "transportUnitBk=" + transportUnitBk +
+                ", type=" + type +
+                ", priority=" + priority +
+                ", mode=" + mode +
+                ", message=" + message +
+                ", problem=" + problem +
+                ", targetLocation=" + targetLocation +
+                ", targetLocationGroup='" + targetLocationGroup + '\'' +
+                ", startEarliestDate=" + startEarliestDate +
+                ", startDate=" + startDate +
+                ", latestDueDate=" + latestDueDate +
+                ", endDate=" + endDate +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Movement movement = (Movement) o;
+        return Objects.equals(transportUnitBk, movement.transportUnitBk) &&
+                type == movement.type &&
+                priority == movement.priority &&
+                mode == movement.mode &&
+                Objects.equals(message, movement.message) &&
+                Objects.equals(problem, movement.problem) &&
+                Objects.equals(targetLocation, movement.targetLocation) &&
+                Objects.equals(targetLocationGroup, movement.targetLocationGroup) &&
+                Objects.equals(startEarliestDate, movement.startEarliestDate) &&
+                Objects.equals(startDate, movement.startDate) &&
+                Objects.equals(latestDueDate, movement.latestDueDate) &&
+                Objects.equals(endDate, movement.endDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(transportUnitBk, type, priority, mode, message, problem, targetLocation, targetLocationGroup, startEarliestDate, startDate, latestDueDate, endDate);
     }
 }

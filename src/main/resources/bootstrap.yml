@@ -12,6 +12,8 @@ spring:
         max-attempts: 120
     discovery:
       enabled: false
+  config:
+    location: classpath:application.yml
   security:
     user:
       name: user
@@ -21,9 +23,6 @@ spring:
     open-in-view: false
     database: h2
     properties:
-      hibernate:
-        hbm2ddl:
-          import_files: movements.sql
       org:
         hibernate:
           envers:
@@ -102,6 +101,18 @@ logging:
   file:
     name: BOOT-TMS-Movements.log
     path: "/tmp/owms"
+
+---
+spring:
+  profiles: CLOUD
+  cloud:
+    config:
+      discovery:
+        enabled: true
+      enabled: true
+      fail-fast: true # true means retry
+    discovery:
+      enabled: true
 
 ---
 spring:
