@@ -22,3 +22,8 @@ jobs:
         java-version: 11
     - name: Build with Maven
       run: mvn package -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+    - name: Build Image & Upload
+      run: ./scripts/docker_build
+      env:
+        DOCKER_USER: ${{ secrets.DOCKER_USER }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
