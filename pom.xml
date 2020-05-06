@@ -10,24 +10,24 @@
     <artifactId>org.openwms.wms.movements</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <name>OpenWMS.org WMS: Movements Services</name>
-    <url>https://openwms.github.io/org.openwms.wms.movements/index.html</url>
+    <url>https://openwms.github.io/${project.artifactId}/index.html</url>
 
     <issueManagement>
         <system>github</system>
-        <url>https://github.com/openwms/org.openwms.wms.movements/issues</url>
+        <url>https://github.com/openwms/${project.artifactId}/issues</url>
     </issueManagement>
 
     <distributionManagement>
         <site>
             <id>site</id>
-            <url>scm:git:git@github.com:openwms/org.openwms.wms.movements.git</url>
+            <url>scm:git:git@github.com:openwms/${project.artifactId}.git</url>
         </site>
     </distributionManagement>
 
     <scm>
-        <url>https://github.com/openwms/org.openwms.wms.movements</url>
-        <connection>scm:git:https://${scmuser}github.com/openwms/org.openwms.wms.movements.git</connection>
-        <developerConnection>scm:git:https://${scmuser}github.com/openwms/org.openwms.wms.movements.git</developerConnection>
+        <url>https://github.com/openwms/${project.artifactId}</url>
+        <connection>scm:git:https://${scmuser}github.com/openwms/${project.artifactId}.git</connection>
+        <developerConnection>scm:git:https://${scmuser}github.com/openwms/${project.artifactId}.git</developerConnection>
     </scm>
 
     <developers>
@@ -48,9 +48,11 @@
         </developer>
     </developers>
 
+    <contributors></contributors>
+
     <ciManagement>
         <system>travis</system>
-        <url>https://travis-ci.com/openwms/org.openwms.wms.movements</url>
+        <url>https://travis-ci.com/openwms/${project.artifactId}</url>
         <notifiers>
             <notifier>
                 <type>mail</type>
@@ -63,7 +65,7 @@
 
     <properties>
         <ameba-lib.version>2.4-SNAPSHOT</ameba-lib.version>
-        <common-service.version>1.6.0-SNAPSHOT</common-service.version>
+        <common.version>1.6.0-SNAPSHOT</common.version>
         <core.version>1.7.0-SNAPSHOT</core.version>
         <spring-cloud-dependencies.version>Hoxton.RELEASE</spring-cloud-dependencies.version>
     </properties>
@@ -94,9 +96,6 @@
             <plugin>
                 <groupId>org.asciidoctor</groupId>
                 <artifactId>asciidoctor-maven-plugin</artifactId>
-                <configuration>
-                    <skip>${skipTests}</skip>
-                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -142,7 +141,7 @@
             <dependency>
                 <groupId>org.openwms</groupId>
                 <artifactId>org.openwms.common.service</artifactId>
-                <version>${common-service.version}</version>
+                <version>${common.version}</version>
                 <classifier>client</classifier>
             </dependency>
             <dependency>
@@ -199,12 +198,12 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <artifactId>spring-boot-starter-web</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>
