@@ -16,6 +16,14 @@
 				<class-a>java.time.ZonedDateTime</class-a>
 				<class-b>java.time.ZonedDateTime</class-b>
 			</converter>
+			<converter type="org.openwms.wms.impl.LocationConverter">
+				<class-a>java.lang.String</class-a>
+				<class-b>org.openwms.wms.impl.Movement</class-b>
+			</converter>
+			<converter type="org.openwms.wms.impl.PriorityConverter">
+				<class-a>java.lang.Integer</class-a>
+				<class-b>org.openwms.wms.impl.PriorityLevel</class-b>
+			</converter>
         </custom-converters>
 	</configuration>
 
@@ -23,8 +31,28 @@
 		<class-a>org.openwms.wms.api.MovementVO</class-a>
 		<class-b>org.openwms.wms.impl.Movement</class-b>
 		<field>
+			<a is-accessible="true">persistentKey</a>
+			<b is-accessible="true">pKey</b>
+		</field>
+		<field>
 			<a is-accessible="true">transportUnitBk</a>
 			<b is-accessible="true">transportUnitBk.value</b>
+		</field>
+		<field>
+			<a is-accessible="true">type</a>
+			<b is-accessible="true">type</b>
+		</field>
+		<field>
+			<a is-accessible="true">priority</a>
+			<b is-accessible="true">priority</b>
+		</field>
+		<field>
+			<a is-accessible="true">target</a>
+			<b is-accessible="true">this</b>
+		</field>
+		<field>
+			<a is-accessible="true">startMode</a>
+			<b is-accessible="true">mode</b>
 		</field>
 	</mapping>
 

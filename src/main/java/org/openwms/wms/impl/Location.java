@@ -18,11 +18,15 @@ package org.openwms.wms.impl;
 import org.ameba.integration.jpa.ApplicationEntity;
 import org.openwms.common.location.LocationPK;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * A Location.
@@ -34,12 +38,24 @@ import java.io.Serializable;
 public class Location extends ApplicationEntity implements Serializable {
 
     @NotNull
-    @Column(name = "C_LOCATION_ID")
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "area", column = @Column(name = "C_AREA")),
+            @AttributeOverride(name = "aisle", column = @Column(name = "C_AISLE")),
+            @AttributeOverride(name = "x", column = @Column(name = "C_X")),
+            @AttributeOverride(name = "y", column = @Column(name = "C_Y")),
+            @AttributeOverride(name = "z", column = @Column(name = "C_Z"))
+    })
     private LocationPK locationId;
+
     @Column(name = "C_LOCATION_GROUP_NAME")
     private String locationGroupName;
 
     protected Location() {
+    }
+
+    public Location(LocationPK locationId) {
+        this.locationId = locationId;
     }
 
     public LocationPK getLocationId() {
@@ -48,5 +64,19 @@ public class Location extends ApplicationEntity implements Serializable {
 
     public String getLocationGroupName() {
         return locationGroupName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Location location = (Location) o;
+        return locationId.equals(location.locationId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), locationId);
     }
 }

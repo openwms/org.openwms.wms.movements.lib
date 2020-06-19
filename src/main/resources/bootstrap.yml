@@ -59,7 +59,7 @@ owms:
     serialization: json
 
 server:
-  port: ${PORT:8133}
+  port: ${PORT:8134}
 
 eureka:
   client:

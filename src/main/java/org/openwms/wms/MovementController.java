@@ -17,20 +17,26 @@ package org.openwms.wms;
 
 import org.ameba.http.MeasuredRestController;
 import org.openwms.core.http.AbstractWebController;
+import org.openwms.wms.api.MovementType;
 import org.openwms.wms.api.MovementVO;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * A MovementController.
  *
  * @author Heiko Scherrer
  */
+@Validated
 @MeasuredRestController
 public class MovementController extends AbstractWebController {
 
@@ -41,13 +47,17 @@ public class MovementController extends AbstractWebController {
     }
 
     @PostMapping("/v1/transport-units/{bk}/movements")
-    public ResponseEntity<Void> create(@PathVariable("bk") String bk, @Valid @RequestBody MovementVO movement, HttpServletRequest req) {
-        try {
-            MovementVO created = service.create(bk, movement);
-            return ResponseEntity.created(getLocationURIForCreatedResource(req, created.getPersistentKey())).build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
+    public ResponseEntity<Void> create(
+        @PathVariable("bk") String bk,
+        @Valid @RequestBody MovementVO movement, HttpServletRequest req) {
+        MovementVO created = service.create(bk, movement);
+        return ResponseEntity.created(getLocationURIForCreatedResource(req, created.getPersistentKey())).build();
+    }
+
+    @GetMapping(value = "/v1/movements", params = {"state", "types"})
+    public ResponseEntity<List<MovementVO>> findFinishedForTypes(
+        @RequestParam("state") String state,
+        @RequestParam("types") MovementType... types){
+        return ResponseEntity.ok(service.findFor(state, types));
     }
 }

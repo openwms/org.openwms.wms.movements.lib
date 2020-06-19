@@ -25,14 +25,14 @@ import org.springframework.context.ApplicationEventPublisher;
 import java.util.List;
 
 /**
- * A ManualMovementHandler.
+ * A InboundMovementHandler.
  *
  * @author Heiko Scherrer
  */
 @TxService
-class ManualMovementHandler extends AbstractMovementHandler {
+class InboundMovementHandler extends AbstractMovementHandler {
 
-    ManualMovementHandler(MovementRepository repository, LocationRepository locationRepository, ApplicationEventPublisher publisher) {
+    InboundMovementHandler(MovementRepository repository, LocationRepository locationRepository, ApplicationEventPublisher publisher) {
         super(repository, locationRepository, publisher);
     }
 
@@ -41,7 +41,7 @@ class ManualMovementHandler extends AbstractMovementHandler {
      */
     @Override
     public MovementType getType() {
-        return MovementType.MANUAL;
+        return MovementType.INBOUND;
     }
 
     /**
@@ -49,6 +49,6 @@ class ManualMovementHandler extends AbstractMovementHandler {
      */
     @Override
     public List<Movement> findInState(String state) {
-        return findInState(state, MovementType.MANUAL);
+        return findInState(state, MovementType.INBOUND);
     }
 }

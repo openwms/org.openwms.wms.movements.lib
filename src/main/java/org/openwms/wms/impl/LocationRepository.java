@@ -15,31 +15,17 @@
  */
 package org.openwms.wms.impl;
 
-import org.openwms.wms.api.MovementType;
+import org.openwms.common.location.LocationPK;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
+import java.util.Optional;
 
 /**
- * A MovementHandler.
+ * A LocationRepository.
  *
  * @author Heiko Scherrer
  */
-public interface MovementHandler {
+public interface LocationRepository extends JpaRepository<Location, Long> {
 
-    /**
-     * Return the type the handler implementation can handle.
-     *
-     * @return The type
-     */
-    MovementType getType();
-
-    /**
-     * Create and return a {@code Movement}.
-     *
-     * @param movement The Movement to create
-     * @return The created instance
-     */
-    Movement create(Movement movement);
-
-    List<Movement> findInState(String state);
+    Optional<Location> findByLocationId(LocationPK locationId);
 }

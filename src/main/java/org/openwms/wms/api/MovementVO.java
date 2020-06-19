@@ -15,6 +15,7 @@
  */
 package org.openwms.wms.api;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -36,13 +37,23 @@ import javax.validation.constraints.NotNull;
 public class MovementVO {
 
     /** The persistent key is returned from the service as soon as the resource has been created. */
+    @JsonProperty("pKey")
     private String persistentKey;
     /** The business key of the TransportUnit is returned from the service. */
+    @JsonProperty("transportUnitBk")
     private String transportUnitBk;
+    /** Whether the Movement should be directly processed (AUTOMATIC) or postponed (MANUAL). */
+    @JsonProperty("mode")
+    private StartMode startMode;
+    /** A priority how fast and prio the Movement needs to be processed; A higher value is less prio than lower values. */
+    @JsonProperty("priority")
+    private Integer priority;
     /** The type of Movement must be passed by the caller. */
+    @JsonProperty("type")
     @NotNull//(groups = ValidationGroups.Movement.Create.class)
     private MovementType type;
     /** The target where to move the TransportUnit to must be passed by the caller. */
+    @JsonProperty("target")
     @NotEmpty(groups = ValidationGroups.Movement.Create.class)
     private String target;
 }

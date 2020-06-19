@@ -15,7 +15,12 @@
  */
 package org.openwms.wms;
 
+import org.openwms.wms.api.MovementType;
 import org.openwms.wms.api.MovementVO;
+
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * A MovementService.
@@ -31,5 +36,7 @@ public interface MovementService {
      * @param movement Detailed Movement information
      * @return The created Movement instance
      */
-    MovementVO create(String bk, MovementVO movement);
+    MovementVO create(@NotEmpty String bk, @NotNull MovementVO movement);
+
+    List<MovementVO> findFor(@NotEmpty String state, @NotNull MovementType... types);
 }

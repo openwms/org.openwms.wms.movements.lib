@@ -21,11 +21,15 @@ import org.openwms.wms.Message;
 import org.openwms.wms.api.MovementType;
 import org.openwms.wms.api.StartMode;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -43,27 +47,31 @@ import java.util.Objects;
 public class Movement extends ApplicationEntity implements Serializable {
 
     /** The business key of the {@code TransportUnit} to move. */
-    @NotNull
-    @Column(name = "C_TRANSPORT_UNIT_BK")
+    @NotNull(groups = ValidationGroups.Movement.Create.class)
+    @Embedded
+    @AttributeOverride(name = "value", column = @Column(name = "C_TRANSPORT_UNIT_BK", length = Barcode.BARCODE_LENGTH, nullable = false))
     private Barcode transportUnitBk;
 
     /** Type of movement. */
-    @Column(name = "C_TYPE")
+    @Column(name = "C_TYPE", nullable = false)
     @Enumerated(EnumType.STRING)
+    @NotNull
     private MovementType type;
 
     /**
      * A priority level of the {@code Movement}. The lower the value the lower the priority. The priority level affects the execution of the
      * {@code Movement}. An order with high priority will be processed faster than those with lower priority.
      */
-    @Column(name = "C_PRIORITY")
+    @Column(name = "C_PRIORITY", nullable = false)
     @Enumerated(EnumType.STRING)
-    private PriorityLevel priority = PriorityLevel.NORMAL;
+    @NotNull
+    private PriorityLevel priority;
 
     /** Defines how the resulting {@code TransportOrder} is started. */
-    @Column(name = "C_MODE")
+    @Column(name = "C_MODE", nullable = false)
     @Enumerated(EnumType.STRING)
-    private StartMode mode;
+    @NotNull
+    private StartMode mode = StartMode.MANUAL;
 
     /** A message with the reason for this {@code Movement}. */
     @Embedded
@@ -74,7 +82,8 @@ public class Movement extends ApplicationEntity implements Serializable {
     private ProblemHistory problem;
 
     /** The target {@code Location} of the {@code Movement}. This property is set before the {@code Movement} is started. */
-    @Column(name = "C_TARGET_LOCATION")
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinColumn(name = "C_TARGET_LOCATION")
     private Location targetLocation;
 
     /** A {@code LocationGroup} can also be set as target. At least one target must be set when the {@code Movement} is being started. */
@@ -102,6 +111,10 @@ public class Movement extends ApplicationEntity implements Serializable {
 
     public Barcode getTransportUnitBk() {
         return transportUnitBk;
+    }
+
+    public void setTransportUnitBk(Barcode transportUnitBk) {
+        this.transportUnitBk = transportUnitBk;
     }
 
     public MovementType getType() {
@@ -132,8 +145,16 @@ public class Movement extends ApplicationEntity implements Serializable {
         return targetLocation;
     }
 
+    public void setTargetLocation(Location targetLocation) {
+        this.targetLocation = targetLocation;
+    }
+
     public String getTargetLocationGroup() {
         return targetLocationGroup;
+    }
+
+    public void setTargetLocationGroup(String targetLocationGroup) {
+        this.targetLocationGroup = targetLocationGroup;
     }
 
     public ZonedDateTime getStartEarliestDate() {

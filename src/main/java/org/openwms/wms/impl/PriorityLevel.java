@@ -19,26 +19,26 @@ import java.io.Serializable;
 import java.util.Arrays;
 
 /**
- * A PriorityLevel is used to prioritize {@link TransportOrder}s.
+ * A PriorityLevel is used to prioritize {@code Movement}s.
  * 
  * @author Heiko Scherrer
  */
 public enum PriorityLevel implements Serializable {
 
-    /** Lowest priority. */
-    LOWEST(10),
+    /** Highest priority. */
+    HIGHEST(10),
 
-    /** Low priority. */
-    LOW(20),
+    /** High priority. */
+    HIGH(20),
 
     /** Standard priority. */
     NORMAL(30),
 
-    /** High priority. */
-    HIGH(40),
+    /** Low priority. */
+    LOW(40),
 
-    /** Highest priority. */
-    HIGHEST(50);
+    /** Lowest priority. */
+    LOWEST(50);
 
     private int order;
 
