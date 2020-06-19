@@ -76,7 +76,10 @@ public class MovementDocumentation {
         TransportUnitVO transportUnit = TransportUnitVO.newBuilder().barcode("4711").build();
         given(transportUnitApi.findTransportUnit("4711")).willReturn(transportUnit);
 
-        MovementVO m = MovementVO.builder().transportUnitBk("4711").type(MovementType.MANUAL).target("EXT_/0000/0000/0000/0000").build();
+        MovementVO m = new MovementVO();
+        m.setTransportUnitBk("4711");
+        m.setType(MovementType.MANUAL);
+        m.setTarget("EXT_/0000/0000/0000/0000");
         mockMvc.perform(
                 post("/v1/transport-units/4711/movements")
                 .content(objectMapper.writeValueAsString(m)).contentType(MediaType.APPLICATION_JSON)

@@ -15,6 +15,7 @@
  */
 package org.openwms.wms.app;
 
+import org.ameba.annotation.EnableAspects;
 import org.ameba.mapping.BeanMapper;
 import org.ameba.mapping.DozerMapperImpl;
 import org.openwms.wms.impl.MovementRepository;
@@ -32,6 +33,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaRepositories(basePackageClasses = MovementRepository.class)
 @EntityScan(basePackageClasses = MovementRepository.class)
 @EnableJpaAuditing
+@EnableAspects(propagateRootCause = true)
 @Configuration
 class MovementConfiguration {
 
