@@ -67,6 +67,7 @@
         <ameba-lib.version>2.4-SNAPSHOT</ameba-lib.version>
         <common.version>1.6.0-SNAPSHOT</common.version>
         <core.version>1.8.0-SNAPSHOT</core.version>
+        <putaway.version>1.0.0-SNAPSHOT</putaway.version>
         <spring-cloud-dependencies.version>Hoxton.RELEASE</spring-cloud-dependencies.version>
     </properties>
 
@@ -145,6 +146,12 @@
                 <classifier>client</classifier>
             </dependency>
             <dependency>
+                <groupId>org.openwms</groupId>
+                <artifactId>org.openwms.wms.putaway</artifactId>
+                <version>${putaway.version}</version>
+                <classifier>client</classifier>
+            </dependency>
+            <dependency>
                 <groupId>net.sf.dozer</groupId>
                 <artifactId>dozer</artifactId>
                 <version>${dozer.version}</version>
@@ -176,6 +183,12 @@
         <dependency>
             <groupId>org.openwms</groupId>
             <artifactId>org.openwms.common.service</artifactId>
+            <classifier>client</classifier>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.openwms</groupId>
+            <artifactId>org.openwms.wms.putaway</artifactId>
             <classifier>client</classifier>
             <optional>true</optional>
         </dependency>

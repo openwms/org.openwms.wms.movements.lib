@@ -4,6 +4,8 @@ eureka:
       enabled: true
 
 owms:
+  movement:
+    putaway-resolution-enabled: true
   events:
     wms:
       movements:

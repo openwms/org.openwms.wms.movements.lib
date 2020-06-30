@@ -30,11 +30,13 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -78,8 +80,8 @@ public class Movement extends ApplicationEntity implements Serializable {
     private Message message;
 
     /** Reported problems on the {@code Movement}. */
-    @OneToOne
-    private ProblemHistory problem;
+    @OneToMany
+    private List<ProblemHistory> problems;
 
     /** The target {@code Location} of the {@code Movement}. This property is set before the {@code Movement} is started. */
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
@@ -137,12 +139,23 @@ public class Movement extends ApplicationEntity implements Serializable {
         return message;
     }
 
-    public ProblemHistory getProblem() {
-        return problem;
+    public List<ProblemHistory> getProblems() {
+        return problems;
+    }
+
+    public boolean addProblem(ProblemHistory problem) {
+        if (this.problems == null) {
+            this.problems = new ArrayList<>(1);
+        }
+        return this.problems.add(problem);
     }
 
     public Location getTargetLocation() {
         return targetLocation;
+    }
+
+    public boolean hasTargetLocation() {
+        return targetLocation != null;
     }
 
     public void setTargetLocation(Location targetLocation) {
@@ -181,7 +194,6 @@ public class Movement extends ApplicationEntity implements Serializable {
                 ", priority=" + priority +
                 ", mode=" + mode +
                 ", message=" + message +
-                ", problem=" + problem +
                 ", targetLocation=" + targetLocation +
                 ", targetLocationGroup='" + targetLocationGroup + '\'' +
                 ", startEarliestDate=" + startEarliestDate +
@@ -201,7 +213,7 @@ public class Movement extends ApplicationEntity implements Serializable {
                 priority == movement.priority &&
                 mode == movement.mode &&
                 Objects.equals(message, movement.message) &&
-                Objects.equals(problem, movement.problem) &&
+                Objects.equals(problems, movement.problems) &&
                 Objects.equals(targetLocation, movement.targetLocation) &&
                 Objects.equals(targetLocationGroup, movement.targetLocationGroup) &&
                 Objects.equals(startEarliestDate, movement.startEarliestDate) &&
@@ -212,6 +224,6 @@ public class Movement extends ApplicationEntity implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(transportUnitBk, type, priority, mode, message, problem, targetLocation, targetLocationGroup, startEarliestDate, startDate, latestDueDate, endDate);
+        return Objects.hash(transportUnitBk, type, priority, mode, message, problems, targetLocation, targetLocationGroup, startEarliestDate, startDate, latestDueDate, endDate);
     }
 }

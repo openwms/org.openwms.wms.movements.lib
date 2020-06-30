@@ -56,7 +56,7 @@ abstract class AbstractMovementHandler implements MovementHandler {
         if (targetLocation != null && targetLocation.isNew()) {
             LocationPK loc = targetLocation.getLocationId();
             targetLocation = locationRepository.findByLocationId(targetLocation.getLocationId()).orElseThrow(
-                    () -> new NotFoundException(format("No Location with ID [%s] exists", loc.toString()))
+                    () -> new NotFoundException(format("Location with ID [%s] does not exist", loc.toString()))
             );
             movement.setTargetLocation(targetLocation);
         }

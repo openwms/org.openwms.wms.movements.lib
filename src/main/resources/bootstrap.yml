@@ -44,8 +44,6 @@ owms:
   srv:
     protocol: http
     hostname: localhost
-  transportation:
-    serialization: json
 
 server:
   port: ${PORT:8134}

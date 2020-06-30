@@ -17,6 +17,7 @@ package org.openwms.wms.app;
 
 import org.openwms.common.location.api.LocationApi;
 import org.openwms.common.location.api.LocationGroupApi;
+import org.openwms.common.putaway.api.PutawayApi;
 import org.openwms.common.transport.api.TransportUnitApi;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Configuration;
@@ -32,7 +33,8 @@ import org.springframework.context.annotation.Profile;
 @EnableFeignClients(basePackageClasses = {
         TransportUnitApi.class,
         LocationApi.class,
-        LocationGroupApi.class
+        LocationGroupApi.class,
+        PutawayApi.class
 })
 class MovementFeignConfiguration {
 }
