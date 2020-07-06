@@ -17,13 +17,17 @@ package org.openwms.wms.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
+import org.ameba.http.AbstractBase;
 import org.openwms.wms.impl.ValidationGroups;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /**
  * A MovementVO encapsulates details about the actual request to move a TransportUnit to a given target.
@@ -34,7 +38,9 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @Getter
 @Setter
-public class MovementVO {
+@ToString
+@EqualsAndHashCode(callSuper = true)
+public class MovementVO extends AbstractBase implements Serializable {
 
     /** The persistent key is returned from the service as soon as the resource has been created. */
     @JsonProperty("pKey")

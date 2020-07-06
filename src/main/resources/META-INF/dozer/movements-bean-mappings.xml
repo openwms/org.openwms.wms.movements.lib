@@ -16,10 +16,6 @@
 				<class-a>java.time.ZonedDateTime</class-a>
 				<class-b>java.time.ZonedDateTime</class-b>
 			</converter>
-			<converter type="org.openwms.wms.impl.LocationConverter">
-				<class-a>java.lang.String</class-a>
-				<class-b>org.openwms.wms.impl.Movement</class-b>
-			</converter>
 			<converter type="org.openwms.wms.impl.PriorityConverter">
 				<class-a>java.lang.Integer</class-a>
 				<class-b>org.openwms.wms.impl.PriorityLevel</class-b>
@@ -48,7 +44,7 @@
 		</field>
 		<field>
 			<a is-accessible="true">target</a>
-			<b is-accessible="true">this</b>
+			<b is-accessible="true">targetLocationGroup</b>
 		</field>
 		<field>
 			<a is-accessible="true">startMode</a>

@@ -41,12 +41,10 @@ class PutawayAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PutawayAdapter.class);
     private final MovementRepository repository;
-    private final LocationRepository locationRepository;
     private final PutawayApi putawayApi;
 
-    PutawayAdapter(MovementRepository repository, LocationRepository locationRepository, PutawayApi putawayApi) {
+    PutawayAdapter(MovementRepository repository, PutawayApi putawayApi) {
         this.repository = repository;
-        this.locationRepository = locationRepository;
         this.putawayApi = putawayApi;
     }
 
@@ -54,14 +52,13 @@ class PutawayAdapter {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW, noRollbackFor = {Exception.class})
     public void onEvent(MovementCreated event) {
-        if (!event.getMovement().hasTargetLocation()) {
+        if (event.getMovement().emptyTargetLocation()) {
             LOGGER.debug("Call putaway strategy to find target location for movement [{}]", event.getMovement().getPersistentKey());
             Movement movement = repository.findById(event.getMovement().getPk()).orElseThrow(() -> new NotFoundException(format("Movement with PK [%d] does not exist", event.getMovement().getPk())));
             try {
                 LocationVO target = putawayApi.findInAisle(event.getMovement().getTargetLocationGroup(), event.getMovement().getTransportUnitBk().getValue());
                 LOGGER.debug("Putaway strategy returned [{}] as next target for movement [{}]", target.getLocationId(), event.getMovement().getPersistentKey());
-                Location targetLocation = locationRepository.findByLocationId(LocationPK.fromString(target.getLocationId())).orElseThrow(() -> new NotFoundException(format("Location with ID [%s] does not exist", target.getLocationId())));
-                movement.setTargetLocation(targetLocation);
+                movement.setTargetLocation(LocationPK.fromString(target.getLocationId()));
             } catch (Exception e) {
                 LOGGER.error("Error calling the putaway strategy: " + e.getMessage(), e);
                 movement.addProblem(new ProblemHistory(movement, new Message.Builder().withMessage(e.getMessage()).build()));

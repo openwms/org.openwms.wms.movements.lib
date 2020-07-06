@@ -15,11 +15,7 @@
  */
 package org.openwms.wms.impl.handler;
 
-import org.ameba.exception.NotFoundException;
-import org.openwms.common.location.LocationPK;
 import org.openwms.wms.api.MovementType;
-import org.openwms.wms.impl.Location;
-import org.openwms.wms.impl.LocationRepository;
 import org.openwms.wms.impl.Movement;
 import org.openwms.wms.impl.MovementCreated;
 import org.openwms.wms.impl.MovementHandler;
@@ -38,12 +34,10 @@ import static java.lang.String.format;
 abstract class AbstractMovementHandler implements MovementHandler {
 
     protected final MovementRepository repository;
-    protected final LocationRepository locationRepository;
     protected final ApplicationEventPublisher publisher;
 
-    AbstractMovementHandler(MovementRepository repository, LocationRepository locationRepository, ApplicationEventPublisher publisher) {
+    AbstractMovementHandler(MovementRepository repository, ApplicationEventPublisher publisher) {
         this.repository = repository;
-        this.locationRepository = locationRepository;
         this.publisher = publisher;
     }
 
@@ -52,13 +46,8 @@ abstract class AbstractMovementHandler implements MovementHandler {
      */
     @Override
     public Movement create(Movement movement) {
-        Location targetLocation = movement.getTargetLocation();
-        if (targetLocation != null && targetLocation.isNew()) {
-            LocationPK loc = targetLocation.getLocationId();
-            targetLocation = locationRepository.findByLocationId(targetLocation.getLocationId()).orElseThrow(
-                    () -> new NotFoundException(format("Location with ID [%s] does not exist", loc.toString()))
-            );
-            movement.setTargetLocation(targetLocation);
+        if (movement.emptyTargetLocation() && movement.emptyTargetLocationGroup()) {
+            throw new IllegalArgumentException("Movement has no target set and cannot be created");
         }
         Movement saved = repository.save(movement);
         publisher.publishEvent(new MovementCreated(saved));

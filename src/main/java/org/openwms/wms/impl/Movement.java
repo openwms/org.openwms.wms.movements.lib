@@ -16,20 +16,20 @@
 package org.openwms.wms.impl;
 
 import org.ameba.integration.jpa.ApplicationEntity;
+import org.openwms.common.location.LocationPK;
 import org.openwms.common.transport.Barcode;
 import org.openwms.wms.Message;
 import org.openwms.wms.api.MovementType;
 import org.openwms.wms.api.StartMode;
 
 import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -80,13 +80,19 @@ public class Movement extends ApplicationEntity implements Serializable {
     private Message message;
 
     /** Reported problems on the {@code Movement}. */
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<ProblemHistory> problems;
 
     /** The target {@code Location} of the {@code Movement}. This property is set before the {@code Movement} is started. */
-    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
-    @JoinColumn(name = "C_TARGET_LOCATION")
-    private Location targetLocation;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "area", column = @Column(name = "C_TARGET_AREA")),
+            @AttributeOverride(name = "aisle", column = @Column(name = "C_TARGET_AISLE")),
+            @AttributeOverride(name = "x", column = @Column(name = "C_TARGET_X")),
+            @AttributeOverride(name = "y", column = @Column(name = "C_TARGET_Y")),
+            @AttributeOverride(name = "z", column = @Column(name = "C_TARGET_Z"))
+    })
+    private LocationPK targetLocation;
 
     /** A {@code LocationGroup} can also be set as target. At least one target must be set when the {@code Movement} is being started. */
     @Column(name = "C_TARGET_LOCATION_GROUP")
@@ -150,20 +156,24 @@ public class Movement extends ApplicationEntity implements Serializable {
         return this.problems.add(problem);
     }
 
-    public Location getTargetLocation() {
+    public LocationPK getTargetLocation() {
         return targetLocation;
     }
 
-    public boolean hasTargetLocation() {
-        return targetLocation != null;
+    public boolean emptyTargetLocation() {
+        return targetLocation == null;
     }
 
-    public void setTargetLocation(Location targetLocation) {
+    public void setTargetLocation(LocationPK targetLocation) {
         this.targetLocation = targetLocation;
     }
 
     public String getTargetLocationGroup() {
         return targetLocationGroup;
+    }
+
+    public boolean emptyTargetLocationGroup() {
+        return targetLocationGroup == null;
     }
 
     public void setTargetLocationGroup(String targetLocationGroup) {

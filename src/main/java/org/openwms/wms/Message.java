@@ -43,8 +43,10 @@ public class Message implements Serializable {
     private String messageNo;
 
     /** Message text about the {@literal Message}. */
-    @Column(name = "C_MESSAGE")
+    @Column(name = "C_MESSAGE", length = DEF_MESSAGE_LENGTH)
     private String message;
+    /** Default length of {@code message}. */
+    public static final int DEF_MESSAGE_LENGTH = 1024;
 
     /** The unique key of the domain object in that context the message occurred. */
     private String pKey;
@@ -59,7 +61,9 @@ public class Message implements Serializable {
     private Message(Builder builder) {
         occurred = builder.occurred;
         messageNo = builder.messageNo;
-        message = builder.message;
+        if (builder.message != null) {
+            message = builder.message.length() > DEF_MESSAGE_LENGTH ? builder.message.substring(0, DEF_MESSAGE_LENGTH-1) : builder.message;
+        }
         pKey = builder.pKey;
     }
 

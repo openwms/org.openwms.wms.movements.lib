@@ -17,7 +17,6 @@ package org.openwms.wms.impl.handler;
 
 import org.ameba.annotation.TxService;
 import org.openwms.wms.api.MovementType;
-import org.openwms.wms.impl.LocationRepository;
 import org.openwms.wms.impl.Movement;
 import org.openwms.wms.impl.MovementRepository;
 import org.springframework.context.ApplicationEventPublisher;
@@ -32,8 +31,8 @@ import java.util.List;
 @TxService
 class ManualMovementHandler extends AbstractMovementHandler {
 
-    ManualMovementHandler(MovementRepository repository, LocationRepository locationRepository, ApplicationEventPublisher publisher) {
-        super(repository, locationRepository, publisher);
+    ManualMovementHandler(MovementRepository repository, ApplicationEventPublisher publisher) {
+        super(repository, publisher);
     }
 
     /**

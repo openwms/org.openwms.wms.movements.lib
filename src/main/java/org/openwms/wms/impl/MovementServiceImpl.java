@@ -67,6 +67,9 @@ class MovementServiceImpl implements MovementService {
      */
     @Override
     public MovementVO create(@NotEmpty String bk, @NotNull MovementVO vo) {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Create a Movement for [{}] with data [{}]", bk, vo);
+        }
         validate(validator, vo, ValidationGroups.Movement.Create.class);
         TransportUnitVO transportUnit = transportUnitApi.findTransportUnit(bk);
         if (transportUnit == null) {
