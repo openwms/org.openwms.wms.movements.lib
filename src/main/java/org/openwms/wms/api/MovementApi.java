@@ -45,21 +45,12 @@ public interface MovementApi {
 
     /**
      *
-     * @param types
-     * @return
-     */
-    @GetMapping(value = "/v1/movements", params = "types")
-    List<MovementVO> findForTypes(
-            @RequestParam("types") MovementType... types);
-
-    /**
-     *
      * @param state
      * @param types
      * @return
      */
     @GetMapping(value = "/v1/movements", params = {"state", "types"})
-    List<MovementVO> findFinishedForTypes(
+    List<MovementVO> findForStateAndTypes(
             @RequestParam("state") String state,
             @RequestParam("types") MovementType... types);
 }

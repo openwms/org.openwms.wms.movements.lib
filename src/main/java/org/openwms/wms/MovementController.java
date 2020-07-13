@@ -55,7 +55,7 @@ public class MovementController extends AbstractWebController {
     }
 
     @GetMapping(value = "/v1/movements", params = {"state", "types"})
-    public ResponseEntity<List<MovementVO>> findFinishedForTypes(
+    public ResponseEntity<List<MovementVO>> findForStateAndTypes(
         @RequestParam("state") String state,
         @RequestParam("types") MovementType... types){
         return ResponseEntity.ok(service.findFor(state, types));
