@@ -56,7 +56,7 @@ class PutawayAdapter {
             LOGGER.debug("Call putaway strategy to find target location for movement [{}]", event.getMovement().getPersistentKey());
             Movement movement = repository.findById(event.getMovement().getPk()).orElseThrow(() -> new NotFoundException(format("Movement with PK [%d] does not exist", event.getMovement().getPk())));
             try {
-                LocationVO target = putawayApi.findInAisle(event.getMovement().getTargetLocationGroup(), event.getMovement().getTransportUnitBk().getValue());
+                LocationVO target = putawayApi.findNextInAisle(event.getMovement().getTargetLocationGroup(), event.getMovement().getTransportUnitBk().getValue());
                 LOGGER.debug("Putaway strategy returned [{}] as next target for movement [{}]", target.getLocationId(), event.getMovement().getPersistentKey());
                 movement.setTargetLocation(LocationPK.fromString(target.getLocationId()));
             } catch (Exception e) {
