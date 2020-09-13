@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.openwms</groupId>
         <artifactId>org.openwms.parent</artifactId>
-        <version>14</version>
+        <version>17</version>
         <relativePath />
     </parent>
     <artifactId>org.openwms.wms.movements</artifactId>
@@ -48,8 +48,6 @@
         </developer>
     </developers>
 
-    <contributors></contributors>
-
     <ciManagement>
         <system>travis</system>
         <url>https://travis-ci.com/openwms/${project.artifactId}</url>
@@ -64,11 +62,12 @@
     </ciManagement>
 
     <properties>
-        <ameba-lib.version>2.4-SNAPSHOT</ameba-lib.version>
-        <common.version>1.6.0-SNAPSHOT</common.version>
-        <core.version>1.8.0-SNAPSHOT</core.version>
+        <ameba-lib.version>2.5-SNAPSHOT</ameba-lib.version>
+        <common.version>1.7.0-SNAPSHOT</common.version>
+        <core.version>1.8.0</core.version>
+        <guava.version>29.0-jre</guava.version>
         <putaway.version>1.0.0-SNAPSHOT</putaway.version>
-        <spring-cloud-dependencies.version>Hoxton.RELEASE</spring-cloud-dependencies.version>
+        <spring-cloud-dependencies.version>Hoxton.SR8</spring-cloud-dependencies.version>
     </properties>
 
     <reporting>
@@ -102,6 +101,7 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>client-build</id>
                         <phase>package</phase>
                         <goals>
                             <goal>jar</goal>
@@ -113,6 +113,16 @@
                             </includes>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>full-build</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>all</classifier>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>
@@ -120,7 +130,9 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>repackage</id>
                         <goals>
+                            <goal>build-info</goal>
                             <goal>repackage</goal>
                         </goals>
                         <configuration>
@@ -128,6 +140,12 @@
                         </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <executable>true</executable>
+                    <layers>
+                        <enabled>true</enabled>
+                    </layers>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -216,7 +234,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter-hateoas</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -224,14 +242,9 @@
             <artifactId>spring-boot-starter-validation</artifactId>
             <optional>true</optional>
         </dependency>
-        <!--dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-            <optional>true</optional>
-        </dependency-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-hateoas</artifactId>
+            <artifactId>spring-boot-starter-web</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -249,6 +262,11 @@
                     <groupId>com.google.guava</groupId>
                     <artifactId>guava</artifactId>
                 </exclusion>
+                <exclusion>
+                    <!-- Has a conflict internally -->
+                    <groupId>commons-configuration</groupId>
+                    <artifactId>commons-configuration</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -262,6 +280,16 @@
                     <artifactId>HdrHistogram</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-sleuth</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-zipkin</artifactId>
+            <optional>true</optional>
         </dependency>
 
         <!-- both for retry -->
@@ -292,7 +320,7 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- Monitoring -->
+        <!-- Observability: Monitoring -->
         <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
@@ -300,26 +328,17 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- Fix Exclusions -->
+        <dependency>
+            <groupId>commons-configuration</groupId>
+            <artifactId>commons-configuration</artifactId>
+            <version>1.10</version>
+        </dependency>
+
         <!-- 3rd party dependencies -->
         <dependency>
-            <groupId>io.interface21</groupId>
-            <artifactId>ameba-lib</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>com.jayway.jsonpath</groupId>
-            <artifactId>json-path</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <!-- Required to use PATCH -->
-            <groupId>io.github.openfeign</groupId>
-            <artifactId>feign-httpclient</artifactId>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -328,14 +347,20 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.jolokia</groupId>
-            <artifactId>jolokia-core</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
             <!-- Required by eureka-client -->
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -354,25 +379,35 @@
             </exclusions>
         </dependency>
         <dependency>
+            <!-- Required to use PATCH -->
+            <groupId>io.github.openfeign</groupId>
+            <artifactId>feign-httpclient</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>io.interface21</groupId>
+            <artifactId>ameba-lib</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
             <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
+            <groupId>org.jolokia</groupId>
+            <artifactId>jolokia-core</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <scope>runtime</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
             <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
@@ -428,16 +463,6 @@
             </exclusions>
         </dependency>
     </dependencies>
-
-    <profiles>
-        <profile>
-            <id>schemagen</id>
-            <properties>
-                <surefireArgs>-Dspring.profiles.active=ASYNCHRONOUS,TEST,TESTPG</surefireArgs>
-                <schemagen.outputDirectory>${project.build.directory}/site/${project.version}</schemagen.outputDirectory>
-            </properties>
-        </profile>
-    </profiles>
 
     <repositories>
         <repository>
