@@ -65,7 +65,7 @@
         <ameba-lib.version>2.5-SNAPSHOT</ameba-lib.version>
         <common.version>1.7.0-SNAPSHOT</common.version>
         <core.version>1.8.0</core.version>
-        <guava.version>29.0-jre</guava.version>
+        <guava.version>30.0-jre</guava.version>
         <putaway.version>1.0.0-SNAPSHOT</putaway.version>
         <spring-cloud-dependencies.version>Hoxton.SR8</spring-cloud-dependencies.version>
     </properties>
