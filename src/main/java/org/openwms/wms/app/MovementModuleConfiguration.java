@@ -48,7 +48,6 @@ import java.util.Properties;
  * @author Heiko Scherrer
  */
 @Configuration
-@EnableDiscoveryClient
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackageClasses = MovementRepository.class)
 @EntityScan(basePackageClasses = MovementRepository.class)
