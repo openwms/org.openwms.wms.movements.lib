@@ -38,5 +38,12 @@ public interface MovementService {
      */
     MovementVO create(@NotEmpty String bk, @NotNull MovementVO movement);
 
+    /**
+     * Find and return {@code Movements} in the given {@code state} and of one of the {@code types}.
+     *
+     * @param state The state the Movement is in
+     * @param types The type of Movement
+     * @return A list of, never {@literal null}
+     */
     List<MovementVO> findFor(@NotEmpty String state, @NotNull MovementType... types);
 }
