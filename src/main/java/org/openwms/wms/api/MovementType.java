@@ -47,5 +47,8 @@ public enum MovementType {
     REPLENISHMENT,
 
     /** Movement for inventory control procedure. */
-    INVENTORY
+    INVENTORY,
+
+    /** Movement for Relocation. */
+    RELOCATION
 }
