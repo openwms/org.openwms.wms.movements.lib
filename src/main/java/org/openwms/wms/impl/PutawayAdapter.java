@@ -58,7 +58,7 @@ class PutawayAdapter {
             try {
                 LocationVO target = putawayApi.findAndAssignNextInLocGroup(event.getMovement().getTargetLocationGroup(), event.getMovement().getTransportUnitBk().getValue());
                 LOGGER.debug("Putaway strategy returned [{}] as next target for movement [{}]", target.getLocationId(), event.getMovement().getPersistentKey());
-                movement.setTargetLocation(LocationPK.fromString(target.getLocationId()));
+                movement.setTargetLocation(target.getLocationId());
             } catch (Exception e) {
                 LOGGER.error("Error calling the putaway strategy: " + e.getMessage(), e);
                 movement.addProblem(new ProblemHistory(movement, new Message.Builder().withMessage(e.getMessage()).build()));

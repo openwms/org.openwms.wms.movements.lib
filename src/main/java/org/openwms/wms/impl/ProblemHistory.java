@@ -15,10 +15,12 @@
  */
 package org.openwms.wms.impl;
 
-import org.ameba.integration.jpa.BaseEntity;
+import org.ameba.integration.jpa.ApplicationEntity;
 import org.openwms.wms.Message;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -31,12 +33,13 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name = "MVM_PROBLEM_HISTORY")
-public class ProblemHistory extends BaseEntity implements Serializable {
+public class ProblemHistory extends ApplicationEntity implements Serializable {
 
     @ManyToOne
-    @JoinColumn(name = "C_FK_MOVEMENT")
+    @JoinColumn(name = "C_FK_MOVEMENT", foreignKey = @ForeignKey(name = "FK_PHISTORY_MVM"))
     private Movement movement;
-    @JoinColumn(name = "C_FK_MSG")
+
+    @Embedded
     private Message problem;
 
     /** Dear JPA ... */

@@ -80,19 +80,12 @@ public class Movement extends ApplicationEntity implements Serializable {
     private Message message;
 
     /** Reported problems on the {@code Movement}. */
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "movement", cascade = CascadeType.ALL)
     private List<ProblemHistory> problems;
 
     /** The target {@code Location} of the {@code Movement}. This property is set before the {@code Movement} is started. */
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "area", column = @Column(name = "C_TARGET_AREA")),
-            @AttributeOverride(name = "aisle", column = @Column(name = "C_TARGET_AISLE")),
-            @AttributeOverride(name = "x", column = @Column(name = "C_TARGET_X")),
-            @AttributeOverride(name = "y", column = @Column(name = "C_TARGET_Y")),
-            @AttributeOverride(name = "z", column = @Column(name = "C_TARGET_Z"))
-    })
-    private LocationPK targetLocation;
+    @Column(name = "C_TARGET_LOCATION")
+    private String targetLocation;
 
     /** A {@code LocationGroup} can also be set as target. At least one target must be set when the {@code Movement} is being started. */
     @Column(name = "C_TARGET_LOCATION_GROUP")
@@ -156,15 +149,15 @@ public class Movement extends ApplicationEntity implements Serializable {
         return this.problems.add(problem);
     }
 
-    public LocationPK getTargetLocation() {
+    public String getTargetLocation() {
         return targetLocation;
     }
 
     public boolean emptyTargetLocation() {
-        return targetLocation == null;
+        return targetLocation == null || targetLocation.isEmpty();
     }
 
-    public void setTargetLocation(LocationPK targetLocation) {
+    public void setTargetLocation(String targetLocation) {
         this.targetLocation = targetLocation;
     }
 

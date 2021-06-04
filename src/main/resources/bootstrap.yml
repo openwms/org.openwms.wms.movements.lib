@@ -19,15 +19,24 @@ spring:
       name: user
       password: sa
   jpa:
-    show-sql: false
     open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+    show-sql: false
   jackson:
-    date-format: yyyy-MM-dd'T'HH:mm:ss.SSSZ
+    date-format: "yyyy-MM-dd'T'HH:mm:ssXXX" # Only matches Dates no Instants!
   main:
     allow-bean-definition-overriding: true
   zipkin:
     sender:
       type: web
+  mvc:
+    format:
+      date-time: "yyyy-MM-dd'T'HH:mm:ssXXX" # Must match the pattern how of @JsonFormat field annotation patterns
+      date: yyyy-MM-dd
+      time: HH:mm:ss
 
 feign:
   httpclient:
@@ -65,6 +74,15 @@ eureka:
       config-protocol: http # The protocol used to access the config server
     prefer-ip-address: true
 
+info:
+  scm-url: "@scm.url@"
+  build-url: "@ciManagement.url@"
+
+logging:
+  file:
+    name: BOOT-WMS-Movements.log
+    path: "/tmp/owms"
+
 management:
   endpoints:
     web:
@@ -82,25 +100,22 @@ management:
     export:
       prometheus:
         enabled: true
-  info:
-    git:
-      mode: full
-
-logging:
-  file:
-    name: BOOT-TMS-Movements.log
-    path: "/tmp/owms"
 
 ---
 spring:
-  profiles: CLOUD
-  cloud:
-    config:
-      discovery:
-        enabled: true
-      enabled: true
-      fail-fast: true # true means retry
-    discovery:
+  profiles: ASYNCHRONOUS
+  rabbitmq:
+    listener:
+      simple:
+        retry:
+          max-attempts: 3
+          enabled: true
+          initial-interval: 1s
+          max-interval: 1s
+
+management:
+  health:
+    rabbit:
       enabled: true
 
 ---

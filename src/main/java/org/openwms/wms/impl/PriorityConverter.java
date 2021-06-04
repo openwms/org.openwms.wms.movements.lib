@@ -15,7 +15,8 @@
  */
 package org.openwms.wms.impl;
 
-import org.dozer.DozerConverter;
+
+import com.github.dozermapper.core.DozerConverter;
 
 /**
  * A PriorityConverter.

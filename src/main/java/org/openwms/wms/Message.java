@@ -15,6 +15,8 @@
  */
 package org.openwms.wms;
 
+import org.ameba.integration.jpa.ApplicationEntity;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Temporal;
@@ -48,9 +50,6 @@ public class Message implements Serializable {
     /** Default length of {@code message}. */
     public static final int DEF_MESSAGE_LENGTH = 1024;
 
-    /** The unique key of the domain object in that context the message occurred. */
-    private String pKey;
-
     /* ----------------------------- methods ------------------- */
     /**
      * Dear JPA...
@@ -64,7 +63,6 @@ public class Message implements Serializable {
         if (builder.message != null) {
             message = builder.message.length() > DEF_MESSAGE_LENGTH ? builder.message.substring(0, DEF_MESSAGE_LENGTH-1) : builder.message;
         }
-        pKey = builder.pKey;
     }
 
     /**
@@ -95,15 +93,6 @@ public class Message implements Serializable {
     }
 
     /**
-     * Get the pKey.
-     *
-     * @return The pKey.
-     */
-    public String getpKey() {
-        return pKey;
-    }
-
-    /**
      * {@inheritDoc}
      *
      * Use all fields.
@@ -115,8 +104,7 @@ public class Message implements Serializable {
         Message message1 = (Message) o;
         return Objects.equals(occurred, message1.occurred) &&
                 Objects.equals(messageNo, message1.messageNo) &&
-                Objects.equals(message, message1.message) &&
-                Objects.equals(pKey, message1.pKey);
+                Objects.equals(message, message1.message);
     }
 
     /**
@@ -140,7 +128,7 @@ public class Message implements Serializable {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(occurred, messageNo, message, pKey);
+        return Objects.hash(occurred, messageNo, message);
     }
 
 
@@ -152,7 +140,6 @@ public class Message implements Serializable {
         private Date occurred;
         private String messageNo;
         private String message;
-        private String pKey;
 
         /**
          * Sets the {@code occurred} and returns a reference to this Builder so that the methods can be chained together.
@@ -184,17 +171,6 @@ public class Message implements Serializable {
          */
         public Builder withMessage(String val) {
             message = val;
-            return this;
-        }
-
-        /**
-         * Sets the {@code pKey} and returns a reference to this Builder so that the methods can be chained together.
-         *
-         * @param val the {@code pKey} to set
-         * @return a reference to this Builder
-         */
-        public Builder withPKey(String val) {
-            pKey = val;
             return this;
         }
 
