@@ -35,6 +35,22 @@ public class MovementEvent implements Serializable {
     public MovementEvent() {
     }
 
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
+
+    public MovementMO getMovement() {
+        return movement;
+    }
+
+    public void setMovement(MovementMO movement) {
+        this.movement = movement;
+    }
+
     public static Builder newBuilder() {
         return new Builder();
     }

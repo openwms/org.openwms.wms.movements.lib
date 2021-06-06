@@ -62,4 +62,8 @@ public class MovementVO extends AbstractBase implements Serializable {
     @JsonProperty("target")
     @NotEmpty(groups = ValidationGroups.Movement.Create.class)
     private String target;
+
+    public boolean hasTarget() {
+        return target != null && !target.isEmpty();
+    }
 }

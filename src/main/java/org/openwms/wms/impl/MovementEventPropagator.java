@@ -40,7 +40,7 @@ class MovementEventPropagator {
     private final AmqpTemplate amqpTemplate;
 
     MovementEventPropagator(
-            @Value("${owms.events.wms.movements.exchange-name}") String exchangeName,
+            @Value("${owms.movements.exchange-name}") String exchangeName,
             AmqpTemplate amqpTemplate) {
         this.exchangeName = exchangeName;
         this.amqpTemplate = amqpTemplate;

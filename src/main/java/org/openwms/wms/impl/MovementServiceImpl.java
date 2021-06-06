@@ -15,6 +15,7 @@
  */
 package org.openwms.wms.impl;
 
+import org.ameba.annotation.Measured;
 import org.ameba.annotation.TxService;
 import org.ameba.exception.NotFoundException;
 import org.ameba.mapping.BeanMapper;
@@ -24,6 +25,7 @@ import org.openwms.common.transport.api.TransportUnitVO;
 import org.openwms.wms.MovementService;
 import org.openwms.wms.api.MovementType;
 import org.openwms.wms.api.MovementVO;
+import org.openwms.wms.spi.MovementTypeResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.validation.annotation.Validated;
@@ -53,23 +55,28 @@ class MovementServiceImpl implements MovementService {
     private final TransportUnitApi transportUnitApi;
     private final BeanMapper mapper;
     private final Validator validator;
+    private final MovementTypeResolver movementTypeResolver;
     private final Map<MovementType, MovementHandler> handlers;
 
-    MovementServiceImpl(TransportUnitApi transportUnitApi, List<MovementHandler> handlersList, BeanMapper mapper, Validator validator) {
+    MovementServiceImpl(TransportUnitApi transportUnitApi, List<MovementHandler> handlersList, BeanMapper mapper, Validator validator,
+            MovementTypeResolver movementTypeResolver) {
         this.transportUnitApi = transportUnitApi;
         this.handlers = handlersList.stream().collect(Collectors.toMap(MovementHandler::getType, h -> h));
         this.mapper = mapper;
         this.validator = validator;
+        this.movementTypeResolver = movementTypeResolver;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Measured
     @Override
     public MovementVO create(@NotEmpty String bk, @NotNull MovementVO vo) {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Create a Movement for [{}] with data [{}]", bk, vo);
         }
+        resolveType(vo);
         validate(validator, vo, ValidationGroups.Movement.Create.class);
         TransportUnitVO transportUnit = transportUnitApi.findTransportUnit(bk);
         if (transportUnit == null) {
@@ -82,9 +89,19 @@ class MovementServiceImpl implements MovementService {
         return mapper.map(result, MovementVO.class);
     }
 
+    private void resolveType(MovementVO vo) {
+        if (vo.getType() == null) {
+            if (!vo.hasTarget()) {
+                throw new IllegalArgumentException("Can't resolve a MovementType automatically because no target is set");
+            }
+            vo.setType(movementTypeResolver.resolve(vo.getTransportUnitBk(), vo.getTarget()).orElseThrow(() -> new IllegalArgumentException("Can't resolve MovementType from target")));
+        }
+    }
+
     /**
      * {@inheritDoc}
      */
+    @Measured
     @Override
     public List<MovementVO> findFor(@NotEmpty String state, @NotNull MovementType... types) {
         return mapper.map(Arrays.stream(types)
