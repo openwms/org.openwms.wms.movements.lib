@@ -50,5 +50,8 @@ public enum MovementType {
     INVENTORY,
 
     /** Movement for Relocation. */
-    RELOCATION
+    RELOCATION,
+
+    WAREHOUSE_RELOCATION
+
 }

@@ -18,6 +18,7 @@ package org.openwms.wms.events;
 import org.ameba.annotation.Measured;
 import org.openwms.core.SpringProfiles;
 import org.openwms.wms.MovementService;
+import org.openwms.wms.api.MovementType;
 import org.openwms.wms.api.MovementVO;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.context.annotation.Profile;
@@ -47,6 +48,8 @@ public class ReservationMessageListener {
         movement.setTransportUnitBk(mo.getTransportUnitBK());
         movement.setPriority(mo.getPriority());
         movement.setTarget(mo.getTargetName());
+        // FIXME [openwms]: 08.06.21 This is project specific and depends on source and target of the split
+        movement.setType(MovementType.RELOCATION);
         movementService.create(mo.getTransportUnitBK(), movement);
     }
 }

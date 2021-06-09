@@ -19,6 +19,8 @@ spring:
       name: user
       password: sa
   jpa:
+    mapping-resources:
+      - META-INF/movements-orm.xml
     open-in-view: false
     properties:
       hibernate:

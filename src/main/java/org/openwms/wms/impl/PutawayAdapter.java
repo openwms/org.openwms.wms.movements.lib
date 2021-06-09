@@ -17,10 +17,9 @@ package org.openwms.wms.impl;
 
 import org.ameba.annotation.TxService;
 import org.ameba.exception.NotFoundException;
-import org.openwms.common.location.LocationPK;
 import org.openwms.common.location.api.LocationVO;
-import org.openwms.common.putaway.api.PutawayApi;
 import org.openwms.wms.Message;
+import org.openwms.wms.movements.spi.common.putaway.PutawayApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -30,6 +29,7 @@ import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import static java.lang.String.format;
+import static java.util.Arrays.asList;
 
 /**
  * A PutawayAdapter.
@@ -56,7 +56,10 @@ class PutawayAdapter {
             LOGGER.debug("Call putaway strategy to find target location for movement [{}]", event.getMovement().getPersistentKey());
             Movement movement = repository.findById(event.getMovement().getPk()).orElseThrow(() -> new NotFoundException(format("Movement with PK [%d] does not exist", event.getMovement().getPk())));
             try {
-                LocationVO target = putawayApi.findAndAssignNextInLocGroup(event.getMovement().getTargetLocationGroup(), event.getMovement().getTransportUnitBk().getValue());
+                LocationVO target = putawayApi.findAndAssignNextInLocGroup(
+                        asList(event.getMovement().getTargetLocationGroup()),
+                        event.getMovement().getTransportUnitBk().getValue()
+                );
                 LOGGER.debug("Putaway strategy returned [{}] as next target for movement [{}]", target.getLocationId(), event.getMovement().getPersistentKey());
                 movement.setTargetLocation(target.getLocationId());
             } catch (Exception e) {

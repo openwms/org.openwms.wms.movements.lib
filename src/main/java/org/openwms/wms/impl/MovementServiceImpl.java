@@ -77,6 +77,10 @@ class MovementServiceImpl implements MovementService {
             LOGGER.debug("Create a Movement for [{}] with data [{}]", bk, vo);
         }
         resolveType(vo);
+        MovementHandler movementHandler = handlers.get(vo.getType());
+        if (movementHandler == null) {
+            throw new IllegalArgumentException(format("No handler registered for MovementType [%s]", vo.getType()));
+        }
         validate(validator, vo, ValidationGroups.Movement.Create.class);
         TransportUnitVO transportUnit = transportUnitApi.findTransportUnit(bk);
         if (transportUnit == null) {
@@ -85,7 +89,7 @@ class MovementServiceImpl implements MovementService {
         Movement movement = mapper.map(vo, Movement.class);
         movement.setTransportUnitBk(Barcode.of(bk));
         validate(validator, movement, ValidationGroups.Movement.Create.class);
-        Movement result = handlers.get(vo.getType()).create(movement);
+        Movement result = movementHandler.create(movement);
         return mapper.map(result, MovementVO.class);
     }
 
