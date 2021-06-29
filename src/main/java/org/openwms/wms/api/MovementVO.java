@@ -58,7 +58,11 @@ public class MovementVO extends AbstractBase implements Serializable {
     @JsonProperty("type")
     @NotNull//(groups = ValidationGroups.Movement.Create.class)
     private MovementType type;
-    /** The target where to move the TransportUnit to must be passed by the caller. */
+    /** The source where the TransportUnit shall be picked up (must be passed by the caller). */
+    @JsonProperty("source")
+    @NotEmpty(groups = ValidationGroups.Movement.Create.class)
+    private String source;
+    /** The target where to move the TransportUnit to (must be passed by the caller). */
     @JsonProperty("target")
     @NotEmpty(groups = ValidationGroups.Movement.Create.class)
     private String target;
