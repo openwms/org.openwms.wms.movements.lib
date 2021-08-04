@@ -16,14 +16,13 @@
 package org.openwms.wms.impl;
 
 import org.ameba.integration.jpa.ApplicationEntity;
-import org.openwms.common.location.LocationPK;
 import org.openwms.common.transport.Barcode;
 import org.openwms.wms.Message;
 import org.openwms.wms.api.MovementType;
 import org.openwms.wms.api.StartMode;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -39,6 +38,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static org.openwms.wms.MovementConstants.DATE_TIME_WITH_TIMEZONE;
+
 /**
  * A Movement.
  *
@@ -49,9 +50,9 @@ import java.util.Objects;
 public class Movement extends ApplicationEntity implements Serializable {
 
     /** The business key of the {@code TransportUnit} to move. */
-    @NotNull(groups = ValidationGroups.Movement.Create.class)
+    @NotNull
     @Embedded
-    @AttributeOverride(name = "value", column = @Column(name = "C_TRANSPORT_UNIT_BK", length = Barcode.BARCODE_LENGTH, nullable = false))
+    @AttributeOverride(name = "value", column = @Column(name = "C_TRANSPORT_UNIT_BK", nullable = false))
     private Barcode transportUnitBk;
 
     /** Type of movement. */
@@ -75,6 +76,9 @@ public class Movement extends ApplicationEntity implements Serializable {
     @NotNull
     private StartMode mode = StartMode.MANUAL;
 
+    @Column(name = "C_STATE")
+    private String state;
+
     /** A message with the reason for this {@code Movement}. */
     @Embedded
     private Message message;
@@ -82,6 +86,10 @@ public class Movement extends ApplicationEntity implements Serializable {
     /** Reported problems on the {@code Movement}. */
     @OneToMany(mappedBy = "movement", cascade = CascadeType.ALL)
     private List<ProblemHistory> problems;
+
+    /** Where the {@code Movement} is picked up. */
+    @Column(name = "C_SOURCE_LOCATION")
+    private String sourceLocation;
 
     /** The target {@code Location} of the {@code Movement}. This property is set before the {@code Movement} is started. */
     @Column(name = "C_TARGET_LOCATION")
@@ -92,19 +100,23 @@ public class Movement extends ApplicationEntity implements Serializable {
     private String targetLocationGroup;
 
     /** Date when the {@code Movement} can be started earliest. */
-    @Column(name = "C_START_EARLIEST_DATE")
+    @Column(name = "C_START_EARLIEST_DATE", columnDefinition = "timestamp(0)")
+    @DateTimeFormat(pattern = DATE_TIME_WITH_TIMEZONE)
     private ZonedDateTime startEarliestDate;
 
     /** Date when the {@code Movement} was started. */
-    @Column(name = "C_START_DATE")
+    @Column(name = "C_START_DATE", columnDefinition = "timestamp(0)")
+    @DateTimeFormat(pattern = DATE_TIME_WITH_TIMEZONE)
     private ZonedDateTime startDate;
 
     /** Latest possible finish date of this {@code Movement}. */
-    @Column(name = "C_LATEST_DUE")
+    @Column(name = "C_LATEST_DUE", columnDefinition = "timestamp(0)")
+    @DateTimeFormat(pattern = DATE_TIME_WITH_TIMEZONE)
     private ZonedDateTime latestDueDate;
 
     /** Date when the {@code Movement} ended. */
-    @Column(name = "C_END_DATE")
+    @Column(name = "C_END_DATE", columnDefinition = "timestamp(0)")
+    @DateTimeFormat(pattern = DATE_TIME_WITH_TIMEZONE)
     private ZonedDateTime endDate;
 
     public Movement() {
@@ -138,6 +150,18 @@ public class Movement extends ApplicationEntity implements Serializable {
         return message;
     }
 
+    public void setMessage(Message message) {
+        this.message = message;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
     public List<ProblemHistory> getProblems() {
         return problems;
     }
@@ -147,6 +171,14 @@ public class Movement extends ApplicationEntity implements Serializable {
             this.problems = new ArrayList<>(1);
         }
         return this.problems.add(problem);
+    }
+
+    public String getSourceLocation() {
+        return sourceLocation;
+    }
+
+    public void setSourceLocation(String sourceLocation) {
+        this.sourceLocation = sourceLocation;
     }
 
     public String getTargetLocation() {
@@ -181,12 +213,20 @@ public class Movement extends ApplicationEntity implements Serializable {
         return startDate;
     }
 
+    public void setStartDate(ZonedDateTime startDate) {
+        this.startDate = startDate;
+    }
+
     public ZonedDateTime getLatestDueDate() {
         return latestDueDate;
     }
 
     public ZonedDateTime getEndDate() {
         return endDate;
+    }
+
+    public void setEndDate(ZonedDateTime endDate) {
+        this.endDate = endDate;
     }
 
     @Override

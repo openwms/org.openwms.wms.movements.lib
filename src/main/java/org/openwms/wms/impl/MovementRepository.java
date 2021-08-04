@@ -18,9 +18,11 @@ package org.openwms.wms.impl;
 import org.openwms.wms.api.MovementType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * A MovementRepository.
@@ -30,9 +32,11 @@ import java.util.List;
 @Repository
 public interface MovementRepository extends JpaRepository<Movement, Long> {
 
-    @Query("select m from Movement m where m.type = :type and m.endDate is null")
-    List<Movement> findActiveOnes(MovementType type);
+    Optional<Movement> findBypKey(String pKey);
 
-    @Query("select m from Movement m where m.type = :type and m.endDate is not null")
-    List<Movement> findInactiveOnes(MovementType type);
+    @Query("select m from Movement m where m.type = :type and m.state = :state and (m.sourceLocation = :source or null = :source)")
+    List<Movement> findByTypeAndStateAndSource(
+            @Param("type") MovementType type,
+            @Param("state") String state,
+            @Param("source") String source);
 }

@@ -47,6 +47,10 @@
 			<b is-accessible="true">targetLocationGroup</b>
 		</field>
 		<field>
+			<a is-accessible="true">source</a>
+			<b is-accessible="true">sourceLocation</b>
+		</field>
+		<field>
 			<a is-accessible="true">startMode</a>
 			<b is-accessible="true">mode</b>
 		</field>

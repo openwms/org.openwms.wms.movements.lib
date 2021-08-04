@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2020 the original author or authors.
+ * Copyright 2005-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openwms.wms.impl;
+package org.openwms.wms;
 
 /**
- * A ValidationGroups is a marker interface collection to aggregate all types used for Bean validation groups.
+ * A MovementConstants.
  *
  * @author Heiko Scherrer
  */
-public interface ValidationGroups {
+public final class MovementConstants {
 
-    interface Movement {
-        interface Create {}
-        interface Move {}
-        interface Complete {}
-    }
+    /** The format pattern for all date-time with timezone types. */
+    public static final String DATE_TIME_WITH_TIMEZONE = "yyyy-MM-dd'T'HH:mm:ssXXX";
+
+    private MovementConstants() { }
 }

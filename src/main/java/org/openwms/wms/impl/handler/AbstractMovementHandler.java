@@ -15,6 +15,7 @@
  */
 package org.openwms.wms.impl.handler;
 
+import org.ameba.annotation.Measured;
 import org.openwms.wms.api.MovementType;
 import org.openwms.wms.impl.Movement;
 import org.openwms.wms.impl.MovementCreated;
@@ -22,9 +23,8 @@ import org.openwms.wms.impl.MovementHandler;
 import org.openwms.wms.impl.MovementRepository;
 import org.springframework.context.ApplicationEventPublisher;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
-
-import static java.lang.String.format;
 
 /**
  * A AbstractMovementHandler.
@@ -45,7 +45,8 @@ abstract class AbstractMovementHandler implements MovementHandler {
      * {@inheritDoc}
      */
     @Override
-    public Movement create(Movement movement) {
+    @Measured
+    public Movement create(@NotNull Movement movement) {
         if (movement.emptyTargetLocation() && movement.emptyTargetLocationGroup()) {
             throw new IllegalArgumentException("Movement has no target set and cannot be created");
         }
@@ -54,13 +55,7 @@ abstract class AbstractMovementHandler implements MovementHandler {
         return saved;
     }
 
-    protected List<Movement> findInState(String state, MovementType type ) {
-        if ("ACTIVE".equals(state)) {
-            return repository.findActiveOnes(type);
-        } else if ("INACTIVE".equals(state)) {
-            return repository.findInactiveOnes(type);
-        } else {
-            throw new IllegalArgumentException(format("The given state is not recognized [%s]", state));
-        }
+    protected List<Movement> findInState(String state, String source, MovementType type ) {
+        return repository.findByTypeAndStateAndSource(type, state, source);
     }
 }

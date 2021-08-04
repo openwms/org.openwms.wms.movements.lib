@@ -33,10 +33,12 @@ import org.springframework.validation.annotation.Validated;
 import javax.validation.Validator;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -55,15 +57,17 @@ class MovementServiceImpl implements MovementService {
     private final TransportUnitApi transportUnitApi;
     private final BeanMapper mapper;
     private final Validator validator;
+    private final MovementRepository repository;
     private final MovementTypeResolver movementTypeResolver;
     private final Map<MovementType, MovementHandler> handlers;
 
     MovementServiceImpl(TransportUnitApi transportUnitApi, List<MovementHandler> handlersList, BeanMapper mapper, Validator validator,
-            MovementTypeResolver movementTypeResolver) {
+            MovementRepository repository, MovementTypeResolver movementTypeResolver) {
         this.transportUnitApi = transportUnitApi;
         this.handlers = handlersList.stream().collect(Collectors.toMap(MovementHandler::getType, h -> h));
         this.mapper = mapper;
         this.validator = validator;
+        this.repository = repository;
         this.movementTypeResolver = movementTypeResolver;
     }
 
@@ -89,6 +93,7 @@ class MovementServiceImpl implements MovementService {
         Movement movement = mapper.map(vo, Movement.class);
         movement.setTransportUnitBk(Barcode.of(bk));
         validate(validator, movement, ValidationGroups.Movement.Create.class);
+        movement.setState("ACTIVE");
         Movement result = movementHandler.create(movement);
         return mapper.map(result, MovementVO.class);
     }
@@ -107,13 +112,56 @@ class MovementServiceImpl implements MovementService {
      */
     @Measured
     @Override
-    public List<MovementVO> findFor(@NotEmpty String state, @NotNull MovementType... types) {
+    public List<MovementVO> findFor(@NotEmpty String state, @NotEmpty String source, @NotNull MovementType... types) {
         return mapper.map(Arrays.stream(types)
                 .parallel()
-                .map(t -> handlers.get(t).findInState(state))
+                .map(t -> handlers.get(t).findInStateAndSource(state, source))
                 .reduce(new ArrayList<>(), (a, b) -> {
                     a.addAll(b);
                     return a;
                 }), MovementVO.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Measured
+    @Override
+    public List<String> getPriorityList() {
+        return Arrays.stream(PriorityLevel.values())
+                .filter(Objects::nonNull)
+                .map(Enum::name)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Measured
+    @Override
+    public MovementVO move(@NotEmpty String pKey, @NotNull MovementVO vo) {
+        Movement movement = repository.findBypKey(pKey).orElseThrow(() -> new NotFoundException(format("Movement with pKey [%s] does not exist", pKey)));
+        movement.setState(vo.getState());
+        if (movement.getStartDate() == null) {
+            movement.setStartDate(ZonedDateTime.now());
+        }
+        movement.setSourceLocation(vo.getSource());
+        movement = repository.save(movement);
+        return mapper.map(movement, MovementVO.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Measured
+    @Override
+    public MovementVO complete(@NotEmpty String pKey, @NotNull MovementVO vo) {
+        Movement movement = repository.findBypKey(pKey).orElseThrow(() -> new NotFoundException(format("Movement with pKey [%s] does not exist", pKey)));
+        movement.setState("DONE");
+        movement.setEndDate(ZonedDateTime.now());
+        movement.setTargetLocation(vo.getTarget());
+        movement.setTargetLocationGroup(vo.getTarget());
+        movement = repository.save(movement);
+        return mapper.map(movement, MovementVO.class);
     }
 }

@@ -15,12 +15,14 @@
  */
 package org.openwms.wms.impl.handler;
 
+import org.ameba.annotation.Measured;
 import org.ameba.annotation.TxService;
 import org.openwms.wms.api.MovementType;
 import org.openwms.wms.impl.Movement;
 import org.openwms.wms.impl.MovementRepository;
 import org.springframework.context.ApplicationEventPublisher;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 /**
@@ -39,6 +41,7 @@ class ManualMovementHandler extends AbstractMovementHandler {
      * {@inheritDoc}
      */
     @Override
+    @Measured
     public MovementType getType() {
         return MovementType.MANUAL;
     }
@@ -47,7 +50,8 @@ class ManualMovementHandler extends AbstractMovementHandler {
      * {@inheritDoc}
      */
     @Override
-    public List<Movement> findInState(String state) {
-        return findInState(state, MovementType.MANUAL);
+    @Measured
+    public List<Movement> findInStateAndSource(@NotEmpty String state, @NotEmpty String source) {
+        return findInState(state, source, MovementType.MANUAL);
     }
 }

@@ -19,9 +19,11 @@ import org.ameba.http.MeasuredRestController;
 import org.openwms.core.http.AbstractWebController;
 import org.openwms.wms.api.MovementType;
 import org.openwms.wms.api.MovementVO;
+import org.openwms.wms.impl.ValidationGroups;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -47,6 +49,7 @@ public class MovementController extends AbstractWebController {
     }
 
     @PostMapping("/v1/transport-units/{bk}/movements")
+    @Validated(ValidationGroups.Movement.Create.class)
     public ResponseEntity<Void> create(
         @PathVariable("bk") String bk,
         @Valid @RequestBody MovementVO movement, HttpServletRequest req) {
@@ -54,10 +57,29 @@ public class MovementController extends AbstractWebController {
         return ResponseEntity.created(getLocationURIForCreatedResource(req, created.getPersistentKey())).build();
     }
 
+    @PatchMapping("/v1/movements/{pKey}")
+    @Validated(ValidationGroups.Movement.Move.class)
+    public ResponseEntity<MovementVO> move(
+            @PathVariable("pKey") String pKey,
+            @Valid @RequestBody MovementVO movement) {
+        MovementVO updated = service.move(pKey, movement);
+        return ResponseEntity.ok(updated);
+    }
+
+    @PatchMapping("/v1/movements/{pKey}/complete")
+    @Validated(ValidationGroups.Movement.Complete.class)
+    public ResponseEntity<MovementVO> complete(
+        @PathVariable("pKey") String pKey,
+        @Valid @RequestBody MovementVO movement) {
+        MovementVO completed = service.complete(pKey, movement);
+        return ResponseEntity.ok(completed);
+    }
+
     @GetMapping(value = "/v1/movements", params = {"state", "types"})
-    public ResponseEntity<List<MovementVO>> findForStateAndTypes(
-        @RequestParam("state") String state,
-        @RequestParam("types") MovementType... types){
-        return ResponseEntity.ok(service.findFor(state, types));
+    public ResponseEntity<List<MovementVO>> findForStateAndTypesAndSource(
+            @RequestParam("state") String state,
+            @RequestParam(value = "source", required = false) String source,
+            @RequestParam("types") MovementType... types){
+        return ResponseEntity.ok(service.findFor(state, source, types));
     }
 }

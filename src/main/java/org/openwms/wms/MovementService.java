@@ -42,8 +42,32 @@ public interface MovementService {
      * Find and return {@code Movements} in the given {@code state} and of one of the {@code types}.
      *
      * @param state The state the Movement is in
+     * @param source The source of the Movement
      * @param types The type of Movement
      * @return A list of, never {@literal null}
      */
-    List<MovementVO> findFor(@NotEmpty String state, @NotNull MovementType... types);
+    List<MovementVO> findFor(@NotEmpty String state, @NotEmpty String source, @NotNull MovementType... types);
+
+    /**
+     *
+     * @return
+     */
+    List<String> getPriorityList();
+
+    /**
+     *
+     * @param pKey
+     * @param vo
+     * @return
+     */
+    MovementVO move(@NotEmpty String pKey, @NotNull MovementVO vo);
+
+    /**
+     * Complete a {@code Movement}.
+     *
+     * @param pKey The identifying persistent key of the Movement to complete
+     * @param vo Required data to set at completion
+     * @return The completed instance
+     */
+    MovementVO complete(@NotEmpty String pKey, @NotNull MovementVO vo);
 }

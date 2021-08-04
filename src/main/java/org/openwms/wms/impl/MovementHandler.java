@@ -17,6 +17,8 @@ package org.openwms.wms.impl;
 
 import org.openwms.wms.api.MovementType;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -39,7 +41,7 @@ public interface MovementHandler {
      * @param movement The Movement to create
      * @return The created instance
      */
-    Movement create(Movement movement);
+    Movement create(@NotNull Movement movement);
 
-    List<Movement> findInState(String state);
+    List<Movement> findInStateAndSource(@NotEmpty String state, @NotEmpty String source);
 }
