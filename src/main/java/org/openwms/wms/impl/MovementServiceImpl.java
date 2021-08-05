@@ -33,6 +33,7 @@ import org.openwms.wms.api.MovementVO;
 import org.openwms.wms.spi.MovementTypeResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
@@ -72,7 +73,8 @@ class MovementServiceImpl implements MovementService {
     private final LocationGroupApi locationGroupApi;
 
     MovementServiceImpl(List<MovementHandler> handlersList, BeanMapper mapper, Validator validator,
-            MovementRepository repository, MovementTypeResolver movementTypeResolver, TransportUnitApi transportUnitApi, LocationApi locationApi, LocationGroupApi locationGroupApi) {
+            MovementRepository repository, @Autowired(required = false) MovementTypeResolver movementTypeResolver,
+            TransportUnitApi transportUnitApi, LocationApi locationApi, LocationGroupApi locationGroupApi) {
         this.handlers = handlersList.stream().collect(Collectors.toMap(MovementHandler::getType, h -> h));
         this.mapper = mapper;
         this.validator = validator;
@@ -141,6 +143,9 @@ class MovementServiceImpl implements MovementService {
         if (vo.getType() == null) {
             if (!vo.hasTarget()) {
                 throw new IllegalArgumentException("Can't resolve a MovementType automatically because no target is set");
+            }
+            if (movementTypeResolver == null) {
+                throw new IllegalStateException("No type is set and needs to be resolved but no MovementTypeResolver is configured");
             }
             vo.setType(movementTypeResolver.resolve(vo.getTransportUnitBk(), vo.getTarget())
                     .orElseThrow(() -> new IllegalArgumentException(format("Can't resolve MovementType for TransportUnit [%s] from target [%s]",
