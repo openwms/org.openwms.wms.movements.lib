@@ -61,7 +61,7 @@ class PutawayAdapter {
                         event.getMovement().getTransportUnitBk().getValue()
                 );
                 LOGGER.debug("Putaway strategy returned [{}] as next target for movement [{}]", target.getLocationId(), event.getMovement().getPersistentKey());
-                movement.setTargetLocation(target.getLocationId());
+                movement.setTargetLocation(target.getErpCode());
             } catch (Exception e) {
                 LOGGER.error("Error calling the putaway strategy: " + e.getMessage(), e);
                 movement.addProblem(new ProblemHistory(movement, new Message.Builder().withMessage(e.getMessage()).build()));

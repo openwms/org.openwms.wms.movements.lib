@@ -17,7 +17,9 @@ package org.openwms.wms;
 
 import org.openwms.wms.api.MovementType;
 import org.openwms.wms.api.MovementVO;
+import org.openwms.wms.impl.ValidationGroups;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -36,7 +38,9 @@ public interface MovementService {
      * @param movement Detailed Movement information
      * @return The created Movement instance
      */
-    MovementVO create(@NotEmpty String bk, @NotNull MovementVO movement);
+    MovementVO create(
+            @NotEmpty(groups = ValidationGroups.Movement.Create.class) String bk,
+            @NotNull(groups = ValidationGroups.Movement.Create.class) @Valid MovementVO movement);
 
     /**
      * Find and return {@code Movements} in the given {@code state} and of one of the {@code types}.
@@ -49,16 +53,18 @@ public interface MovementService {
     List<MovementVO> findFor(@NotEmpty String state, @NotEmpty String source, @NotNull MovementType... types);
 
     /**
+     * Get all priorities as a list of strings.
      *
-     * @return
+     * @return The list of priorities
      */
     List<String> getPriorityList();
 
     /**
+     * Move a {@code Movement} to a new location.
      *
-     * @param pKey
-     * @param vo
-     * @return
+     * @param pKey The persistent key of the Movement
+     * @param vo The Movement data must contain the new source
+     * @return The moved instance
      */
     MovementVO move(@NotEmpty String pKey, @NotNull MovementVO vo);
 

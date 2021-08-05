@@ -25,11 +25,10 @@ import lombok.ToString;
 import org.ameba.http.AbstractBase;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
-import static org.openwms.wms.impl.ValidationGroups.Movement.Create;
 import static org.openwms.wms.impl.ValidationGroups.Movement.Complete;
+import static org.openwms.wms.impl.ValidationGroups.Movement.Create;
 import static org.openwms.wms.impl.ValidationGroups.Movement.Move;
 /**
  * A MovementVO encapsulates details about the actual request to move a TransportUnit to a given target.
@@ -61,13 +60,15 @@ public class MovementVO extends AbstractBase implements Serializable {
     @NotEmpty(groups = Move.class)
     private String state;
     /** The type of Movement must be passed by the caller. */
-    @JsonProperty("type")
-    @NotNull(groups = Create.class)
+    @JsonProperty("type") // Not required at creation because it can be resolved from the TU and the target
     private MovementType type;
-    /** The source where the TransportUnit shall be picked up (must be passed by the caller). */
-    @JsonProperty("source")
+    /** The source Location where the TransportUnit shall be picked up (must be passed by the caller). */
+    @JsonProperty("sourceLocation")
     @NotEmpty(groups = {Create.class, Move.class})
-    private String source;
+    private String sourceLocation;
+    /** The LocationGroup the sourceLocation belongs to. */
+    @JsonProperty("sourceLocationGroupName")
+    private String sourceLocationGroupName;
     /** The target where to move the TransportUnit to (must be passed by the caller). */
     @JsonProperty("target")
     @NotEmpty(groups = {Create.class, Complete.class})

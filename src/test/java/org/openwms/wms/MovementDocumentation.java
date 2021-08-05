@@ -20,10 +20,14 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.openwms.common.location.api.LocationApi;
+import org.openwms.common.location.api.LocationGroupApi;
+import org.openwms.common.location.api.LocationVO;
 import org.openwms.common.transport.api.TransportUnitApi;
 import org.openwms.common.transport.api.TransportUnitVO;
 import org.openwms.wms.api.MovementType;
 import org.openwms.wms.api.MovementVO;
+import org.openwms.wms.movements.spi.common.putaway.PutawayApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
@@ -33,6 +37,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
+
+import java.util.Optional;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -54,6 +60,12 @@ public class MovementDocumentation {
     protected ObjectMapper objectMapper;
     @MockBean
     protected TransportUnitApi transportUnitApi;
+    @MockBean
+    protected LocationApi locationApi;
+    @MockBean
+    protected LocationGroupApi locationGroupApi;
+    @MockBean
+    protected PutawayApi putawayApi;
 
     /**
      * Do something before each test method.
@@ -71,18 +83,20 @@ public class MovementDocumentation {
         Mockito.reset(transportUnitApi);
     }
 
-    @Test
-    void testCreate() throws Exception {
+    @Test void testCreate() throws Exception {
         TransportUnitVO transportUnit = TransportUnitVO.newBuilder().barcode("4711").build();
         given(transportUnitApi.findTransportUnit("4711")).willReturn(transportUnit);
+        LocationVO sourceLocation = new LocationVO("WE__/0001/0000/0000/0000");
+        given(locationApi.findLocationByCoordinate("WE__/0001/0000/0000/0000")).willReturn(Optional.of(sourceLocation));
 
         MovementVO m = new MovementVO();
         m.setTransportUnitBk("4711");
         m.setType(MovementType.MANUAL);
+        m.setSourceLocation("WE__/0001/0000/0000/0000");
         m.setTarget("EXT_/0000/0000/0000/0000");
         mockMvc.perform(
                 post("/v1/transport-units/4711/movements")
-                .content(objectMapper.writeValueAsString(m)).contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(m)).contentType(MediaType.APPLICATION_JSON)
         )
                 .andExpect(status().isCreated())
                 .andExpect(header().exists(HttpHeaders.LOCATION))

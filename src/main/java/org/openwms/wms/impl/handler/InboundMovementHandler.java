@@ -23,6 +23,7 @@ import org.openwms.wms.impl.MovementRepository;
 import org.springframework.context.ApplicationEventPublisher;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -51,7 +52,7 @@ class InboundMovementHandler extends AbstractMovementHandler {
      */
     @Override
     @Measured
-    public List<Movement> findInStateAndSource(@NotEmpty String state, @NotEmpty String source) {
-        return findInState(state, source, MovementType.INBOUND);
+    public List<Movement> findInStateAndSource(@NotEmpty String state, @NotNull List<String> sources) {
+        return findInState(state, sources, MovementType.INBOUND);
     }
 }

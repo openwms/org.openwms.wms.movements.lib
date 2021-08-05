@@ -91,6 +91,10 @@ public class Movement extends ApplicationEntity implements Serializable {
     @Column(name = "C_SOURCE_LOCATION")
     private String sourceLocation;
 
+    /** The name of the {@code LocationGroup} where the {@code sourceLocation} belongs to. */
+    @Column(name = "C_SOURCE_LOCATION_GROUP_NAME")
+    private String sourceLocationGroupName;
+
     /** The target {@code Location} of the {@code Movement}. This property is set before the {@code Movement} is started. */
     @Column(name = "C_TARGET_LOCATION")
     private String targetLocation;
@@ -181,6 +185,14 @@ public class Movement extends ApplicationEntity implements Serializable {
         this.sourceLocation = sourceLocation;
     }
 
+    public String getSourceLocationGroupName() {
+        return sourceLocationGroupName;
+    }
+
+    public void setSourceLocationGroupName(String sourceLocationGroupName) {
+        this.sourceLocationGroupName = sourceLocationGroupName;
+    }
+
     public String getTargetLocation() {
         return targetLocation;
     }
@@ -236,8 +248,12 @@ public class Movement extends ApplicationEntity implements Serializable {
                 ", type=" + type +
                 ", priority=" + priority +
                 ", mode=" + mode +
+                ", state='" + state + '\'' +
                 ", message=" + message +
-                ", targetLocation=" + targetLocation +
+                ", problems=" + problems +
+                ", sourceLocation='" + sourceLocation + '\'' +
+                ", sourceLocationGroupName='" + sourceLocationGroupName + '\'' +
+                ", targetLocation='" + targetLocation + '\'' +
                 ", targetLocationGroup='" + targetLocationGroup + '\'' +
                 ", startEarliestDate=" + startEarliestDate +
                 ", startDate=" + startDate +
@@ -249,24 +265,14 @@ public class Movement extends ApplicationEntity implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Movement)) return false;
+        if (!super.equals(o)) return false;
         Movement movement = (Movement) o;
-        return Objects.equals(transportUnitBk, movement.transportUnitBk) &&
-                type == movement.type &&
-                priority == movement.priority &&
-                mode == movement.mode &&
-                Objects.equals(message, movement.message) &&
-                Objects.equals(problems, movement.problems) &&
-                Objects.equals(targetLocation, movement.targetLocation) &&
-                Objects.equals(targetLocationGroup, movement.targetLocationGroup) &&
-                Objects.equals(startEarliestDate, movement.startEarliestDate) &&
-                Objects.equals(startDate, movement.startDate) &&
-                Objects.equals(latestDueDate, movement.latestDueDate) &&
-                Objects.equals(endDate, movement.endDate);
+        return Objects.equals(transportUnitBk, movement.transportUnitBk) && type == movement.type && priority == movement.priority && mode == movement.mode && Objects.equals(state, movement.state) && Objects.equals(message, movement.message) && Objects.equals(problems, movement.problems) && Objects.equals(sourceLocation, movement.sourceLocation) && Objects.equals(sourceLocationGroupName, movement.sourceLocationGroupName) && Objects.equals(targetLocation, movement.targetLocation) && Objects.equals(targetLocationGroup, movement.targetLocationGroup) && Objects.equals(startEarliestDate, movement.startEarliestDate) && Objects.equals(startDate, movement.startDate) && Objects.equals(latestDueDate, movement.latestDueDate) && Objects.equals(endDate, movement.endDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(transportUnitBk, type, priority, mode, message, problems, targetLocation, targetLocationGroup, startEarliestDate, startDate, latestDueDate, endDate);
+        return Objects.hash(super.hashCode(), transportUnitBk, type, priority, mode, state, message, problems, sourceLocation, sourceLocationGroupName, targetLocation, targetLocationGroup, startEarliestDate, startDate, latestDueDate, endDate);
     }
 }

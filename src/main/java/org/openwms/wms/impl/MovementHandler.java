@@ -43,5 +43,5 @@ public interface MovementHandler {
      */
     Movement create(@NotNull Movement movement);
 
-    List<Movement> findInStateAndSource(@NotEmpty String state, @NotEmpty String source);
+    List<Movement> findInStateAndSource(@NotEmpty String state, @NotNull List<String> sources);
 }

@@ -21,11 +21,18 @@ import javax.validation.constraints.NotEmpty;
 import java.util.Optional;
 
 /**
- * A MovementTypeResolver.
+ * A MovementTypeResolver tries to resolve the type of {@code Movement} from given parameters.
  *
  * @author Heiko Scherrer
  */
 public interface MovementTypeResolver {
 
+    /**
+     * Resolve the type of {@code Movement}.
+     *
+     * @param transportUnitBK The current business key of the TransportUnit
+     * @param target The current target of the Movement
+     * @return The type of Movement
+     */
     Optional<MovementType> resolve(@NotEmpty String transportUnitBK, @NotEmpty String target);
 }

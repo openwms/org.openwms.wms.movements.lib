@@ -34,9 +34,9 @@ public interface MovementRepository extends JpaRepository<Movement, Long> {
 
     Optional<Movement> findBypKey(String pKey);
 
-    @Query("select m from Movement m where m.type = :type and m.state = :state and (m.sourceLocation = :source or null = :source)")
+    @Query("select m from Movement m where m.type = :type and m.state = :state and (m.sourceLocationGroupName in :sources or m.sourceLocation in :sources or null = :sources)")
     List<Movement> findByTypeAndStateAndSource(
             @Param("type") MovementType type,
             @Param("state") String state,
-            @Param("source") String source);
+            @Param("sources") List<String> sources);
 }

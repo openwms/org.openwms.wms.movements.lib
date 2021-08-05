@@ -19,6 +19,11 @@ import org.ameba.annotation.Measured;
 import org.ameba.annotation.TxService;
 import org.ameba.exception.NotFoundException;
 import org.ameba.mapping.BeanMapper;
+import org.openwms.common.location.LocationPK;
+import org.openwms.common.location.api.LocationApi;
+import org.openwms.common.location.api.LocationGroupApi;
+import org.openwms.common.location.api.LocationGroupVO;
+import org.openwms.common.location.api.LocationVO;
 import org.openwms.common.transport.Barcode;
 import org.openwms.common.transport.api.TransportUnitApi;
 import org.openwms.common.transport.api.TransportUnitVO;
@@ -30,15 +35,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
 import javax.validation.Validator;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -54,56 +62,89 @@ import static org.ameba.system.ValidationUtil.validate;
 class MovementServiceImpl implements MovementService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MovementServiceImpl.class);
-    private final TransportUnitApi transportUnitApi;
     private final BeanMapper mapper;
     private final Validator validator;
     private final MovementRepository repository;
     private final MovementTypeResolver movementTypeResolver;
     private final Map<MovementType, MovementHandler> handlers;
+    private final TransportUnitApi transportUnitApi;
+    private final LocationApi locationApi;
+    private final LocationGroupApi locationGroupApi;
 
-    MovementServiceImpl(TransportUnitApi transportUnitApi, List<MovementHandler> handlersList, BeanMapper mapper, Validator validator,
-            MovementRepository repository, MovementTypeResolver movementTypeResolver) {
-        this.transportUnitApi = transportUnitApi;
+    MovementServiceImpl(List<MovementHandler> handlersList, BeanMapper mapper, Validator validator,
+            MovementRepository repository, MovementTypeResolver movementTypeResolver, TransportUnitApi transportUnitApi, LocationApi locationApi, LocationGroupApi locationGroupApi) {
         this.handlers = handlersList.stream().collect(Collectors.toMap(MovementHandler::getType, h -> h));
         this.mapper = mapper;
         this.validator = validator;
         this.repository = repository;
         this.movementTypeResolver = movementTypeResolver;
+        this.transportUnitApi = transportUnitApi;
+        this.locationApi = locationApi;
+        this.locationGroupApi = locationGroupApi;
     }
 
     /**
      * {@inheritDoc}
      */
     @Measured
+    @Validated(ValidationGroups.Movement.Create.class)
     @Override
-    public MovementVO create(@NotEmpty String bk, @NotNull MovementVO vo) {
+    public MovementVO create(
+            @NotEmpty(groups = ValidationGroups.Movement.Create.class) String bk,
+            @NotNull(groups = ValidationGroups.Movement.Create.class) @Valid MovementVO vo) {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Create a Movement for [{}] with data [{}]", bk, vo);
         }
-        resolveType(vo);
+        validateAndResolveType(vo);
         MovementHandler movementHandler = handlers.get(vo.getType());
         if (movementHandler == null) {
             throw new IllegalArgumentException(format("No handler registered for MovementType [%s]", vo.getType()));
         }
         validate(validator, vo, ValidationGroups.Movement.Create.class);
-        TransportUnitVO transportUnit = transportUnitApi.findTransportUnit(bk);
-        if (transportUnit == null) {
-            throw new NotFoundException(format("TransportUnit with BK [%s] does not exist", bk));
-        }
+        TransportUnitVO transportUnit = resolveTransportUnit(bk).orElseThrow(() -> new NotFoundException(format("TransportUnit with BK [%s] does not exist", bk)));
+        LocationVO sourceLocation = resolveLocation(vo);
         Movement movement = mapper.map(vo, Movement.class);
+        movement.setSourceLocation(sourceLocation.getErpCode());
+        movement.setSourceLocationGroupName(sourceLocation.getLocationGroupName());
         movement.setTransportUnitBk(Barcode.of(bk));
-        validate(validator, movement, ValidationGroups.Movement.Create.class);
         movement.setState("ACTIVE");
+        validate(validator, movement, ValidationGroups.Movement.Create.class);
         Movement result = movementHandler.create(movement);
         return mapper.map(result, MovementVO.class);
     }
 
-    private void resolveType(MovementVO vo) {
+    private Optional<TransportUnitVO> resolveTransportUnit(String bk) {
+        try {
+            return Optional.of(transportUnitApi.findTransportUnit(bk));
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
+
+    private LocationVO resolveLocation(MovementVO vo) {
+        if (LocationPK.isValid(vo.getSourceLocation())) {
+            try {
+                return locationApi.findLocationByCoordinate(vo.getSourceLocation()).orElseThrow(() -> new NotFoundException(format("Location with locationId [%s] does not exist", vo.getSourceLocation())));
+            } catch (Exception e) {
+                throw new NotFoundException(format("Location with locationId [%s] does not exist", vo.getSourceLocation()));
+            }
+        } else {
+            try {
+                return locationApi.findLocationByErpCode(vo.getSourceLocation()).orElseThrow(() -> new NotFoundException(format("Location with erpCode [%s] does not exist", vo.getSourceLocation())));
+            } catch (Exception e) {
+                throw new NotFoundException(format("Location with erpCode [%s] does not exist", vo.getSourceLocation()));
+            }
+        }
+    }
+
+    private void validateAndResolveType(MovementVO vo) {
         if (vo.getType() == null) {
             if (!vo.hasTarget()) {
                 throw new IllegalArgumentException("Can't resolve a MovementType automatically because no target is set");
             }
-            vo.setType(movementTypeResolver.resolve(vo.getTransportUnitBk(), vo.getTarget()).orElseThrow(() -> new IllegalArgumentException("Can't resolve MovementType from target")));
+            vo.setType(movementTypeResolver.resolve(vo.getTransportUnitBk(), vo.getTarget())
+                    .orElseThrow(() -> new IllegalArgumentException(format("Can't resolve MovementType for TransportUnit [%s] from target [%s]",
+                            vo.getTransportUnitBk(), vo.getTarget()))));
         }
     }
 
@@ -113,9 +154,20 @@ class MovementServiceImpl implements MovementService {
     @Measured
     @Override
     public List<MovementVO> findFor(@NotEmpty String state, @NotEmpty String source, @NotNull MovementType... types) {
+        Optional<LocationGroupVO> locationGroupOpt = locationGroupApi.findByName(source);
+        List<String> sources;
+        sources = locationGroupOpt.map(lg -> lg
+                .streamLocationGroups()
+                .map(LocationGroupVO::getName)
+                .collect(Collectors.toList()))
+                .orElseGet(() -> Collections.singletonList(source));
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Search for Movements of type [{}] in state [{}] and in [{}]", types, state, sources);
+        }
+
         return mapper.map(Arrays.stream(types)
                 .parallel()
-                .map(t -> handlers.get(t).findInStateAndSource(state, source))
+                .map(t -> handlers.get(t).findInStateAndSource(state, sources))
                 .reduce(new ArrayList<>(), (a, b) -> {
                     a.addAll(b);
                     return a;
@@ -145,7 +197,9 @@ class MovementServiceImpl implements MovementService {
         if (movement.getStartDate() == null) {
             movement.setStartDate(ZonedDateTime.now());
         }
-        movement.setSourceLocation(vo.getSource());
+        LocationVO sourceLocation = resolveLocation(vo);
+        movement.setSourceLocation(sourceLocation.getErpCode());
+        movement.setSourceLocationGroupName(sourceLocation.getLocationGroupName());
         movement = repository.save(movement);
         return mapper.map(movement, MovementVO.class);
     }

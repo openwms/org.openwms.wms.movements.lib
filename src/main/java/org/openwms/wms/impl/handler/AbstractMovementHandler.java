@@ -55,7 +55,7 @@ abstract class AbstractMovementHandler implements MovementHandler {
         return saved;
     }
 
-    protected List<Movement> findInState(String state, String source, MovementType type ) {
-        return repository.findByTypeAndStateAndSource(type, state, source);
+    protected List<Movement> findInState(String state, List<String> sources, MovementType type ) {
+        return repository.findByTypeAndStateAndSource(type, state, sources);
     }
 }

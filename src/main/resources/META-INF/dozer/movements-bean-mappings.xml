@@ -44,11 +44,15 @@
 		</field>
 		<field>
 			<a is-accessible="true">target</a>
-			<b is-accessible="true">targetLocationGroup</b>
+			<b is-accessible="true">targetLocation</b>
 		</field>
 		<field>
-			<a is-accessible="true">source</a>
+			<a is-accessible="true">sourceLocation</a>
 			<b is-accessible="true">sourceLocation</b>
+		</field>
+		<field>
+			<a is-accessible="true">sourceLocationGroupName</a>
+			<b is-accessible="true">sourceLocationGroupName</b>
 		</field>
 		<field>
 			<a is-accessible="true">startMode</a>
