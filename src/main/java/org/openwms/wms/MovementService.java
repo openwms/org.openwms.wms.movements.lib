@@ -15,6 +15,7 @@
  */
 package org.openwms.wms;
 
+import org.openwms.wms.api.MovementState;
 import org.openwms.wms.api.MovementType;
 import org.openwms.wms.api.MovementVO;
 import org.openwms.wms.impl.ValidationGroups;
@@ -25,7 +26,7 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
- * A MovementService.
+ * A MovementService is the internal service API that deals with {@code Movement}s.
  *
  * @author Heiko Scherrer
  */
@@ -50,7 +51,7 @@ public interface MovementService {
      * @param types The type of Movement
      * @return A list of, never {@literal null}
      */
-    List<MovementVO> findFor(@NotEmpty String state, @NotEmpty String source, @NotNull MovementType... types);
+    List<MovementVO> findFor(@NotNull MovementState state, @NotEmpty String source, @NotNull MovementType... types);
 
     /**
      * Get all priorities as a list of strings.

@@ -16,7 +16,7 @@
 package org.openwms.wms.api;
 
 /**
- * An StartMode.
+ * A StartMode defines how a {@code Movement} is started.
  * 
  * @author Heiko Scherrer
  */

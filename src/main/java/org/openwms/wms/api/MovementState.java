@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2020 the original author or authors.
+ * Copyright 2005-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,22 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openwms.wms.impl;
+package org.openwms.wms.api;
 
 /**
- * A MovementCreated signals that a {@link Movement} has been created.
+ * A MovementState is used to drive and track the execution of {@code Movement}s and {@code MovementGroup}s and meant to be extended in
+ * projects.
  *
  * @author Heiko Scherrer
  */
-public class MovementCreated {
+public interface MovementState {
 
-    private Movement movement;
-
-    public MovementCreated(Movement movement) {
-        this.movement = movement;
-    }
-
-    public Movement getMovement() {
-        return movement;
-    }
+    /**
+     * Get the name of the state.
+     *
+     * @return The name of the Movement
+     */
+    String getName();
 }

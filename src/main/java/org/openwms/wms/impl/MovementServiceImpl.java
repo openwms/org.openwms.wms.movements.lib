@@ -28,8 +28,10 @@ import org.openwms.common.transport.Barcode;
 import org.openwms.common.transport.api.TransportUnitApi;
 import org.openwms.common.transport.api.TransportUnitVO;
 import org.openwms.wms.MovementService;
+import org.openwms.wms.api.MovementState;
 import org.openwms.wms.api.MovementType;
 import org.openwms.wms.api.MovementVO;
+import org.openwms.wms.spi.MovementStateResolver;
 import org.openwms.wms.spi.MovementTypeResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +56,7 @@ import static java.lang.String.format;
 import static org.ameba.system.ValidationUtil.validate;
 
 /**
- * A MovementServiceImpl.
+ * A MovementServiceImpl is a Spring managed transaction service that deals with {@link Movement}s.
  *
  * @author Heiko Scherrer
  */
@@ -65,6 +67,7 @@ class MovementServiceImpl implements MovementService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MovementServiceImpl.class);
     private final BeanMapper mapper;
     private final Validator validator;
+    private final MovementStateResolver movementStateProvider;
     private final MovementRepository repository;
     private final MovementTypeResolver movementTypeResolver;
     private final Map<MovementType, MovementHandler> handlers;
@@ -73,11 +76,12 @@ class MovementServiceImpl implements MovementService {
     private final LocationGroupApi locationGroupApi;
 
     MovementServiceImpl(List<MovementHandler> handlersList, BeanMapper mapper, Validator validator,
-            MovementRepository repository, @Autowired(required = false) MovementTypeResolver movementTypeResolver,
+            MovementStateResolver movementStateProvider, MovementRepository repository, @Autowired(required = false) MovementTypeResolver movementTypeResolver,
             TransportUnitApi transportUnitApi, LocationApi locationApi, LocationGroupApi locationGroupApi) {
         this.handlers = handlersList.stream().collect(Collectors.toMap(MovementHandler::getType, h -> h));
         this.mapper = mapper;
         this.validator = validator;
+        this.movementStateProvider = movementStateProvider;
         this.repository = repository;
         this.movementTypeResolver = movementTypeResolver;
         this.transportUnitApi = transportUnitApi;
@@ -109,7 +113,9 @@ class MovementServiceImpl implements MovementService {
         movement.setSourceLocation(sourceLocation.getErpCode());
         movement.setSourceLocationGroupName(sourceLocation.getLocationGroupName());
         movement.setTransportUnitBk(Barcode.of(bk));
-        movement.setState("ACTIVE");
+        movement.setState(movementStateProvider.getNewState());
+        movement.setTargetLocationGroup(movement.getTargetLocation());
+        movement.setTargetLocation(null);
         validate(validator, movement, ValidationGroups.Movement.Create.class);
         Movement result = movementHandler.create(movement);
         return mapper.map(result, MovementVO.class);
@@ -158,7 +164,7 @@ class MovementServiceImpl implements MovementService {
      */
     @Measured
     @Override
-    public List<MovementVO> findFor(@NotEmpty String state, @NotEmpty String source, @NotNull MovementType... types) {
+    public List<MovementVO> findFor(@NotNull MovementState state, @NotEmpty String source, @NotNull MovementType... types) {
         Optional<LocationGroupVO> locationGroupOpt = locationGroupApi.findByName(source);
         List<String> sources;
         sources = locationGroupOpt.map(lg -> lg
@@ -216,7 +222,7 @@ class MovementServiceImpl implements MovementService {
     @Override
     public MovementVO complete(@NotEmpty String pKey, @NotNull MovementVO vo) {
         Movement movement = repository.findBypKey(pKey).orElseThrow(() -> new NotFoundException(format("Movement with pKey [%s] does not exist", pKey)));
-        movement.setState("DONE");
+        movement.setState(movementStateProvider.getCompletedState());
         movement.setEndDate(ZonedDateTime.now());
         movement.setTargetLocation(vo.getTarget());
         movement.setTargetLocationGroup(vo.getTarget());

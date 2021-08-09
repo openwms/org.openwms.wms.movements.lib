@@ -17,6 +17,7 @@ package org.openwms.wms;
 
 import org.ameba.http.MeasuredRestController;
 import org.openwms.core.http.AbstractWebController;
+import org.openwms.wms.api.MovementState;
 import org.openwms.wms.api.MovementType;
 import org.openwms.wms.api.MovementVO;
 import org.openwms.wms.impl.ValidationGroups;
@@ -77,7 +78,7 @@ public class MovementController extends AbstractWebController {
 
     @GetMapping(value = "/v1/movements", params = {"state", "types"})
     public ResponseEntity<List<MovementVO>> findForStateAndTypesAndSource(
-            @RequestParam("state") String state,
+            @RequestParam("state") MovementState state,
             @RequestParam(value = "source", required = false) String source,
             @RequestParam("types") MovementType... types){
         return ResponseEntity.ok(service.findFor(state, source, types));

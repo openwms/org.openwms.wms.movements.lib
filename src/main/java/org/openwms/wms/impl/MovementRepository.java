@@ -15,6 +15,7 @@
  */
 package org.openwms.wms.impl;
 
+import org.openwms.wms.api.MovementState;
 import org.openwms.wms.api.MovementType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -34,9 +35,9 @@ public interface MovementRepository extends JpaRepository<Movement, Long> {
 
     Optional<Movement> findBypKey(String pKey);
 
-    @Query("select m from Movement m where m.type = :type and m.state = :state and (m.sourceLocationGroupName in :sources or m.sourceLocation in :sources or null = :sources)")
+    @Query("select m from Movement m where m.type = :type and m.state = :state and (m.sourceLocationGroupName in :sources or m.sourceLocation in :sources or null = :sources) order by m.createDt")
     List<Movement> findByTypeAndStateAndSource(
             @Param("type") MovementType type,
-            @Param("state") String state,
+            @Param("state") MovementState state,
             @Param("sources") List<String> sources);
 }

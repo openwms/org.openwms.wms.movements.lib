@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2020 the original author or authors.
+ * Copyright 2005-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,22 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openwms.wms.impl;
+package org.openwms.wms.spi;
+
+import org.openwms.wms.api.MovementState;
 
 /**
- * A MovementCreated signals that a {@link Movement} has been created.
+ * A DefaultMovementState defines the states in the default implementation.
  *
  * @author Heiko Scherrer
+ * @see MovementState
  */
-public class MovementCreated {
+public enum DefaultMovementState implements MovementState {
 
-    private Movement movement;
+    /** Ready to be executed. */
+    INACTIVE,
 
-    public MovementCreated(Movement movement) {
-        this.movement = movement;
-    }
+    /** Currently in execution. */
+    ACTIVE,
 
-    public Movement getMovement() {
-        return movement;
+    /** Executed and done. */
+    DONE;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getName() {
+        return this.name();
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2020 the original author or authors.
+ * Copyright 2005-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,22 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openwms.wms.impl;
+package org.openwms.wms.spi;
+
+import org.openwms.wms.api.MovementState;
 
 /**
- * A MovementCreated signals that a {@link Movement} has been created.
+ * A MovementStateResolver requires to resolve the basic states of a {@code Movement}
  *
  * @author Heiko Scherrer
  */
-public class MovementCreated {
+public interface MovementStateResolver {
 
-    private Movement movement;
+    /**
+     * Get the state when a {@code Movement} is created.
+     *
+     * @return The state
+     */
+    MovementState getNewState();
 
-    public MovementCreated(Movement movement) {
-        this.movement = movement;
-    }
-
-    public Movement getMovement() {
-        return movement;
-    }
+    /**
+     * Get the state when a {@code Movement} is completely done.
+     *
+     * @return The state
+     */
+    MovementState getCompletedState();
 }

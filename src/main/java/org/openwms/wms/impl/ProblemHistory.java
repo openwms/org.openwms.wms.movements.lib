@@ -25,6 +25,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * A ProblemHistory stores an occurred problem, in form of {@code Message}, recorded on a {@code Movement}.
@@ -35,16 +36,17 @@ import java.io.Serializable;
 @Table(name = "MVM_PROBLEM_HISTORY")
 public class ProblemHistory extends ApplicationEntity implements Serializable {
 
+    /** Reference to the {@link Movement} it belongs to. */
     @ManyToOne
     @JoinColumn(name = "C_FK_MOVEMENT", foreignKey = @ForeignKey(name = "FK_PHISTORY_MVM"))
     private Movement movement;
 
+    /** The message to store in the history. */
     @Embedded
     private Message problem;
 
     /** Dear JPA ... */
-    protected ProblemHistory() {
-    }
+    protected ProblemHistory() {}
 
     /**
      * Full constructor.
@@ -73,5 +75,42 @@ public class ProblemHistory extends ApplicationEntity implements Serializable {
      */
     public Movement getMovement() {
         return movement;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * All fields
+     */
+    @Override
+    public String toString() {
+        return "ProblemHistory{" +
+                "movement=" + movement +
+                ", problem=" + problem +
+                '}';
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * All fields
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ProblemHistory)) return false;
+        if (!super.equals(o)) return false;
+        ProblemHistory that = (ProblemHistory) o;
+        return Objects.equals(movement, that.movement) && Objects.equals(problem, that.problem);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * All fields
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), movement, problem);
     }
 }

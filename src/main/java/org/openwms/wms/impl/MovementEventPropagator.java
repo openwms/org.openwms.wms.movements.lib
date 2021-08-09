@@ -15,25 +15,24 @@
  */
 package org.openwms.wms.impl;
 
-import org.ameba.annotation.TxService;
 import org.openwms.core.SpringProfiles;
 import org.openwms.wms.events.api.MovementEvent;
 import org.openwms.wms.events.api.MovementMO;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 /**
- * A MovementEventPropagator.
+ * A MovementEventPropagator is active with the {@value SpringProfiles#ASYNCHRONOUS_PROFILE} profile and propagates internal events to the
+ * outer world over AMQP protocol.
  *
  * @author Heiko Scherrer
  */
 @Profile(SpringProfiles.ASYNCHRONOUS_PROFILE)
-@TxService
+@Component
 class MovementEventPropagator {
 
     private final String exchangeName;
@@ -47,7 +46,6 @@ class MovementEventPropagator {
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    @Transactional(propagation = Propagation.REQUIRES_NEW, noRollbackFor = {Exception.class})
     public void onEvent(MovementCreated event) {
         Movement movement = event.getMovement();
         amqpTemplate.convertAndSend(exchangeName, "movement.event.created",

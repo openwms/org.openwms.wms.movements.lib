@@ -19,7 +19,7 @@ package org.openwms.wms.impl;
 import com.github.dozermapper.core.DozerConverter;
 
 /**
- * A PriorityConverter.
+ * A PriorityConverter is a converter used by the Apache Dozer library to convert between Integers and PriorityLevels.
  *
  * @author Heiko Scherrer
  */

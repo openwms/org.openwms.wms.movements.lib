@@ -17,6 +17,7 @@ package org.openwms.wms.impl.handler;
 
 import org.ameba.annotation.Measured;
 import org.ameba.annotation.TxService;
+import org.openwms.wms.api.MovementState;
 import org.openwms.wms.api.MovementType;
 import org.openwms.wms.impl.Movement;
 import org.openwms.wms.impl.MovementRepository;
@@ -52,7 +53,7 @@ class InboundMovementHandler extends AbstractMovementHandler {
      */
     @Override
     @Measured
-    public List<Movement> findInStateAndSource(@NotEmpty String state, @NotNull List<String> sources) {
+    public List<Movement> findInStateAndSource(@NotEmpty MovementState state, @NotNull List<String> sources) {
         return findInState(state, sources, MovementType.INBOUND);
     }
 }

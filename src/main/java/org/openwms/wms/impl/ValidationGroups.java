@@ -16,7 +16,7 @@
 package org.openwms.wms.impl;
 
 /**
- * A ValidationGroups is a marker interface collection to aggregate all types used for Bean validation groups.
+ * A ValidationGroups is a marker interface collection to aggregate all types used for bean validation groups.
  *
  * @author Heiko Scherrer
  */

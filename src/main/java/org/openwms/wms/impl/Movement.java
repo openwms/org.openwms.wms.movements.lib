@@ -18,6 +18,7 @@ package org.openwms.wms.impl;
 import org.ameba.integration.jpa.ApplicationEntity;
 import org.openwms.common.transport.Barcode;
 import org.openwms.wms.Message;
+import org.openwms.wms.api.MovementState;
 import org.openwms.wms.api.MovementType;
 import org.openwms.wms.api.StartMode;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -29,6 +30,9 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -41,7 +45,8 @@ import java.util.Objects;
 import static org.openwms.wms.MovementConstants.DATE_TIME_WITH_TIMEZONE;
 
 /**
- * A Movement.
+ * A Movement is a simple task to move a {@code TransportUnit} from one source {@code Location} to a target {@code Location}. This is
+ * often used for manual warehouses or manual activities.
  *
  * @author Heiko Scherrer
  */
@@ -55,11 +60,17 @@ public class Movement extends ApplicationEntity implements Serializable {
     @AttributeOverride(name = "value", column = @Column(name = "C_TRANSPORT_UNIT_BK", nullable = false))
     private Barcode transportUnitBk;
 
-    /** Type of movement. */
+    /** Type of {@code Movement}. */
     @Column(name = "C_TYPE", nullable = false)
     @Enumerated(EnumType.STRING)
     @NotNull
     private MovementType type;
+
+    /** The {@link MovementGroup}, the {@code Movement} belongs to. */
+    @ManyToOne
+    @JoinColumn(name = "C_GROUP_PK", nullable = true, foreignKey = @ForeignKey(name = "FK_PPS_POS"))
+    @NotNull
+    private MovementGroup group;
 
     /**
      * A priority level of the {@code Movement}. The lower the value the lower the priority. The priority level affects the execution of the
@@ -76,8 +87,9 @@ public class Movement extends ApplicationEntity implements Serializable {
     @NotNull
     private StartMode mode = StartMode.MANUAL;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "C_STATE")
-    private String state;
+    private MovementState state;
 
     /** A message with the reason for this {@code Movement}. */
     @Embedded
@@ -123,9 +135,35 @@ public class Movement extends ApplicationEntity implements Serializable {
     @DateTimeFormat(pattern = DATE_TIME_WITH_TIMEZONE)
     private ZonedDateTime endDate;
 
-    public Movement() {
+    /*~ -------------- Constructors -------------- */
+    /** Dear JPA... */
+    public Movement() {}
+
+    /*~ ---------------- Methods ----------------- */
+
+    /**
+     * Add a new problem to the {@code Movement}s {@code problemHistory}.
+     *
+     * @param problem The problem to store
+     * @return {@literal true} if added successfully
+     */
+    public boolean addProblem(ProblemHistory problem) {
+        if (this.problems == null) {
+            this.problems = new ArrayList<>(1);
+        }
+        return this.problems.add(problem);
     }
 
+    /**
+     * Check whether the {@code targetLocation} is empty.
+     *
+     * @return {@literal true} if so
+     */
+    public boolean emptyTargetLocation() {
+        return targetLocation == null || targetLocation.isEmpty();
+    }
+
+    /*~ --------------- Accessors ---------------- */
     public Barcode getTransportUnitBk() {
         return transportUnitBk;
     }
@@ -136,6 +174,10 @@ public class Movement extends ApplicationEntity implements Serializable {
 
     public MovementType getType() {
         return type;
+    }
+
+    public MovementGroup getGroup() {
+        return group;
     }
 
     public PriorityLevel getPriority() {
@@ -158,23 +200,16 @@ public class Movement extends ApplicationEntity implements Serializable {
         this.message = message;
     }
 
-    public String getState() {
+    public MovementState getState() {
         return state;
     }
 
-    public void setState(String state) {
+    public void setState(MovementState state) {
         this.state = state;
     }
 
     public List<ProblemHistory> getProblems() {
         return problems;
-    }
-
-    public boolean addProblem(ProblemHistory problem) {
-        if (this.problems == null) {
-            this.problems = new ArrayList<>(1);
-        }
-        return this.problems.add(problem);
     }
 
     public String getSourceLocation() {
@@ -195,10 +230,6 @@ public class Movement extends ApplicationEntity implements Serializable {
 
     public String getTargetLocation() {
         return targetLocation;
-    }
-
-    public boolean emptyTargetLocation() {
-        return targetLocation == null || targetLocation.isEmpty();
     }
 
     public void setTargetLocation(String targetLocation) {
@@ -241,6 +272,11 @@ public class Movement extends ApplicationEntity implements Serializable {
         this.endDate = endDate;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Not the group and not the history.
+     */
     @Override
     public String toString() {
         return "Movement{" +
@@ -248,9 +284,8 @@ public class Movement extends ApplicationEntity implements Serializable {
                 ", type=" + type +
                 ", priority=" + priority +
                 ", mode=" + mode +
-                ", state='" + state + '\'' +
+                ", state=" + state +
                 ", message=" + message +
-                ", problems=" + problems +
                 ", sourceLocation='" + sourceLocation + '\'' +
                 ", sourceLocationGroupName='" + sourceLocationGroupName + '\'' +
                 ", targetLocation='" + targetLocation + '\'' +
@@ -262,17 +297,27 @@ public class Movement extends ApplicationEntity implements Serializable {
                 '}';
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Not the group and not the history.
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Movement)) return false;
         if (!super.equals(o)) return false;
         Movement movement = (Movement) o;
-        return Objects.equals(transportUnitBk, movement.transportUnitBk) && type == movement.type && priority == movement.priority && mode == movement.mode && Objects.equals(state, movement.state) && Objects.equals(message, movement.message) && Objects.equals(problems, movement.problems) && Objects.equals(sourceLocation, movement.sourceLocation) && Objects.equals(sourceLocationGroupName, movement.sourceLocationGroupName) && Objects.equals(targetLocation, movement.targetLocation) && Objects.equals(targetLocationGroup, movement.targetLocationGroup) && Objects.equals(startEarliestDate, movement.startEarliestDate) && Objects.equals(startDate, movement.startDate) && Objects.equals(latestDueDate, movement.latestDueDate) && Objects.equals(endDate, movement.endDate);
+        return Objects.equals(transportUnitBk, movement.transportUnitBk) && type == movement.type && priority == movement.priority && mode == movement.mode && Objects.equals(state, movement.state) && Objects.equals(message, movement.message) && Objects.equals(sourceLocation, movement.sourceLocation) && Objects.equals(sourceLocationGroupName, movement.sourceLocationGroupName) && Objects.equals(targetLocation, movement.targetLocation) && Objects.equals(targetLocationGroup, movement.targetLocationGroup) && Objects.equals(startEarliestDate, movement.startEarliestDate) && Objects.equals(startDate, movement.startDate) && Objects.equals(latestDueDate, movement.latestDueDate) && Objects.equals(endDate, movement.endDate);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Not the group and not the history.
+     */
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), transportUnitBk, type, priority, mode, state, message, problems, sourceLocation, sourceLocationGroupName, targetLocation, targetLocationGroup, startEarliestDate, startDate, latestDueDate, endDate);
+        return Objects.hash(super.hashCode(), transportUnitBk, type, priority, mode, state, message, sourceLocation, sourceLocationGroupName, targetLocation, targetLocationGroup, startEarliestDate, startDate, latestDueDate, endDate);
     }
 }

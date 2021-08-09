@@ -15,6 +15,7 @@
  */
 package org.openwms.wms.impl;
 
+import org.openwms.wms.api.MovementState;
 import org.openwms.wms.api.MovementType;
 
 import javax.validation.constraints.NotEmpty;
@@ -22,7 +23,7 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
- * A MovementHandler.
+ * A MovementHandler does all the work according to the specific type of {@link Movement}.
  *
  * @author Heiko Scherrer
  */
@@ -43,5 +44,12 @@ public interface MovementHandler {
      */
     Movement create(@NotNull Movement movement);
 
-    List<Movement> findInStateAndSource(@NotEmpty String state, @NotNull List<String> sources);
+    /**
+     * Find and return {@code Movement}s.
+     *
+     * @param state The state to search Movements for
+     * @param sources A list of sourceLocation or sourceLocationGroup names to search Movements for
+     * @return A list of instances, never {@literal null}
+     */
+    List<Movement> findInStateAndSource(@NotEmpty MovementState state, @NotNull List<String> sources);
 }

@@ -16,6 +16,7 @@
 package org.openwms.wms.impl.handler;
 
 import org.ameba.annotation.Measured;
+import org.openwms.wms.api.MovementState;
 import org.openwms.wms.api.MovementType;
 import org.openwms.wms.impl.Movement;
 import org.openwms.wms.impl.MovementCreated;
@@ -55,7 +56,7 @@ abstract class AbstractMovementHandler implements MovementHandler {
         return saved;
     }
 
-    protected List<Movement> findInState(String state, List<String> sources, MovementType type ) {
+    protected List<Movement> findInState(MovementState state, List<String> sources, MovementType type ) {
         return repository.findByTypeAndStateAndSource(type, state, sources);
     }
 }

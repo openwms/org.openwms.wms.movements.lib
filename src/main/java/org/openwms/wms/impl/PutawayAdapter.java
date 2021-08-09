@@ -32,7 +32,8 @@ import static java.lang.String.format;
 import static java.util.Arrays.asList;
 
 /**
- * A PutawayAdapter.
+ * A PutawayAdapter is a Spring managed transactional event listener that acts as an adapter to the {@link PutawayApi} that is called after
+ * a {@link Movement} has been created successfully.
  *
  * @author Heiko Scherrer
  */

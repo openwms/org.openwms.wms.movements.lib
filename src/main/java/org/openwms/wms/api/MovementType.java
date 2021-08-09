@@ -16,7 +16,7 @@
 package org.openwms.wms.api;
 
 /**
- * A MovementType.
+ * A MovementType defines all possible types of {@code Movement}s in a project. Each {@code Movement} must be of a specific type.
  *
  * @author Heiko Scherrer
  */
@@ -37,10 +37,10 @@ public enum MovementType {
     /** Movement out of stock (hand over from own system to external parties). */
     OUTBOUND,
 
-    /** Movement order to clearing. */
+    /** Movement to clearing or error check. */
     CLEARING,
 
-    /** Movement order for an empty {@literal TransportUnit}. */
+    /** Movement for an empty {@code TransportUnit}. */
     EMPTIES,
 
     /** Movement for replenishment. */
@@ -49,9 +49,9 @@ public enum MovementType {
     /** Movement for inventory control procedure. */
     INVENTORY,
 
-    /** Movement for Relocation. */
+    /** Relocation within a warehouse. */
     RELOCATION,
 
+    /** Relocation between warehouses. */
     WAREHOUSE_RELOCATION
-
 }

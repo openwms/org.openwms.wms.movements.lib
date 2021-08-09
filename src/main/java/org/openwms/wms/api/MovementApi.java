@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 /**
- * A MovementApi.
+ * A MovementApi is the public outer API that can be used by clients.
  *
  * @author Heiko Scherrer
  */
@@ -33,7 +33,7 @@ import java.util.List;
 public interface MovementApi {
 
     /**
-     * Create a {@code Movement} of a {@code TransportUnit}.
+     * Create a {@code Movement} for a {@code TransportUnit}.
      *
      * @param bk The identifying business key of the TransportUnit
      * @param movement The details of the Movement
@@ -44,10 +44,11 @@ public interface MovementApi {
             @RequestBody MovementVO movement);
 
     /**
+     * Find and return {@code Movement}s.
      *
-     * @param state
-     * @param types
-     * @return
+     * @param state The state the Movement shall reside in
+     * @param types Allowed types of Movements to search for
+     * @return A list of all instances, never {@literal null}
      */
     @GetMapping(value = "/v1/movements", params = {"state", "types"})
     List<MovementVO> findForStateAndTypes(

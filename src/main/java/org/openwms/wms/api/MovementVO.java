@@ -31,7 +31,7 @@ import static org.openwms.wms.impl.ValidationGroups.Movement.Complete;
 import static org.openwms.wms.impl.ValidationGroups.Movement.Create;
 import static org.openwms.wms.impl.ValidationGroups.Movement.Move;
 /**
- * A MovementVO encapsulates details about the actual request to move a TransportUnit to a given target.
+ * A MovementVO encapsulates details about the actual request to move a {@code TransportUnit} to a target.
  *
  * @author Heiko Scherrer
  */
@@ -43,37 +43,42 @@ import static org.openwms.wms.impl.ValidationGroups.Movement.Move;
 @EqualsAndHashCode(callSuper = true)
 public class MovementVO extends AbstractBase implements Serializable {
 
-    /** The persistent key is returned from the service as soon as the resource has been created. */
+    /** The persistent key is returned from the service as soon as the {@code Movement} has been created. */
     @JsonProperty("pKey")
     private String persistentKey;
-    /** The business key of the TransportUnit is returned from the service. */
+    /** The business key of the {@code TransportUnit} to move. */
     @JsonProperty("transportUnitBk")
     private String transportUnitBk;
-    /** Whether the Movement should be directly processed (AUTOMATIC) or postponed (MANUAL). */
+    /** Whether the {@code Movement} should be directly processed (AUTOMATIC) or delayed (MANUAL). */
     @JsonProperty("mode")
     private StartMode startMode = StartMode.AUTOMATIC;
-    /** A priority how fast and prio the Movement needs to be processed; A higher value is less prio than lower values. */
+    /** A priority how fast and prio the {@code Movement} needs to be processed; A higher value means less prio than lower values. */
     @JsonProperty("priority")
     private Integer priority;
-    /** The state of the Movement [ACTIVE|INACTIVE]. */
+    /** The state of the {@code Movement}. */
     @JsonProperty("state")
     @NotEmpty(groups = Move.class)
-    private String state;
-    /** The type of Movement must be passed by the caller. */
+    private MovementState state;
+    /** The type of {@code Movement} must be passed by the caller. */
     @JsonProperty("type") // Not required at creation because it can be resolved from the TU and the target
     private MovementType type;
-    /** The source Location where the TransportUnit shall be picked up (must be passed by the caller). */
+    /** The source {@code Location} where the {@code TransportUnit} shall be picked up (must be passed by the caller). */
     @JsonProperty("sourceLocation")
     @NotEmpty(groups = {Create.class, Move.class})
     private String sourceLocation;
-    /** The LocationGroup the sourceLocation belongs to. */
+    /** The {@code LocationGroup} the {@code sourceLocation} belongs to. */
     @JsonProperty("sourceLocationGroupName")
     private String sourceLocationGroupName;
-    /** The target where to move the TransportUnit to (must be passed by the caller). */
+    /** The target where to move the {@code TransportUnit} to (must be passed by the caller). */
     @JsonProperty("target")
     @NotEmpty(groups = {Create.class, Complete.class})
     private String target;
 
+    /**
+     * Checks whether a target is set or not.
+     *
+     * @return {@literal true} if so
+     */
     public boolean hasTarget() {
         return target != null && !target.isEmpty();
     }
