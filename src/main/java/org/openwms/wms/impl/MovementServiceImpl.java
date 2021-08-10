@@ -113,7 +113,7 @@ class MovementServiceImpl implements MovementService {
         movement.setSourceLocation(sourceLocation.getErpCode());
         movement.setSourceLocationGroupName(sourceLocation.getLocationGroupName());
         movement.setTransportUnitBk(Barcode.of(bk));
-        movement.setState(movementStateProvider.getNewState());
+        movement.setState(movementStateProvider.getNewState().getName());
         movement.setTargetLocationGroup(movement.getTargetLocation());
         movement.setTargetLocation(null);
         validate(validator, movement, ValidationGroups.Movement.Create.class);
@@ -148,7 +148,7 @@ class MovementServiceImpl implements MovementService {
     private void validateAndResolveType(MovementVO vo) {
         if (vo.getType() == null) {
             if (!vo.hasTarget()) {
-                throw new IllegalArgumentException("Can't resolve a MovementType automatically because no target is set");
+                throw new IllegalArgumentException("Can't automatically resolve a MovementType because no target is set");
             }
             if (movementTypeResolver == null) {
                 throw new IllegalStateException("No type is set and needs to be resolved but no MovementTypeResolver is configured");
@@ -222,7 +222,7 @@ class MovementServiceImpl implements MovementService {
     @Override
     public MovementVO complete(@NotEmpty String pKey, @NotNull MovementVO vo) {
         Movement movement = repository.findBypKey(pKey).orElseThrow(() -> new NotFoundException(format("Movement with pKey [%s] does not exist", pKey)));
-        movement.setState(movementStateProvider.getCompletedState());
+        movement.setState(movementStateProvider.getCompletedState().getName());
         movement.setEndDate(ZonedDateTime.now());
         movement.setTargetLocation(vo.getTarget());
         movement.setTargetLocationGroup(vo.getTarget());

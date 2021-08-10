@@ -6,3 +6,4 @@ eureka:
 owms:
   movement:
     putaway-resolution-enabled: true
+

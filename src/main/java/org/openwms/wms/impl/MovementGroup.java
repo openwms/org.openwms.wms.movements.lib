@@ -16,12 +16,9 @@
 package org.openwms.wms.impl;
 
 import org.ameba.integration.jpa.ApplicationEntity;
-import org.openwms.wms.api.MovementState;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
@@ -48,9 +45,9 @@ public class MovementGroup extends ApplicationEntity implements Serializable {
     @NotEmpty
     private String name;
 
-    @Enumerated(EnumType.STRING)
+    /** The current state the {@link MovementGroup} resides in. */
     @Column(name = "C_STATE")
-    private MovementState state;
+    private String state;
 
     /** A human user might be assigned to this {@code MovementGroup}. */
     @Column(name = "C_USER")
@@ -71,7 +68,7 @@ public class MovementGroup extends ApplicationEntity implements Serializable {
     /*~ --------------- Lifecycle ---------------- */
     @PrePersist
     protected void prePersist() {
-        this.state = ACTIVE;
+        this.state = ACTIVE.getName();
     }
 
     /*~ --------------- Accessors ---------------- */
@@ -81,6 +78,14 @@ public class MovementGroup extends ApplicationEntity implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 
     public String getAssignedUser() {

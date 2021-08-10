@@ -18,7 +18,6 @@ package org.openwms.wms.impl;
 import org.ameba.integration.jpa.ApplicationEntity;
 import org.openwms.common.transport.Barcode;
 import org.openwms.wms.Message;
-import org.openwms.wms.api.MovementState;
 import org.openwms.wms.api.MovementType;
 import org.openwms.wms.api.StartMode;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -68,8 +67,7 @@ public class Movement extends ApplicationEntity implements Serializable {
 
     /** The {@link MovementGroup}, the {@code Movement} belongs to. */
     @ManyToOne
-    @JoinColumn(name = "C_GROUP_PK", nullable = true, foreignKey = @ForeignKey(name = "FK_PPS_POS"))
-    @NotNull
+    @JoinColumn(name = "C_GROUP_PK", nullable = true, foreignKey = @ForeignKey(name = "FK_MVM_GRP"))
     private MovementGroup group;
 
     /**
@@ -87,9 +85,9 @@ public class Movement extends ApplicationEntity implements Serializable {
     @NotNull
     private StartMode mode = StartMode.MANUAL;
 
-    @Enumerated(EnumType.STRING)
+    /** The current state the {@link Movement} resides in. */
     @Column(name = "C_STATE")
-    private MovementState state;
+    private String state;
 
     /** A message with the reason for this {@code Movement}. */
     @Embedded
@@ -200,11 +198,11 @@ public class Movement extends ApplicationEntity implements Serializable {
         this.message = message;
     }
 
-    public MovementState getState() {
+    public String getState() {
         return state;
     }
 
-    public void setState(MovementState state) {
+    public void setState(String state) {
         this.state = state;
     }
 

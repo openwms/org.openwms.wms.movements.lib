@@ -16,6 +16,8 @@
 package org.openwms.wms.spi;
 
 import org.ameba.annotation.Measured;
+import org.openwms.wms.MovementProperties;
+import org.openwms.wms.MovementTarget;
 import org.openwms.wms.api.MovementType;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -34,15 +36,19 @@ import java.util.Optional;
 @Component
 class DefaultMovementTypeResolver implements MovementTypeResolver {
 
+    private final MovementProperties properties;
+
+    DefaultMovementTypeResolver(MovementProperties properties) {
+        this.properties = properties;
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
     @Measured
     public Optional<MovementType> resolve(@NotEmpty String transportUnitBK, @NotEmpty String target) {
-        if ("VGZ_LZ".equals(target)) {
-            return Optional.of(MovementType.RELOCATION);
-        }
-        return Optional.of(MovementType.UNDEFINED);
+        MovementTarget movementTarget = properties.findTarget(target);
+        return Optional.of(movementTarget.getType());
     }
 }

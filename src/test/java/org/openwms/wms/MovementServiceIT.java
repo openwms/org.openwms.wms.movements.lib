@@ -127,6 +127,7 @@ class MovementServiceIT {
 
     @Test
     void test_create_with_success() {
+        //arrange
         LocationVO sourceLocation = new LocationVO("PASS/PASS/PASS/PASS/PASS");
         sourceLocation.setErpCode("PASS");
         given(transportUnitApi.findTransportUnit("4711")).willReturn(new TransportUnitVO("4711"));
@@ -136,7 +137,11 @@ class MovementServiceIT {
         mov.setType(MovementType.INBOUND);
         mov.setSourceLocation("PASS/PASS/PASS/PASS/PASS");
         mov.setTarget("KNOWN");
+
+        // act
         MovementVO result = testee.create("4711", mov);
+
+        //assert
         assertThat(result.getPersistentKey()).isNotEmpty();
         assertThat(result.getSourceLocation()).isEqualTo("PASS");
         assertThat(result.getTarget()).isEqualTo("KNOWN");

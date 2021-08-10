@@ -58,7 +58,7 @@ public class MovementVO extends AbstractBase implements Serializable {
     /** The state of the {@code Movement}. */
     @JsonProperty("state")
     @NotEmpty(groups = Move.class)
-    private MovementState state;
+    private String state;
     /** The type of {@code Movement} must be passed by the caller. */
     @JsonProperty("type") // Not required at creation because it can be resolved from the TU and the target
     private MovementType type;

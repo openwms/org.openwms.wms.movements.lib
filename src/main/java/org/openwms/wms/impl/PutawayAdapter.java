@@ -19,6 +19,8 @@ import org.ameba.annotation.TxService;
 import org.ameba.exception.NotFoundException;
 import org.openwms.common.location.api.LocationVO;
 import org.openwms.wms.Message;
+import org.openwms.wms.MovementProperties;
+import org.openwms.wms.MovementTarget;
 import org.openwms.wms.movements.spi.common.putaway.PutawayApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +31,6 @@ import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import static java.lang.String.format;
-import static java.util.Arrays.asList;
 
 /**
  * A PutawayAdapter is a Spring managed transactional event listener that acts as an adapter to the {@link PutawayApi} that is called after
@@ -41,10 +42,12 @@ import static java.util.Arrays.asList;
 class PutawayAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PutawayAdapter.class);
+    private final MovementProperties properties;
     private final MovementRepository repository;
     private final PutawayApi putawayApi;
 
-    PutawayAdapter(MovementRepository repository, PutawayApi putawayApi) {
+    PutawayAdapter(MovementProperties properties, MovementRepository repository, PutawayApi putawayApi) {
+        this.properties = properties;
         this.repository = repository;
         this.putawayApi = putawayApi;
     }
@@ -57,8 +60,9 @@ class PutawayAdapter {
             LOGGER.debug("Call putaway strategy to find target location for movement [{}]", event.getMovement().getPersistentKey());
             Movement movement = repository.findById(event.getMovement().getPk()).orElseThrow(() -> new NotFoundException(format("Movement with PK [%d] does not exist", event.getMovement().getPk())));
             try {
+                MovementTarget movementTarget = properties.findTarget(event.getMovement().getTargetLocationGroup());
                 LocationVO target = putawayApi.findAndAssignNextInLocGroup(
-                        asList(event.getMovement().getTargetLocationGroup()),
+                        movementTarget.getSearchLocationGroupNames(),
                         event.getMovement().getTransportUnitBk().getValue()
                 );
                 LOGGER.debug("Putaway strategy returned [{}] as next target for movement [{}]", target.getLocationId(), event.getMovement().getPersistentKey());

@@ -54,6 +54,7 @@ public class MovementController extends AbstractWebController {
     public ResponseEntity<Void> create(
         @PathVariable("bk") String bk,
         @Valid @RequestBody MovementVO movement, HttpServletRequest req) {
+        movement.setTransportUnitBk(bk);
         MovementVO created = service.create(bk, movement);
         return ResponseEntity.created(getLocationURIForCreatedResource(req, created.getPersistentKey())).build();
     }
