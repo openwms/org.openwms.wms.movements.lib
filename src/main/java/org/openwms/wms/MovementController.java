@@ -17,10 +17,10 @@ package org.openwms.wms;
 
 import org.ameba.http.MeasuredRestController;
 import org.openwms.core.http.AbstractWebController;
-import org.openwms.wms.api.MovementState;
 import org.openwms.wms.api.MovementType;
 import org.openwms.wms.api.MovementVO;
 import org.openwms.wms.impl.ValidationGroups;
+import org.openwms.wms.spi.DefaultMovementState;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -79,9 +79,10 @@ public class MovementController extends AbstractWebController {
 
     @GetMapping(value = "/v1/movements", params = {"state", "types"})
     public ResponseEntity<List<MovementVO>> findForStateAndTypesAndSource(
-            @RequestParam("state") MovementState state,
+            @RequestParam("state") String state,
             @RequestParam(value = "source", required = false) String source,
             @RequestParam("types") MovementType... types){
-        return ResponseEntity.ok(service.findFor(state, source, types));
+        // FIXME [openwms]: 11.08.21 Make extendable
+        return ResponseEntity.ok(service.findFor(DefaultMovementState.valueOf(state), source, types));
     }
 }

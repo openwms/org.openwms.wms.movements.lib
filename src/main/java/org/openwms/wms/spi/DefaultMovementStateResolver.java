@@ -32,7 +32,7 @@ class DefaultMovementStateResolver implements MovementStateResolver {
      * {@inheritDoc}
      */
     @Override
-    public MovementState getNewState() {
+    public DefaultMovementState getNewState() {
         return DefaultMovementState.INACTIVE;
     }
 
@@ -40,7 +40,7 @@ class DefaultMovementStateResolver implements MovementStateResolver {
      * {@inheritDoc}
      */
     @Override
-    public MovementState getCompletedState() {
+    public DefaultMovementState getCompletedState() {
         return DefaultMovementState.DONE;
     }
 }

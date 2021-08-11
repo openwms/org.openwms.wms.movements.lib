@@ -29,12 +29,12 @@ public interface MovementStateResolver {
      *
      * @return The state
      */
-    MovementState getNewState();
+    DefaultMovementState getNewState();
 
     /**
      * Get the state when a {@code Movement} is completely done.
      *
      * @return The state
      */
-    MovementState getCompletedState();
+    DefaultMovementState getCompletedState();
 }

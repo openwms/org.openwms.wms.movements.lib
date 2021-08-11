@@ -20,6 +20,7 @@ import org.openwms.common.transport.Barcode;
 import org.openwms.wms.Message;
 import org.openwms.wms.api.MovementType;
 import org.openwms.wms.api.StartMode;
+import org.openwms.wms.spi.DefaultMovementState;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.AttributeOverride;
@@ -87,7 +88,8 @@ public class Movement extends ApplicationEntity implements Serializable {
 
     /** The current state the {@link Movement} resides in. */
     @Column(name = "C_STATE")
-    private String state;
+    @Enumerated(EnumType.STRING)
+    private DefaultMovementState state;
 
     /** A message with the reason for this {@code Movement}. */
     @Embedded
@@ -198,11 +200,11 @@ public class Movement extends ApplicationEntity implements Serializable {
         this.message = message;
     }
 
-    public String getState() {
+    public DefaultMovementState getState() {
         return state;
     }
 
-    public void setState(String state) {
+    public void setState(DefaultMovementState state) {
         this.state = state;
     }
 
@@ -306,7 +308,7 @@ public class Movement extends ApplicationEntity implements Serializable {
         if (!(o instanceof Movement)) return false;
         if (!super.equals(o)) return false;
         Movement movement = (Movement) o;
-        return Objects.equals(transportUnitBk, movement.transportUnitBk) && type == movement.type && priority == movement.priority && mode == movement.mode && Objects.equals(state, movement.state) && Objects.equals(message, movement.message) && Objects.equals(sourceLocation, movement.sourceLocation) && Objects.equals(sourceLocationGroupName, movement.sourceLocationGroupName) && Objects.equals(targetLocation, movement.targetLocation) && Objects.equals(targetLocationGroup, movement.targetLocationGroup) && Objects.equals(startEarliestDate, movement.startEarliestDate) && Objects.equals(startDate, movement.startDate) && Objects.equals(latestDueDate, movement.latestDueDate) && Objects.equals(endDate, movement.endDate);
+        return Objects.equals(transportUnitBk, movement.transportUnitBk) && type == movement.type && priority == movement.priority && mode == movement.mode && state == movement.state && Objects.equals(message, movement.message) && Objects.equals(sourceLocation, movement.sourceLocation) && Objects.equals(sourceLocationGroupName, movement.sourceLocationGroupName) && Objects.equals(targetLocation, movement.targetLocation) && Objects.equals(targetLocationGroup, movement.targetLocationGroup) && Objects.equals(startEarliestDate, movement.startEarliestDate) && Objects.equals(startDate, movement.startDate) && Objects.equals(latestDueDate, movement.latestDueDate) && Objects.equals(endDate, movement.endDate);
     }
 
     /**

@@ -31,6 +31,7 @@ import org.openwms.wms.MovementService;
 import org.openwms.wms.api.MovementState;
 import org.openwms.wms.api.MovementType;
 import org.openwms.wms.api.MovementVO;
+import org.openwms.wms.spi.DefaultMovementState;
 import org.openwms.wms.spi.MovementStateResolver;
 import org.openwms.wms.spi.MovementTypeResolver;
 import org.slf4j.Logger;
@@ -113,7 +114,7 @@ class MovementServiceImpl implements MovementService {
         movement.setSourceLocation(sourceLocation.getErpCode());
         movement.setSourceLocationGroupName(sourceLocation.getLocationGroupName());
         movement.setTransportUnitBk(Barcode.of(bk));
-        movement.setState(movementStateProvider.getNewState().getName());
+        movement.setState(movementStateProvider.getNewState());
         movement.setTargetLocationGroup(movement.getTargetLocation());
         movement.setTargetLocation(null);
         validate(validator, movement, ValidationGroups.Movement.Create.class);
@@ -204,7 +205,7 @@ class MovementServiceImpl implements MovementService {
     @Override
     public MovementVO move(@NotEmpty String pKey, @NotNull MovementVO vo) {
         Movement movement = repository.findBypKey(pKey).orElseThrow(() -> new NotFoundException(format("Movement with pKey [%s] does not exist", pKey)));
-        movement.setState(vo.getState());
+        movement.setState(DefaultMovementState.valueOf(vo.getState()));
         if (movement.getStartDate() == null) {
             movement.setStartDate(ZonedDateTime.now());
         }
@@ -222,7 +223,7 @@ class MovementServiceImpl implements MovementService {
     @Override
     public MovementVO complete(@NotEmpty String pKey, @NotNull MovementVO vo) {
         Movement movement = repository.findBypKey(pKey).orElseThrow(() -> new NotFoundException(format("Movement with pKey [%s] does not exist", pKey)));
-        movement.setState(movementStateProvider.getCompletedState().getName());
+        movement.setState(movementStateProvider.getCompletedState());
         movement.setEndDate(ZonedDateTime.now());
         movement.setTargetLocation(vo.getTarget());
         movement.setTargetLocationGroup(vo.getTarget());
