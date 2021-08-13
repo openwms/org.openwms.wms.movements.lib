@@ -15,7 +15,6 @@
  */
 package org.openwms.wms.spi;
 
-import org.openwms.wms.api.MovementState;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -33,7 +32,7 @@ class DefaultMovementStateResolver implements MovementStateResolver {
      */
     @Override
     public DefaultMovementState getNewState() {
-        return DefaultMovementState.INACTIVE;
+        return DefaultMovementState.ACTIVE;
     }
 
     /**
