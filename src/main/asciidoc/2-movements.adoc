@@ -1,5 +1,5 @@
 [[resources-receiving-order]]
-==== ReceivingOrder
+== Movements
 A `ReceivingOrder` represents an announcement of receiving goods into the warehouse. Usually these kind of orders are sent by the ERP system
 prior to the actual goods receipt. A `ReceivingOrder` is just the envelope that contains `ReceivingOrderPositions`, where each position
 determines the expected product to receive in its quantity.

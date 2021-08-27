@@ -1,6 +1,5 @@
 [[resources-index]]
 == Index
-
 The initial HTTP request to retrieve information about all available resources looks like the following. The Index page is a public
 available resource and does not need any authentication.
 

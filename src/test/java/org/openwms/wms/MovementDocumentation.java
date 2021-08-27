@@ -33,6 +33,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -43,6 +44,7 @@ import java.util.Optional;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -83,7 +85,7 @@ public class MovementDocumentation {
         Mockito.reset(transportUnitApi);
     }
 
-    @Test void testCreate() throws Exception {
+    @Test void shall_create_a_movement() throws Exception {
         TransportUnitVO transportUnit = TransportUnitVO.newBuilder().barcode("4711").build();
         given(transportUnitApi.findTransportUnit("4711")).willReturn(transportUnit);
         LocationVO sourceLocation = new LocationVO("WE__/0001/0000/0000/0000");
@@ -101,6 +103,50 @@ public class MovementDocumentation {
                 .andExpect(status().isCreated())
                 .andExpect(header().exists(HttpHeaders.LOCATION))
                 .andDo(document("move-create"))
+        ;
+    }
+
+    @Sql(scripts = "classpath:import-TEST.sql")
+    @Test void shall_drive_a_movement() throws Exception {
+        TransportUnitVO transportUnit = TransportUnitVO.newBuilder().barcode("4711").build();
+        given(transportUnitApi.findTransportUnit("4711")).willReturn(transportUnit);
+        LocationVO sourceLocation = new LocationVO("LOC_/0002/0000/0000/0000");
+        sourceLocation.setErpCode("LOC2");
+        sourceLocation.setLocationGroupName("STOCK");
+        given(locationApi.findLocationByErpCode("LOC2")).willReturn(Optional.of(sourceLocation));
+
+        MovementVO m = new MovementVO();
+        m.setTransportUnitBk("4711");
+        m.setSourceLocation("LOC2");
+        m.setState("ACTIVE");
+        mockMvc.perform(
+                        patch("/v1/movements/1000")
+                                .content(objectMapper.writeValueAsString(m)).contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andDo(document("move-move"))
+        ;
+    }
+
+    @Sql(scripts = "classpath:import-TEST.sql")
+    @Test void shall_drive_a_completed_movement_fails() throws Exception {
+        TransportUnitVO transportUnit = TransportUnitVO.newBuilder().barcode("4711").build();
+        given(transportUnitApi.findTransportUnit("4711")).willReturn(transportUnit);
+        LocationVO sourceLocation = new LocationVO("LOC_/0002/0000/0000/0000");
+        sourceLocation.setErpCode("LOC2");
+        sourceLocation.setLocationGroupName("STOCK");
+        given(locationApi.findLocationByErpCode("LOC2")).willReturn(Optional.of(sourceLocation));
+
+        MovementVO m = new MovementVO();
+        m.setTransportUnitBk("4711");
+        m.setSourceLocation("LOC2");
+        m.setState("ACTIVE");
+        mockMvc.perform(
+                        patch("/v1/movements/1002")
+                                .content(objectMapper.writeValueAsString(m)).contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isInternalServerError())
+                .andDo(document("move-move-with-completed"))
         ;
     }
 }
