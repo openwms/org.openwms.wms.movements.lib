@@ -60,4 +60,20 @@
 		</field>
 	</mapping>
 
+	<mapping>
+		<class-a>org.openwms.wms.commands.MovementMO</class-a>
+		<class-b>org.openwms.wms.api.MovementVO</class-b>
+		<field>
+			<a is-accessible="true">pKey</a>
+			<b is-accessible="true">persistentKey</b>
+		</field>
+		<field>
+			<a is-accessible="true">transportUnitBK</a>
+			<b is-accessible="true">transportUnitBk</b>
+		</field>
+		<field>
+			<a is-accessible="true">target</a>
+			<b is-accessible="true">target</b>
+		</field>
+	</mapping>
 </mappings>

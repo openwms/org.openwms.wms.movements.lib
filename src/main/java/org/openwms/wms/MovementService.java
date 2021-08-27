@@ -67,7 +67,7 @@ public interface MovementService {
      * @param vo The Movement data must contain the new source
      * @return The moved instance
      */
-    MovementVO move(@NotEmpty String pKey, @NotNull MovementVO vo);
+    MovementVO move(@NotEmpty String pKey, @Valid @NotNull MovementVO vo);
 
     /**
      * Complete a {@code Movement}.
@@ -76,5 +76,5 @@ public interface MovementService {
      * @param vo Required data to set at completion
      * @return The completed instance
      */
-    MovementVO complete(@NotEmpty String pKey, @NotNull MovementVO vo);
+    MovementVO complete(@NotEmpty String pKey, @Valid @NotNull MovementVO vo);
 }

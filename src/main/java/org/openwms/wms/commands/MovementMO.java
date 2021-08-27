@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openwms.wms.events.api;
+package org.openwms.wms.commands;
 
 import java.io.Serializable;
 

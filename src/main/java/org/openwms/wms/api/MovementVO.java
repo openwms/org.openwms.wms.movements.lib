@@ -17,6 +17,7 @@ package org.openwms.wms.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,6 +41,7 @@ import static org.openwms.wms.impl.ValidationGroups.Movement.Move;
 @Getter
 @Setter
 @ToString
+@Builder
 @EqualsAndHashCode(callSuper = true)
 public class MovementVO extends AbstractBase implements Serializable {
 

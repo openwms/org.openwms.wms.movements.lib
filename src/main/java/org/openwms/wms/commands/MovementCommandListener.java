@@ -13,44 +13,52 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openwms.wms.events;
+package org.openwms.wms.commands;
 
 import org.ameba.annotation.Measured;
+import org.ameba.annotation.TxService;
+import org.ameba.mapping.BeanMapper;
 import org.openwms.core.SpringProfiles;
 import org.openwms.wms.MovementService;
-import org.openwms.wms.api.MovementType;
 import org.openwms.wms.api.MovementVO;
-import org.openwms.wms.commands.SplitMO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.context.annotation.Profile;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
+
+import javax.validation.Valid;
 
 /**
- * A ReservationMessageListener.
+ * A MovementCommandListener.
  *
  * @author Heiko Scherrer
  */
 @Profile(SpringProfiles.ASYNCHRONOUS_PROFILE)
-@Component
-public class ReservationMessageListener {
+@Validated
+@TxService
+class MovementCommandListener {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MovementCommandListener.class);
+    private final BeanMapper mapper;
     private final MovementService movementService;
 
-    public ReservationMessageListener(MovementService movementService) {
+    MovementCommandListener(BeanMapper mapper, MovementService movementService) {
+        this.mapper = mapper;
         this.movementService = movementService;
     }
 
     @Measured
-    @RabbitListener(queues = "${owms.events.shipping.split.queue-name}")
-    public void handle(@Payload SplitMO mo, @Header("amqp_receivedRoutingKey") String routingKey) {
-        MovementVO movement = new MovementVO();
-        movement.setTransportUnitBk(mo.getTransportUnitBK());
-        movement.setPriority(mo.getPriority());
-        movement.setTarget(mo.getTargetName());
-        // FIXME [openwms]: 08.06.21 This is project specific and depends on source and target of the split
-        movement.setType(MovementType.RELOCATION);
-        movementService.create(mo.getTransportUnitBK(), movement);
+    @RabbitListener(queues = "${owms.commands.movements.movement.queue-name}")
+    public void onCommand(@Valid @Payload MovementCommand command) {
+        switch (command.getType()) {
+            case CREATE:
+                MovementMO movement = command.getMovement();
+                LOGGER.debug("Got command to create a Movement [{}]", movement);
+                movementService.create(movement.getTransportUnitBK(), mapper.map(movement, MovementVO.class));
+                break;
+            default:
+        }
     }
 }

@@ -116,6 +116,10 @@ spring:
           max-interval: 1s
 
 owms:
+  commands:
+    movements:
+      movement:
+        queue-name: movements-command-queue
   dead-letter:
     exchange-name: dle.inventory
     queue-name: inventory-dl-queue

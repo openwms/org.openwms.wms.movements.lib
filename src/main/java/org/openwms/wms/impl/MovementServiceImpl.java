@@ -17,7 +17,9 @@ package org.openwms.wms.impl;
 
 import org.ameba.annotation.Measured;
 import org.ameba.annotation.TxService;
+import org.ameba.exception.BusinessRuntimeException;
 import org.ameba.exception.NotFoundException;
+import org.ameba.i18n.Translator;
 import org.ameba.mapping.BeanMapper;
 import org.openwms.common.location.LocationPK;
 import org.openwms.common.location.api.LocationApi;
@@ -55,6 +57,10 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static org.ameba.system.ValidationUtil.validate;
+import static org.openwms.wms.MovementsMessages.LOCATION_NOT_FOUND_BY_ERP_CODE;
+import static org.openwms.wms.MovementsMessages.LOCATION_NOT_FOUND_BY_ID;
+import static org.openwms.wms.MovementsMessages.MOVEMENT_COMPLETED_NOT_MOVED;
+import static org.openwms.wms.MovementsMessages.MOVEMENT_NOT_FOUND;
 
 /**
  * A MovementServiceImpl is a Spring managed transaction service that deals with {@link Movement}s.
@@ -68,7 +74,8 @@ class MovementServiceImpl implements MovementService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MovementServiceImpl.class);
     private final BeanMapper mapper;
     private final Validator validator;
-    private final MovementStateResolver movementStateProvider;
+    private final Translator translator;
+    private final MovementStateResolver movementStateResolver;
     private final MovementRepository repository;
     private final MovementTypeResolver movementTypeResolver;
     private final Map<MovementType, MovementHandler> handlers;
@@ -77,12 +84,13 @@ class MovementServiceImpl implements MovementService {
     private final LocationGroupApi locationGroupApi;
 
     MovementServiceImpl(List<MovementHandler> handlersList, BeanMapper mapper, Validator validator,
-            MovementStateResolver movementStateProvider, MovementRepository repository, @Autowired(required = false) MovementTypeResolver movementTypeResolver,
+            Translator translator, MovementStateResolver movementStateResolver, MovementRepository repository, @Autowired(required = false) MovementTypeResolver movementTypeResolver,
             TransportUnitApi transportUnitApi, LocationApi locationApi, LocationGroupApi locationGroupApi) {
         this.handlers = handlersList.stream().collect(Collectors.toMap(MovementHandler::getType, h -> h));
         this.mapper = mapper;
         this.validator = validator;
-        this.movementStateProvider = movementStateProvider;
+        this.translator = translator;
+        this.movementStateResolver = movementStateResolver;
         this.repository = repository;
         this.movementTypeResolver = movementTypeResolver;
         this.transportUnitApi = transportUnitApi;
@@ -114,9 +122,7 @@ class MovementServiceImpl implements MovementService {
         movement.setSourceLocation(sourceLocation.getErpCode());
         movement.setSourceLocationGroupName(sourceLocation.getLocationGroupName());
         movement.setTransportUnitBk(Barcode.of(bk));
-        movement.setState(movementStateProvider.getNewState());
-        movement.setTargetLocationGroup(movement.getTargetLocation());
-        movement.setTargetLocation(null);
+        movement.setState(movementStateResolver.getNewState());
         validate(validator, movement, ValidationGroups.Movement.Create.class);
         Movement result = movementHandler.create(movement);
         return mapper.map(result, MovementVO.class);
@@ -133,15 +139,16 @@ class MovementServiceImpl implements MovementService {
     private LocationVO resolveLocation(MovementVO vo) {
         if (LocationPK.isValid(vo.getSourceLocation())) {
             try {
-                return locationApi.findLocationByCoordinate(vo.getSourceLocation()).orElseThrow(() -> new NotFoundException(format("Location with locationId [%s] does not exist", vo.getSourceLocation())));
+                return locationApi.findLocationByCoordinate(vo.getSourceLocation())
+                        .orElseThrow(NotFoundException::new);
             } catch (Exception e) {
-                throw new NotFoundException(format("Location with locationId [%s] does not exist", vo.getSourceLocation()));
+                throw new NotFoundException(translator, LOCATION_NOT_FOUND_BY_ID, new String[]{vo.getSourceLocation()}, vo.getSourceLocation());
             }
         } else {
             try {
-                return locationApi.findLocationByErpCode(vo.getSourceLocation()).orElseThrow(() -> new NotFoundException(format("Location with erpCode [%s] does not exist", vo.getSourceLocation())));
+                return locationApi.findLocationByErpCode(vo.getSourceLocation()).orElseThrow(NotFoundException::new);
             } catch (Exception e) {
-                throw new NotFoundException(format("Location with erpCode [%s] does not exist", vo.getSourceLocation()));
+                throw new NotFoundException(translator, LOCATION_NOT_FOUND_BY_ERP_CODE, new String[]{vo.getSourceLocation()}, vo.getSourceLocation());
             }
         }
     }
@@ -198,13 +205,22 @@ class MovementServiceImpl implements MovementService {
                 .collect(Collectors.toList());
     }
 
+    private Movement findInternal(String pKey) {
+        return repository.findBypKey(pKey)
+                .orElseThrow(() -> new NotFoundException(translator, MOVEMENT_NOT_FOUND, new String[]{pKey}, pKey));
+    }
+
     /**
      * {@inheritDoc}
      */
+    @Validated(ValidationGroups.Movement.Move.class)
     @Measured
     @Override
-    public MovementVO move(@NotEmpty String pKey, @NotNull MovementVO vo) {
-        Movement movement = repository.findBypKey(pKey).orElseThrow(() -> new NotFoundException(format("Movement with pKey [%s] does not exist", pKey)));
+    public MovementVO move(@NotEmpty String pKey, @Valid @NotNull MovementVO vo) {
+        Movement movement = findInternal(pKey);
+        if (movement.getState() == movementStateResolver.getCompletedState()) {
+            throw new BusinessRuntimeException(translator, MOVEMENT_COMPLETED_NOT_MOVED, new String[]{pKey}, pKey);
+        }
         movement.setState(DefaultMovementState.valueOf(vo.getState()));
         if (movement.getStartDate() == null) {
             movement.setStartDate(ZonedDateTime.now());
@@ -219,11 +235,12 @@ class MovementServiceImpl implements MovementService {
     /**
      * {@inheritDoc}
      */
+    @Validated(ValidationGroups.Movement.Complete.class)
     @Measured
     @Override
-    public MovementVO complete(@NotEmpty String pKey, @NotNull MovementVO vo) {
-        Movement movement = repository.findBypKey(pKey).orElseThrow(() -> new NotFoundException(format("Movement with pKey [%s] does not exist", pKey)));
-        movement.setState(movementStateProvider.getCompletedState());
+    public MovementVO complete(@NotEmpty String pKey, @Valid @NotNull MovementVO vo) {
+        Movement movement = findInternal(pKey);
+        movement.setState(movementStateResolver.getCompletedState());
         movement.setEndDate(ZonedDateTime.now());
         movement.setTargetLocation(vo.getTarget());
         movement.setTargetLocationGroup(vo.getTarget());

@@ -112,7 +112,7 @@ public class Movement extends ApplicationEntity implements Serializable {
     private String targetLocation;
 
     /** A {@code LocationGroup} can also be set as target. At least one target must be set when the {@code Movement} is being started. */
-    @Column(name = "C_TARGET_LOCATION_GROUP")
+    @Column(name = "C_TARGET_LOCATION_GROUP_NAME")
     private String targetLocationGroup;
 
     /** Date when the {@code Movement} can be started earliest. */

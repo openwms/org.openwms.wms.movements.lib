@@ -15,6 +15,7 @@
  */
 package org.openwms.wms;
 
+import org.ameba.exception.BusinessRuntimeException;
 import org.ameba.exception.NotFoundException;
 import org.ameba.exception.ServiceLayerException;
 import org.junit.jupiter.api.Test;
@@ -25,15 +26,19 @@ import org.openwms.common.transport.api.TransportUnitApi;
 import org.openwms.common.transport.api.TransportUnitVO;
 import org.openwms.wms.api.MovementType;
 import org.openwms.wms.api.MovementVO;
+import org.openwms.wms.api.StartMode;
+import org.openwms.wms.impl.Movement;
 import org.openwms.wms.movements.spi.common.putaway.PutawayApi;
+import org.openwms.wms.spi.DefaultMovementState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.jdbc.Sql;
 
+import javax.persistence.EntityManager;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 
 /**
@@ -44,6 +49,8 @@ import static org.mockito.BDDMockito.given;
 @MovementsApplicationTest
 class MovementServiceIT {
 
+    @Autowired
+    private EntityManager em;
     @MockBean
     protected TransportUnitApi transportUnitApi;
     @MockBean
@@ -131,8 +138,7 @@ class MovementServiceIT {
         LocationVO sourceLocation = new LocationVO("PASS/PASS/PASS/PASS/PASS");
         sourceLocation.setErpCode("PASS");
         given(transportUnitApi.findTransportUnit("4711")).willReturn(new TransportUnitVO("4711"));
-        given(locationApi.findLocationByCoordinate("PASS/PASS/PASS/PASS/PASS"))
-                .willReturn(Optional.of(sourceLocation));
+        given(locationApi.findLocationByCoordinate("PASS/PASS/PASS/PASS/PASS")).willReturn(Optional.of(sourceLocation));
         var mov = new MovementVO();
         mov.setType(MovementType.INBOUND);
         mov.setSourceLocation("PASS/PASS/PASS/PASS/PASS");
@@ -141,26 +147,138 @@ class MovementServiceIT {
         // act
         MovementVO result = testee.create("4711", mov);
 
-        //assert
+        // assert
         assertThat(result.getPersistentKey()).isNotEmpty();
         assertThat(result.getSourceLocation()).isEqualTo("PASS");
         assertThat(result.getTarget()).isEqualTo("KNOWN");
         assertThat(result.getType()).isEqualTo(MovementType.INBOUND);
     }
 
+    @Sql(scripts = "classpath:import-TEST.sql")
     @Test
     void findFor() {
+        var result = testee.findFor(DefaultMovementState.INACTIVE, "HRL.10.20.2.0", MovementType.INBOUND);
+        assertThat(result).hasSize(1);
     }
 
     @Test
     void getPriorityList() {
+        var list = testee.getPriorityList();
+        assertThat(list).hasSize(5);
     }
 
+    @Test
+    void test_move_fails_without_state() {
+        // arrange
+        var vo = MovementVO.builder()
+                .build();
+
+        // act & assert
+        assertThatThrownBy(() -> testee.move("1000", vo))
+                .isInstanceOf(ServiceLayerException.class)
+                .hasMessageContaining("move.vo.state: must not be empty");
+
+        var vo2 = MovementVO.builder()
+                .state("INACTIVE")
+                .build();
+
+        // act & assert
+        assertThatThrownBy(() -> testee.move("1000", vo2))
+                .isInstanceOf(ServiceLayerException.class)
+                .hasMessageContaining("move.vo.sourceLocation: must not be empty");
+
+        var vo3 = MovementVO.builder()
+                .sourceLocation("PASS/PASS/PASS/PASS/PASS")
+                .state("INACTIVE")
+                .build();
+
+        // act & assert
+        assertThatThrownBy(() -> testee.move("1000", vo3))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessageContaining("Location with locationId [PASS/PASS/PASS/PASS/PASS] does not exist");
+
+        LocationVO sourceLocation = new LocationVO("PASS/PASS/PASS/PASS/PASS");
+        sourceLocation.setErpCode("PASS");
+        sourceLocation.setLocationGroupName("LG");
+        given(locationApi.findLocationByCoordinate("PASS/PASS/PASS/PASS/PASS")).willReturn(Optional.of(sourceLocation));
+        // act & assert
+        assertThatThrownBy(() -> testee.move("1002", vo3))
+                .isInstanceOf(BusinessRuntimeException.class)
+                .hasMessageContaining("Movement [1002] cant be moved it is already completed");
+    }
+
+    @Sql(scripts = "classpath:import-TEST.sql")
     @Test
     void move() {
+        // arrange
+        LocationVO sourceLocation = new LocationVO("PASS/PASS/PASS/PASS/PASS");
+        sourceLocation.setErpCode("PASS");
+        sourceLocation.setLocationGroupName("LG");
+        given(locationApi.findLocationByCoordinate("PASS/PASS/PASS/PASS/PASS")).willReturn(Optional.of(sourceLocation));
+        var vo = MovementVO.builder()
+                .sourceLocation("PASS/PASS/PASS/PASS/PASS")
+                .state("INACTIVE")
+                .build();
+
+        // act
+        var moved = testee.move("1000", vo);
+
+        // assert
+        assertThat(moved.getPersistentKey()).isEqualTo("1000");
+        assertThat(moved.getTransportUnitBk()).isEqualTo("4711");
+        assertThat(moved.getStartMode()).isEqualTo(StartMode.MANUAL);
+        assertThat(moved.getPriority()).isEqualTo(30);
+        assertThat(moved.getState()).isEqualTo("INACTIVE");
+        assertThat(moved.getType()).isEqualTo(MovementType.INBOUND);
+        assertThat(moved.getSourceLocation()).isEqualTo("PASS");
+        assertThat(moved.getSourceLocationGroupName()).isEqualTo("LG");
+        assertThat(moved.getTarget()).isEqualTo("WA_01");
+
+        var entity = em.find(Movement.class, 1000L);
+        assertThat(entity.getSourceLocation()).isEqualTo("PASS");
+        assertThat(entity.getSourceLocationGroupName()).isEqualTo("LG");
     }
 
     @Test
+    void test_complete_fails_without_target() {
+        // arrange
+        var vo = MovementVO.builder()
+                .build();
+
+        // act & assert
+        assertThatThrownBy(() -> testee.complete("1002", vo))
+                .isInstanceOf(ServiceLayerException.class)
+                .hasMessageContaining("complete.vo.target: must not be empty");
+    }
+
+    @Sql(scripts = "classpath:import-TEST.sql")
+    @Test
     void complete() {
+        // arrange
+        LocationVO sourceLocation = new LocationVO("PASS/PASS/PASS/PASS/PASS");
+        sourceLocation.setErpCode("ERPCODE");
+        sourceLocation.setLocationGroupName("LG");
+        given(locationApi.findLocationByErpCode("ERPCODE")).willReturn(Optional.of(sourceLocation));
+        var vo = MovementVO.builder()
+                .target("ERPCODE")
+                .build();
+
+        // act
+        var moved = testee.complete("1000", vo);
+
+        // assert
+        assertThat(moved.getPersistentKey()).isEqualTo("1000");
+        assertThat(moved.getTransportUnitBk()).isEqualTo("4711");
+        assertThat(moved.getStartMode()).isEqualTo(StartMode.MANUAL);
+        assertThat(moved.getPriority()).isEqualTo(30);
+        assertThat(moved.getState()).isEqualTo("DONE");
+        assertThat(moved.getType()).isEqualTo(MovementType.INBOUND);
+        assertThat(moved.getSourceLocation()).isEqualTo("HRL.10.20.2.0");
+        assertThat(moved.getSourceLocationGroupName()).isEqualTo("STOCK");
+        assertThat(moved.getTarget()).isEqualTo("ERPCODE");
+
+        var entity = em.find(Movement.class, 1000L);
+        assertThat(entity.getTargetLocation()).isEqualTo("ERPCODE");
+        assertThat(entity.getTargetLocationGroup()).isEqualTo("ERPCODE");
     }
 }

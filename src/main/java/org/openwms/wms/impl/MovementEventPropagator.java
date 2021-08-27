@@ -17,7 +17,7 @@ package org.openwms.wms.impl;
 
 import org.openwms.core.SpringProfiles;
 import org.openwms.wms.events.api.MovementEvent;
-import org.openwms.wms.events.api.MovementMO;
+import org.openwms.wms.commands.MovementMO;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;

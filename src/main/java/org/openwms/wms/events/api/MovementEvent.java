@@ -15,6 +15,8 @@
  */
 package org.openwms.wms.events.api;
 
+import org.openwms.wms.commands.MovementMO;
+
 import java.io.Serializable;
 
 /**
