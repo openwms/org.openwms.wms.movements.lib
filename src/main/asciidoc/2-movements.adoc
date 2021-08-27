@@ -1,45 +1,32 @@
 [[resources-receiving-order]]
 == Movements
-A `ReceivingOrder` represents an announcement of receiving goods into the warehouse. Usually these kind of orders are sent by the ERP system
-prior to the actual goods receipt. A `ReceivingOrder` is just the envelope that contains `ReceivingOrderPositions`, where each position
-determines the expected product to receive in its quantity.
+A `Movement` is a manual move of a `TransportUnit` from a `Location` A to `Location` B. It always refers to a `TransportUnit` and not to any
+kind of material or articles. A `Movement` has a *source* `Location` where the `TransportUnit` is picked up and may have a *target*
+`Location` or in general a target `LocationGroup` where to bring the `TransportUnit` to. A `Movement` is meant to be executed by a human
+user in manual warehouses with some kind of equipment, like a fork lift, a trolley etc. So the `TransportUnit` is either on a `Location` or
+on the equipment - the latter is also expressed with a `Location`. That said, a `Movement` changed the source `Location` where it is picked
+up or dropped off but has no assignment to the human user. The operator/user may change, but the `TransportUnit` is still assigned to the
+`Location` it is currently on.
 
-=== ReceivingOrder Index
-The index with all possible operations on a `ReceivingOrder` can be retrieved with a GET request:
+=== Movement Index
+The index with all possible operations on a `Movements` can be retrieved with a GET request:
 
-include::{generated}/get-order-index/http-request.adoc[]
+include::{generated}/get-move-index/http-request.adoc[]
 
-The response lists all the operations possible on `ReceivingOrders` with a name and the corresponding href link:
+The response lists all the operations possible on `Movements` with a name and the corresponding href link:
 
-include::{generated}/get-order-index/http-response.adoc[]
+include::{generated}/get-move-index/http-response.adoc[]
 
-=== Create a ReceivingOrder
-The POST operation take a flat structure of a simple `ReceivingOrder` to create.
+=== Create a Movement
+To place a `Movement` a client must send a `POST` request to `movements` resource with the required data in the request body.
 
-include::{generated}/order-create/http-request.adoc[]
+include::{generated}/move-create/http-request.adoc[]
 
-If the `ReceivingOrder` has been created successfully, the server returns the URI to the created resource:
+If the `Movement` has been created successfully, the server returns the URI to the created resource:
 
-include::{generated}/order-create/http-response.adoc[]
+include::{generated}/move-create/http-response.adoc[]
 
-In case the client request did not match the server expectations, the server responds with:
-
-include::{generated}/order-create-400/http-response.adoc[]
-
-=== Find a ReceivingOrder
-A HTTP GET request is required to find a `ReceivingOrder`.
-
-include::{generated}/order-find/http-request.adoc[]
-
-If the `ReceivingOrder` has been found, the server returns the order as part of the response body:
-
-include::{generated}/order-find/http-response.adoc[]
-
-In case the order does not exist, the server responds with:
-
-include::{generated}/order-find-404/http-response.adoc[]
-
-=== Find all ReceivingOrders
+=== Find Movements
 A HTTP GET request to the primary resource is required to find all `ReceivingOrders`.
 
 include::{generated}/order-find-all/http-request.adoc[]
@@ -48,7 +35,7 @@ Returns an array of `ReceivingOrders` or an empty array:
 
 include::{generated}/order-find-all/http-response.adoc[]
 
-=== Cancel a ReceivingOrder
+=== Move a Movement
 An earlier posted `ReceivingOrder` can be cancelled for further processing. The client needs to send a HTTP DELETE request with the unique
 identifier of the order.
 
@@ -61,3 +48,5 @@ include::{generated}/order-cancel/http-response.adoc[]
 In case the order couldn't be cancelled because the order is already in process or has been processed, the server responds with:
 
 include::{generated}/order-cancel-403/http-response.adoc[]
+
+=== Complete a Movement

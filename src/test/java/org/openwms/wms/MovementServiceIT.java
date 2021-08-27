@@ -176,7 +176,7 @@ class MovementServiceIT {
         // act & assert
         assertThatThrownBy(() -> testee.move("1000", vo))
                 .isInstanceOf(ServiceLayerException.class)
-                .hasMessageContaining("move.vo.state: must not be empty");
+                .hasMessageContaining("state: must not be empty");
 
         var vo2 = MovementVO.builder()
                 .state("INACTIVE")
@@ -185,7 +185,7 @@ class MovementServiceIT {
         // act & assert
         assertThatThrownBy(() -> testee.move("1000", vo2))
                 .isInstanceOf(ServiceLayerException.class)
-                .hasMessageContaining("move.vo.sourceLocation: must not be empty");
+                .hasMessageContaining("sourceLocation: must not be empty");
 
         var vo3 = MovementVO.builder()
                 .sourceLocation("PASS/PASS/PASS/PASS/PASS")
@@ -248,7 +248,7 @@ class MovementServiceIT {
         // act & assert
         assertThatThrownBy(() -> testee.complete("1002", vo))
                 .isInstanceOf(ServiceLayerException.class)
-                .hasMessageContaining("complete.vo.target: must not be empty");
+                .hasMessageContaining("target: must not be empty");
     }
 
     @Sql(scripts = "classpath:import-TEST.sql")
