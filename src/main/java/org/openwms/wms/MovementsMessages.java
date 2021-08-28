@@ -22,9 +22,13 @@ package org.openwms.wms;
  */
 public final class MovementsMessages {
 
+    /** If a Location has not been found by an erpCode. */
     public static final String LOCATION_NOT_FOUND_BY_ERP_CODE= "owms.wms.mov.loc.erpCodeNotExists";
+    /** If a Location has not been found by the LocationId. */
     public static final String LOCATION_NOT_FOUND_BY_ID = "owms.wms.mov.loc.idNotExists";
+    /** If the Movement with the given pKey does not exist. */
     public static final String MOVEMENT_NOT_FOUND = "owms.wms.mov.mov.notMoved";
+    /** The Movement can't be moved because it is already completed. */
     public static final String MOVEMENT_COMPLETED_NOT_MOVED = "owms.wms.mov.mov.completedNotMoved";
 
     private MovementsMessages() {}

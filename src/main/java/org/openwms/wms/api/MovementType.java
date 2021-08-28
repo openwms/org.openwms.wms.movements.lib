@@ -25,7 +25,7 @@ public enum MovementType {
     /** Some arbitrary kind of movement, not defined elsewhere. */
     UNDEFINED,
 
-    /** Manual order movement. */
+    /** Arbitrary manual movement. */
     MANUAL,
 
     /** Movement based on a stock check procedure. */
@@ -46,8 +46,8 @@ public enum MovementType {
     /** Movement for replenishment. */
     REPLENISHMENT,
 
-    /** Movement for inventory control procedure. */
-    INVENTORY,
+    /** Movement for reconciliation procedure. */
+    RECONCILIATION,
 
     /** Relocation within a warehouse. */
     RELOCATION,

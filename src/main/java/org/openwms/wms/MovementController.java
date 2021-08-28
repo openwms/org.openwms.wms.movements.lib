@@ -17,6 +17,7 @@ package org.openwms.wms;
 
 import org.ameba.http.MeasuredRestController;
 import org.openwms.core.http.AbstractWebController;
+import org.openwms.core.http.Index;
 import org.openwms.wms.api.MovementType;
 import org.openwms.wms.api.MovementVO;
 import org.openwms.wms.impl.ValidationGroups;
@@ -34,6 +35,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 /**
  * A MovementController.
  *
@@ -47,6 +51,18 @@ public class MovementController extends AbstractWebController {
 
     public MovementController(MovementService service) {
         this.service = service;
+    }
+
+    @GetMapping("/v1/movements/index")
+    public ResponseEntity<Index> index() {
+        return ResponseEntity.ok(
+                new Index(
+                        linkTo(methodOn(MovementController.class).create("transportUnitBK", new MovementVO(), null)).withRel("movement-create"),
+                        linkTo(methodOn(MovementController.class).findForStateAndTypesAndSource("state", "source", MovementType.INBOUND)).withRel("movement-findForStateAndTypesAndSource"),
+                        linkTo(methodOn(MovementController.class).move("pKey", new MovementVO())).withRel("movement-move"),
+                        linkTo(methodOn(MovementController.class).complete("pKey", new MovementVO())).withRel("movement-complete")
+                )
+        );
     }
 
     @PostMapping("/v1/transport-units/{bk}/movements")
