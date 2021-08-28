@@ -90,6 +90,10 @@ class MovementAsyncConfiguration {
         return new TopicExchange(exchangeName, true, false);
     }
     @Bean
+    DirectExchange commandsExchange(@Value("${owms.commands.movements.exchange-name}") String exchangeName) {
+        return new DirectExchange(exchangeName, true, false);
+    }
+    @Bean
     TopicExchange shippingExchange(@Value("${owms.events.shipping.exchange-name}") String exchangeName) {
         return new TopicExchange(exchangeName, true, false);
     }
@@ -98,6 +102,15 @@ class MovementAsyncConfiguration {
     @Bean
     Queue splitQueue(
             @Value("${owms.events.shipping.split.queue-name}") String queueName,
+            @Value("${owms.dead-letter.exchange-name}") String exchangeName) {
+        return QueueBuilder.durable(queueName)
+                .withArgument("x-dead-letter-exchange", exchangeName)
+                .withArgument("x-dead-letter-routing-key", "poison-message")
+                .build();
+    }
+    @Bean
+    Queue commandsQueue(
+            @Value("${owms.commands.movements.movement.queue-name}") String queueName,
             @Value("${owms.dead-letter.exchange-name}") String exchangeName) {
         return QueueBuilder.durable(queueName)
                 .withArgument("x-dead-letter-exchange", exchangeName)
@@ -114,6 +127,16 @@ class MovementAsyncConfiguration {
         return BindingBuilder
                 .bind(splitQueue)
                 .to(shippingExchange)
+                .with(routingKey);
+    }
+    @Bean
+    Binding commandsBinding(
+            @Qualifier("commandsExchange") DirectExchange commandsExchange,
+            @Qualifier("commandsQueue") Queue commandsQueue,
+            @Value("${owms.commands.movements.movement.routing-key}") String routingKey) {
+        return BindingBuilder
+                .bind(commandsQueue)
+                .to(commandsExchange)
                 .with(routingKey);
     }
 

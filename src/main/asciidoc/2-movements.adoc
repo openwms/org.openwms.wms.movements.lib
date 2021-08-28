@@ -18,7 +18,9 @@ The response lists all the operations possible on `Movements` with a name and th
 include::{generated}/get-move-index/http-response.adoc[]
 
 === Create a Movement
-To place a `Movement` a client must send a `POST` request to `movements` resource with the required data in the request body.
+To place a `Movement` a client must send a `POST` request to `movements` sub resource of the primary `transport-units` resource with the
+required data in the request body. The required data contains the source where to pick up the `TransportUnit` and the target where to drop
+it. The `TransportUnit` that shall be moved is directly referenced as the primary resource in the URI.
 
 include::{generated}/move-create/http-request.adoc[]
 

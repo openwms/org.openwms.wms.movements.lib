@@ -25,7 +25,6 @@ import org.openwms.common.location.api.LocationGroupApi;
 import org.openwms.common.location.api.LocationVO;
 import org.openwms.common.transport.api.TransportUnitApi;
 import org.openwms.common.transport.api.TransportUnitVO;
-import org.openwms.wms.api.MovementType;
 import org.openwms.wms.api.MovementVO;
 import org.openwms.wms.movements.spi.common.putaway.PutawayApi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,13 +88,14 @@ public class MovementDocumentation {
         TransportUnitVO transportUnit = TransportUnitVO.newBuilder().barcode("4711").build();
         given(transportUnitApi.findTransportUnit("4711")).willReturn(transportUnit);
         LocationVO sourceLocation = new LocationVO("WE__/0001/0000/0000/0000");
-        given(locationApi.findLocationByCoordinate("WE__/0001/0000/0000/0000")).willReturn(Optional.of(sourceLocation));
+        sourceLocation.setErpCode("WE_01");
+        sourceLocation.setLocationGroupName("WE");
+        given(locationApi.findLocationByErpCode("WE_01")).willReturn(Optional.of(sourceLocation));
 
         MovementVO m = new MovementVO();
         m.setTransportUnitBk("4711");
-        m.setType(MovementType.MANUAL);
-        m.setSourceLocation("WE__/0001/0000/0000/0000");
-        m.setTarget("EXT_/0000/0000/0000/0000");
+        m.setSourceLocation("WE_01");
+        m.setTarget("ERR_/0001/0000/0000/0000");
         mockMvc.perform(
                 post("/v1/transport-units/4711/movements")
                         .content(objectMapper.writeValueAsString(m)).contentType(MediaType.APPLICATION_JSON)

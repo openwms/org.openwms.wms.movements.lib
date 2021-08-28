@@ -1,5 +1,5 @@
 ## Purpose
-**TMS Movement Service** allows to create Movement orders for Transport Units in warehouses.
+**TMS Movement Service** allows creating manual Movement tasks for Transport Units in warehouses. 
 
 ## Release
 

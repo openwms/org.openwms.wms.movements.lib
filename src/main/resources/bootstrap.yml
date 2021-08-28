@@ -118,8 +118,10 @@ spring:
 owms:
   commands:
     movements:
+      exchange-name: movements.commands
       movement:
         queue-name: movements-command-queue
+        routing-key: movement.command.create
   dead-letter:
     exchange-name: dle.inventory
     queue-name: inventory-dl-queue
@@ -202,6 +204,13 @@ spring:
           import_files: import-TEST.sql
   main:
     banner-mode: "off"
+
+owms:
+  movement:
+    targets:
+      - name: ERR_/0001/0000/0000/0000
+        search-location-group-names: CLEARING
+        type: INBOUND
 
 ---
 spring:
