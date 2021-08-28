@@ -78,6 +78,8 @@ jobs:
           -Dsonar.login=$SONAR_TOKEN
           -Dspring.rabbitmq.host=localhost
           -DsurefireArgs=-Dspring.profiles.active=ASYNCHRONOUS,TEST
+          -Dargs=-Dspring.profiles.active=ASYNCHRONOUS,TEST,TESTPG
+          -Dspring.rabbitmq.host=localhost
           -Dci.buildNumber=$GITHUB_RUN_NUMBER
           -DSONAR_TOKEN=$SONAR_TOKEN
           -Pcoverage -B $MAVEN_OPTS
