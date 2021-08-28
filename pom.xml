@@ -11,24 +11,24 @@
     <artifactId>org.openwms.wms.movements</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <name>OpenWMS.org WMS: Movements Services</name>
-    <url>https://openwms.github.io/${project.artifactId}/index.html</url>
+    <url>https://openwms.github.io/org.openwms.tms.movements/index.html</url>
 
     <issueManagement>
 		<system>GitHub</system>
-        <url>https://github.com/openwms/${project.artifactId}/issues</url>
+        <url>https://github.com/openwms/org.openwms.tms.movements/issues</url>
     </issueManagement>
 
     <distributionManagement>
         <site>
             <id>site</id>
-            <url>scm:git:git@github.com:openwms/${project.artifactId}.git</url>
+            <url>scm:git:git@github.com:openwms/org.openwms.tms.movements.git</url>
         </site>
     </distributionManagement>
 
     <scm>
-        <url>https://github.com/openwms/${project.artifactId}</url>
-        <connection>scm:git:https://${scmuser}github.com/openwms/${project.artifactId}.git</connection>
-        <developerConnection>scm:git:https://${scmuser}github.com/openwms/${project.artifactId}.git</developerConnection>
+        <url>https://github.com/openwms/org.openwms.tms.movements</url>
+        <connection>scm:git:https://${scmuser}github.com/openwms/org.openwms.tms.movements.git</connection>
+        <developerConnection>scm:git:https://${scmuser}github.com/openwms/org.openwms.tms.movements.git</developerConnection>
     </scm>
 
     <developers>
@@ -51,7 +51,7 @@
 
     <ciManagement>
         <system>GitHub</system>
-		<url>https://github.com/openwms/${project.artifactId}/actions</url>
+		<url>https://github.com/openwms/org.openwms.tms.movements/actions</url>
         <notifiers>
             <notifier>
                 <type>mail</type>
