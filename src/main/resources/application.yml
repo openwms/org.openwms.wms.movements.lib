@@ -1,9 +1,0 @@
-eureka:
-  client:
-    healthcheck:
-      enabled: true
-
-owms:
-  movement:
-    putaway-resolution-enabled: true
-

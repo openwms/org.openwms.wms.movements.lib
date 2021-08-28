@@ -1,0 +1,15 @@
+org.openwms.common
+org.openwms.common.location
+org.openwms.common.transport
+org.openwms.common.transport.events
+org.openwms.wms
+org.openwms.wms.api
+org.openwms.wms.app
+org.openwms.wms.commands
+org.openwms.wms.events
+org.openwms.wms.events.api
+org.openwms.wms.impl
+org.openwms.wms.impl.handler
+org.openwms.wms.movements.spi.common.putaway
+org.openwms.wms.spi
+org.openwms.wms.ui
