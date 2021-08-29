@@ -77,9 +77,8 @@ jobs:
           ./mvnw clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:3.7.0.1746:sonar
           -Dsonar.login=$SONAR_TOKEN
           -Dspring.rabbitmq.host=localhost
-          -DsurefireArgs=-Dspring.profiles.active=ASYNCHRONOUS,TEST
+          -DsurefireArgs=-Dspring.profiles.active=ASYNCHRONOUS,TEST,TESTPG
           -Dargs=-Dspring.profiles.active=ASYNCHRONOUS,TEST,TESTPG
-          -Dspring.rabbitmq.host=localhost
           -Dci.buildNumber=$GITHUB_RUN_NUMBER
           -DSONAR_TOKEN=$SONAR_TOKEN
           -Pcoverage -B $MAVEN_OPTS
