@@ -67,7 +67,7 @@
 			<b is-accessible="true">finishedAt</b>
 		</field>
 		<field type="one-way">
-			<a is-accessible="true">createdDt</a>
+			<a is-accessible="true">createDt</a>
 			<b is-accessible="true">createdAt</b>
 		</field>
 	</mapping>
