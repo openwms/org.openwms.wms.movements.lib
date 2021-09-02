@@ -24,15 +24,15 @@
 	</configuration>
 
 	<mapping>
-		<class-a>org.openwms.wms.api.MovementVO</class-a>
-		<class-b>org.openwms.wms.impl.Movement</class-b>
+		<class-a>org.openwms.wms.impl.Movement</class-a>
+		<class-b>org.openwms.wms.api.MovementVO</class-b>
 		<field>
-			<a is-accessible="true">persistentKey</a>
-			<b is-accessible="true">pKey</b>
+			<a is-accessible="true">pKey</a>
+			<b is-accessible="true">persistentKey</b>
 		</field>
 		<field>
-			<a is-accessible="true">transportUnitBk</a>
-			<b is-accessible="true">transportUnitBk.value</b>
+			<a is-accessible="true">transportUnitBk.value</a>
+			<b is-accessible="true">transportUnitBk</b>
 		</field>
 		<field>
 			<a is-accessible="true">type</a>
@@ -43,8 +43,8 @@
 			<b is-accessible="true">priority</b>
 		</field>
 		<field>
-			<a is-accessible="true">target</a>
-			<b is-accessible="true">targetLocation</b>
+			<a is-accessible="true">targetLocation</a>
+			<b is-accessible="true">target</b>
 		</field>
 		<field>
 			<a is-accessible="true">sourceLocation</a>
@@ -55,8 +55,20 @@
 			<b is-accessible="true">sourceLocationGroupName</b>
 		</field>
 		<field>
-			<a is-accessible="true">startMode</a>
-			<b is-accessible="true">mode</b>
+			<a is-accessible="true">mode</a>
+			<b is-accessible="true">startMode</b>
+		</field>
+		<field>
+			<a is-accessible="true">startDate</a>
+			<b is-accessible="true">startedAt</b>
+		</field>
+		<field>
+			<a is-accessible="true">endDate</a>
+			<b is-accessible="true">finishedAt</b>
+		</field>
+		<field type="one-way">
+			<a is-accessible="true">createdDt</a>
+			<b is-accessible="true">createdAt</b>
 		</field>
 	</mapping>
 

@@ -15,6 +15,7 @@
  */
 package org.openwms.wms.api;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,7 +28,9 @@ import org.ameba.http.AbstractBase;
 
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 
+import static org.openwms.wms.MovementConstants.DATE_TIME_WITH_TIMEZONE;
 import static org.openwms.wms.impl.ValidationGroups.Movement.Complete;
 import static org.openwms.wms.impl.ValidationGroups.Movement.Create;
 import static org.openwms.wms.impl.ValidationGroups.Movement.Move;
@@ -75,6 +78,15 @@ public class MovementVO extends AbstractBase implements Serializable {
     @JsonProperty("target")
     @NotEmpty(groups = {Create.class, Complete.class})
     private String target;
+    @JsonProperty("startedAt")
+    @JsonFormat(pattern = DATE_TIME_WITH_TIMEZONE)
+    private ZonedDateTime startedAt;
+    @JsonProperty("finishedAt")
+    @JsonFormat(pattern = DATE_TIME_WITH_TIMEZONE)
+    private ZonedDateTime finishedAt;
+    @JsonProperty("createdAt")
+    @JsonFormat(pattern = DATE_TIME_WITH_TIMEZONE)
+    private ZonedDateTime createdAt;
 
     /**
      * Checks whether a target is set or not.
