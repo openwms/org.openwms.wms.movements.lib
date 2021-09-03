@@ -1,7 +1,7 @@
 name: 'build_site'
 on:
   workflow_run:
-    workflows: ["master_build"]
+    workflows: ["build_master"]
     branches: [ master ]
     types:
       - completed
