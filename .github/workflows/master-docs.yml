@@ -1,4 +1,4 @@
-name: 'build_site'
+name: 'Build Documentation & QA'
 on:
   workflow_run:
     workflows: ["build_master"]
@@ -73,6 +73,7 @@ jobs:
           -Dargs=-Dspring.profiles.active=ASYNCHRONOUS,TEST,TESTPG
           -Dspring.rabbitmq.host=localhost
           -Dsonar.login=$SONAR_TOKEN
+          -Dmaven.compiler.debug=true
           -DSONAR_TOKEN=$SONAR_TOKEN
           -Dci.buildNumber=$GITHUB_RUN_NUMBER
           -Pcoverage -B $MAVEN_OPTS
