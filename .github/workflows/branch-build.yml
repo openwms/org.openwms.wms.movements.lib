@@ -1,4 +1,4 @@
-name: 'branch_build'
+name: 'build_branch'
 on:
   push:
     branches-ignore: [ master ]
@@ -7,9 +7,9 @@ env:
   MAVEN_OPTS: -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
 jobs:
-  build_job:
+  build_branch:
     runs-on: ubuntu-latest
-    name: Build & Test Microservice
+    name: Build & Test Microservice on Feature Branches
     services:
       rabbitmq:
         image: rabbitmq:3.8

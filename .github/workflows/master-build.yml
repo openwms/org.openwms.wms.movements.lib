@@ -1,4 +1,4 @@
-name: 'master_build'
+name: 'build_master'
 on:
   push:
     branches: [ master ]
@@ -7,9 +7,9 @@ env:
   MAVEN_OPTS: -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
 jobs:
-  build_job:
+  build_master:
     runs-on: ubuntu-latest
-    name: Build & Test Microservice
+    name: Build & Test Microservice on Master Branch
     services:
       rabbitmq:
         image: rabbitmq:3.8
