@@ -247,4 +247,14 @@ class MovementServiceImpl implements MovementService {
         movement = repository.save(movement);
         return mapper.map(movement, MovementVO.class);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Measured
+    @Override
+    public List<MovementVO> findAll() {
+        List<Movement> all = repository.findAll();
+        return all == null ? Collections.emptyList() : mapper.map(all, MovementVO.class);
+    }
 }

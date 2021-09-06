@@ -93,6 +93,11 @@ public class MovementController extends AbstractWebController {
         return ResponseEntity.ok(completed);
     }
 
+    @GetMapping(value = "/v1/movements")
+    public ResponseEntity<List<MovementVO>> findAll(){
+        return ResponseEntity.ok(service.findAll());
+    }
+
     @GetMapping(value = "/v1/movements", params = {"state", "types"})
     public ResponseEntity<List<MovementVO>> findForStateAndTypesAndSource(
             @RequestParam("state") String state,

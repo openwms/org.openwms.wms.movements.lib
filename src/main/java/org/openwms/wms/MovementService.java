@@ -77,4 +77,11 @@ public interface MovementService {
      * @return The completed instance
      */
     MovementVO complete(@NotEmpty String pKey, @Valid @NotNull MovementVO vo);
+
+    /**
+     * Find and return all existing {@code Movements}.
+     *
+     * @return All instances, never {@literal null}
+     */
+    List<MovementVO> findAll();
 }
