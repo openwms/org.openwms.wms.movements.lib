@@ -496,7 +496,7 @@ Host: localhost:8080
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 201 Created
-Location: http://localhost:8080/v1/transport-units/4711/movements/2d96821f-68ce-4430-9211-73b3c11c601c/</code></pre>
+Location: http://localhost:8080/v1/transport-units/4711/movements/2c164570-4a25-4a95-99df-97340791e70b/</code></pre>
 </div>
 </div>
 </div>
@@ -539,14 +539,20 @@ identifier of the order.</p>
 </div>
 <div class="sect2">
 <h3 id="movement-complete">Complete a Movement</h3>
-
+<div class="paragraph">
+<p>To complete a <code>Movement</code> a client needs to explicitly send the <code>COMPLETE</code> action to the <code>Movement</code> resource. This completes the <code>Movement</code>
+and sets the target to the required <code>target</code> that is passed from the caller in the response body.</p>
+</div>
+<div class="paragraph">
+<p>Unresolved directive in 2-movements.adoc - include::/home/runner/work/org.openwms.tms.movements/org.openwms.tms.movements/target/generated-snippets/order-complete/http-response.adoc[]</p>
+</div>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-09-07 21:02:39 UTC
+Last updated 2021-09-07 22:35:19 UTC
 </div>
 </div>
 </body>
