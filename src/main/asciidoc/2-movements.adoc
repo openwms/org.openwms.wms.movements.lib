@@ -57,3 +57,7 @@ include::{generated}/order-cancel-403/http-response.adoc[]
 
 [[movement-complete]]
 === Complete a Movement
+To complete a `Movement` a client needs to explicitly send the `COMPLETE` action to the `Movement` resource. This completes the `Movement`
+and sets the target to the required `target` that is passed from the caller in the response body.
+
+include::{generated}/order-complete/http-response.adoc[]
