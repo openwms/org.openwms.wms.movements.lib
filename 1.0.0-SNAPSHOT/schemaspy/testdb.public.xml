@@ -22,7 +22,7 @@
          <column autoUpdated="false" digits="0" id="15" name="c_start_earliest_date" nullable="true" remarks="" size="22" type="timestamp"/>
          <column autoUpdated="false" digits="0" id="16" name="c_state" nullable="true" remarks="" size="255" type="varchar"/>
          <column autoUpdated="false" digits="0" id="17" name="c_target_location" nullable="true" remarks="" size="255" type="varchar"/>
-         <column autoUpdated="false" digits="0" id="18" name="c_target_location_group_name" nullable="true" remarks="" size="255" type="varchar"/>
+         <column autoUpdated="false" digits="0" id="18" name="c_target_location_group_name" nullable="false" remarks="" size="255" type="varchar"/>
          <column autoUpdated="false" digits="0" id="19" name="c_transport_unit_bk" nullable="false" remarks="" size="255" type="varchar"/>
          <column autoUpdated="false" digits="0" id="20" name="c_type" nullable="false" remarks="" size="255" type="varchar"/>
          <column autoUpdated="false" digits="0" id="21" name="c_group_pk" nullable="true" remarks="" size="19" type="int8">
