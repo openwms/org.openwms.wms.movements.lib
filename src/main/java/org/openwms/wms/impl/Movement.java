@@ -36,10 +36,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -110,10 +110,12 @@ public class Movement extends ApplicationEntity implements Serializable {
 
     /** The target {@code Location} of the {@code Movement}. This property is set before the {@code Movement} is started. */
     @Column(name = "C_TARGET_LOCATION")
+    @Null(groups = ValidationGroups.Movement.Create.class)
     private String targetLocation;
 
     /** A {@code LocationGroup} can also be set as target. At least one target must be set when the {@code Movement} is being started. */
     @Column(name = "C_TARGET_LOCATION_GROUP_NAME")
+    @NotNull
     private String targetLocationGroup;
 
     /** Date when the {@code Movement} can be started earliest. */

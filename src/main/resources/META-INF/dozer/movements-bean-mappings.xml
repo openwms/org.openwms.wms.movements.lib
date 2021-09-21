@@ -43,7 +43,7 @@
 			<b is-accessible="true">priority</b>
 		</field>
 		<field>
-			<a is-accessible="true">targetLocation</a>
+			<a is-accessible="true">targetLocationGroup</a>
 			<b is-accessible="true">target</b>
 		</field>
 		<field>

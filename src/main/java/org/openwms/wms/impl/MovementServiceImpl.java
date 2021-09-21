@@ -125,7 +125,7 @@ class MovementServiceImpl implements MovementService {
         movement.setState(movementStateResolver.getNewState());
         validate(validator, movement, ValidationGroups.Movement.Create.class);
         Movement result = movementHandler.create(movement);
-        return mapper.map(result, MovementVO.class);
+        return convert(result);
     }
 
     private Optional<TransportUnitVO> resolveTransportUnit(String bk) {
@@ -184,13 +184,13 @@ class MovementServiceImpl implements MovementService {
             LOGGER.debug("Search for Movements of type [{}] in state [{}] and in [{}]", types, state, sources);
         }
 
-        return mapper.map(Arrays.stream(types)
+        return Arrays.stream(types)
                 .parallel()
                 .map(t -> handlers.get(t).findInStateAndSource(state, sources))
                 .reduce(new ArrayList<>(), (a, b) -> {
                     a.addAll(b);
                     return a;
-                }), MovementVO.class);
+                }).stream().map(this::convert).collect(Collectors.toList());
     }
 
     /**
@@ -229,7 +229,7 @@ class MovementServiceImpl implements MovementService {
         movement.setSourceLocation(sourceLocation.getErpCode());
         movement.setSourceLocationGroupName(sourceLocation.getLocationGroupName());
         movement = repository.save(movement);
-        return mapper.map(movement, MovementVO.class);
+        return convert(movement);
     }
 
     /**
@@ -245,7 +245,7 @@ class MovementServiceImpl implements MovementService {
         movement.setTargetLocation(vo.getTarget());
         movement.setTargetLocationGroup(vo.getTarget());
         movement = repository.save(movement);
-        return mapper.map(movement, MovementVO.class);
+        return convert(movement);
     }
 
     /**
@@ -254,7 +254,18 @@ class MovementServiceImpl implements MovementService {
     @Measured
     @Override
     public List<MovementVO> findAll() {
-        List<Movement> all = repository.findAll();
-        return all == null ? Collections.emptyList() : mapper.map(all, MovementVO.class);
+        var all = repository.findAll();
+        if (all == null) {
+            return Collections.emptyList();
+        }
+        return all.stream().map(this::convert).collect(Collectors.toList());
+    }
+
+    private MovementVO convert(Movement eo) {
+        var vo = mapper.map(eo, MovementVO.class);
+        if (eo.getTargetLocation() != null && !eo.getTargetLocation().isEmpty()) {
+            vo.setTarget(eo.getTargetLocation());
+        }
+        return vo;
     }
 }
