@@ -225,6 +225,9 @@ class MovementServiceImpl implements MovementService {
         if (movement.getStartDate() == null) {
             movement.setStartDate(ZonedDateTime.now());
         }
+        if (vo.hasTransportUnitBK()) {
+            movement.setTransportUnitBk(Barcode.of(vo.getTransportUnitBk()));
+        }
         LocationVO sourceLocation = resolveLocation(vo);
         movement.setSourceLocation(sourceLocation.getErpCode());
         movement.setSourceLocationGroupName(sourceLocation.getLocationGroupName());

@@ -96,4 +96,8 @@ public class MovementVO extends AbstractBase implements Serializable {
     public boolean hasTarget() {
         return target != null && !target.isEmpty();
     }
+
+    public boolean hasTransportUnitBK() {
+        return this.transportUnitBk != null && !this.transportUnitBk.isEmpty();
+    }
 }
