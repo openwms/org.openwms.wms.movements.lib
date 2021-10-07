@@ -15,8 +15,10 @@
  */
 package org.openwms.wms.impl;
 
+import org.openwms.common.transport.Barcode;
 import org.openwms.wms.api.MovementState;
 import org.openwms.wms.api.MovementType;
+import org.openwms.wms.spi.DefaultMovementState;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -34,6 +36,8 @@ import java.util.Optional;
 public interface MovementRepository extends JpaRepository<Movement, Long> {
 
     Optional<Movement> findBypKey(String pKey);
+
+    List<Movement> findByTransportUnitBkAndStateIsNot(Barcode transportUnitBk, DefaultMovementState state);
 
     @Query("select m from Movement m where m.type = :type and m.state = :state and (m.sourceLocationGroupName in :sources or m.sourceLocation in :sources or null = :sources) order by m.createDt")
     List<Movement> findByTypeAndStateAndSource(

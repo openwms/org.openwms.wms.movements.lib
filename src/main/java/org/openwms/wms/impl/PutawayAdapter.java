@@ -57,10 +57,10 @@ class PutawayAdapter {
     @Transactional(propagation = Propagation.REQUIRES_NEW, noRollbackFor = {Exception.class})
     public void onEvent(MovementCreated event) {
         if (event.getMovement().emptyTargetLocation()) {
-            LOGGER.debug("Call putaway strategy to find target location for movement [{}]", event.getMovement().getPersistentKey());
             Movement movement = repository.findById(event.getMovement().getPk()).orElseThrow(() -> new NotFoundException(format("Movement with PK [%d] does not exist", event.getMovement().getPk())));
             try {
                 MovementTarget movementTarget = properties.findTarget(event.getMovement().getTargetLocationGroup());
+                LOGGER.debug("Call putaway strategy to find target location for movement [{}] in [{}]", event.getMovement().getPersistentKey(), movementTarget.getSearchLocationGroupNames());
                 LocationVO target = putawayApi.findAndAssignNextInLocGroup(
                         movementTarget.getSearchLocationGroupNames(),
                         event.getMovement().getTransportUnitBk().getValue(),
@@ -73,6 +73,8 @@ class PutawayAdapter {
                 movement.addProblem(new ProblemHistory(movement, new Message.Builder().withMessage(e.getMessage()).build()));
             }
             repository.save(movement);
+        } else {
+            LOGGER.debug("Target is already set and not being resolved");
         }
     }
 }

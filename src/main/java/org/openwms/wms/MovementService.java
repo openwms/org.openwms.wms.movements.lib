@@ -79,9 +79,17 @@ public interface MovementService {
     MovementVO complete(@NotEmpty String pKey, @Valid @NotNull MovementVO vo);
 
     /**
-     * Find and return all existing {@code Movements}.
+     * Find and return all existing {@code Movement}s.
      *
      * @return All instances, never {@literal null}
      */
     List<MovementVO> findAll();
+
+    /**
+     * Find all {@code Movement}s for a {@code TransportUnit} with the given {@code barcode}.
+     *
+     * @param barcode The business key of the TransportUnit to move
+     * @return A list of Movements, never {@literal null}
+     */
+    List<MovementVO> findForTU(@NotEmpty String barcode);
 }
