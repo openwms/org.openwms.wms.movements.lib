@@ -37,6 +37,7 @@ digraph "oneDegreeRelationshipsDiagram" {
       <TR><TD PORT="c_occurred" COLSPAN="2" ALIGN="LEFT">c_occurred</TD><TD PORT="c_occurred.type" ALIGN="LEFT">timestamp[29,6]</TD></TR>
       <TR><TD PORT="c_mode" COLSPAN="2" ALIGN="LEFT">c_mode</TD><TD PORT="c_mode.type" ALIGN="LEFT">varchar[255]</TD></TR>
       <TR><TD PORT="c_priority" COLSPAN="2" ALIGN="LEFT">c_priority</TD><TD PORT="c_priority.type" ALIGN="LEFT">varchar[255]</TD></TR>
+      <TR><TD PORT="c_sku" COLSPAN="2" ALIGN="LEFT">c_sku</TD><TD PORT="c_sku.type" ALIGN="LEFT">varchar[255]</TD></TR>
       <TR><TD PORT="c_source_location" COLSPAN="2" ALIGN="LEFT">c_source_location</TD><TD PORT="c_source_location.type" ALIGN="LEFT">varchar[255]</TD></TR>
       <TR><TD PORT="c_source_location_group_name" COLSPAN="2" ALIGN="LEFT">c_source_location_group_name</TD><TD PORT="c_source_location_group_name.type" ALIGN="LEFT">varchar[255]</TD></TR>
       <TR><TD PORT="c_start_date" COLSPAN="2" ALIGN="LEFT">c_start_date</TD><TD PORT="c_start_date.type" ALIGN="LEFT">timestamp[22]</TD></TR>

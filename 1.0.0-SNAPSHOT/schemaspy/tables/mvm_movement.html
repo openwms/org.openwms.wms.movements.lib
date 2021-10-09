@@ -81,7 +81,7 @@
 </tr>
 </thead>
 <tbody valign='top'>
-<tr class='even'>
+<tr class='odd'>
  <td class='primaryKey' title='Primary Key'>c_pk</td>
  <td class='detail'>int8</td>
  <td class='detail' align='right'>19</td>
@@ -90,7 +90,7 @@
  <td class='detail'></td>
  <td class='detail'>
   <table border='0' width='100%' cellspacing='0' cellpadding='0'>
-   <tr class='relative even' valign='top'>
+   <tr class='relative odd' valign='top'>
     <td class='relatedTable detail' title="mvm_problem_history.c_fk_movement refs mvm_movement.c_pk via fk_phistory_mvm"><a href='mvm_problem_history.html'>mvm_problem_history</a><span class='relatedKey'>.c_fk_movement</span>
     </td>
     <td class='constraint detail'>fk_phistory_mvm<span title='Restrict delete:
@@ -101,7 +101,7 @@
  <td class='detail'> </td>
  <td class='comment detail'></td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='detail'>c_created</td>
  <td class='detail'>timestamp</td>
  <td class='detail' align='right'>29,6</td>
@@ -112,7 +112,7 @@
  <td class='detail'> </td>
  <td class='comment detail'></td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='detail'>c_updated</td>
  <td class='detail'>timestamp</td>
  <td class='detail' align='right'>29,6</td>
@@ -123,7 +123,7 @@
  <td class='detail'> </td>
  <td class='comment detail'></td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='detail'>c_ol</td>
  <td class='detail'>int8</td>
  <td class='detail' align='right'>19</td>
@@ -134,7 +134,7 @@
  <td class='detail'> </td>
  <td class='comment detail'></td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='detail'>c_pid</td>
  <td class='detail'>varchar</td>
  <td class='detail' align='right'>255</td>
@@ -145,7 +145,7 @@
  <td class='detail'> </td>
  <td class='comment detail'></td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='detail'>c_end_date</td>
  <td class='detail'>timestamp</td>
  <td class='detail' align='right'>22</td>
@@ -156,7 +156,7 @@
  <td class='detail'> </td>
  <td class='comment detail'></td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='detail'>c_latest_due</td>
  <td class='detail'>timestamp</td>
  <td class='detail' align='right'>22</td>
@@ -167,7 +167,7 @@
  <td class='detail'> </td>
  <td class='comment detail'></td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='detail'>c_message</td>
  <td class='detail'>varchar</td>
  <td class='detail' align='right'>1024</td>
@@ -178,7 +178,7 @@
  <td class='detail'> </td>
  <td class='comment detail'></td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='detail'>c_no</td>
  <td class='detail'>varchar</td>
  <td class='detail' align='right'>255</td>
@@ -189,7 +189,7 @@
  <td class='detail'> </td>
  <td class='comment detail'></td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='detail'>c_occurred</td>
  <td class='detail'>timestamp</td>
  <td class='detail' align='right'>29,6</td>
@@ -200,7 +200,7 @@
  <td class='detail'> </td>
  <td class='comment detail'></td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='detail'>c_mode</td>
  <td class='detail'>varchar</td>
  <td class='detail' align='right'>255</td>
@@ -211,13 +211,24 @@
  <td class='detail'> </td>
  <td class='comment detail'></td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='detail'>c_priority</td>
  <td class='detail'>varchar</td>
  <td class='detail' align='right'>255</td>
  <td class='detail' align='center'></td>
  <td class='detail' align='center'></td>
  <td class='detail'></td>
+ <td class='detail'></td>
+ <td class='detail'> </td>
+ <td class='comment detail'></td>
+</tr>
+<tr class='odd'>
+ <td class='detail'>c_sku</td>
+ <td class='detail'>varchar</td>
+ <td class='detail' align='right'>255</td>
+ <td class='detail' align='center' title='nullable'>&nbsp;&radic;&nbsp;</td>
+ <td class='detail' align='center'></td>
+ <td class='detail' align='right'>null</td>
  <td class='detail'></td>
  <td class='detail'> </td>
  <td class='comment detail'></td>
@@ -342,7 +353,7 @@
  <td class='comment detail'></td>
 </tr>
 </table>
-<p title='22 columns'>Table contained 3 rows at Sun Oct 03 07:49 UTC 2021<p/>
+<p title='23 columns'>Table contained 3 rows at Sat Oct 09 20:41 UTC 2021<p/>
 </td></tr></table>
 <div class='indent'>
 <b>Indexes:</b>
@@ -366,8 +377,8 @@
 </div>
 <table width='100%' border='0'><tr><td class='container'>
 <br><form action='get'><b>Close relationships:</b></form><map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="mvm_movement.html" title="mvm_movement" alt="" coords="252,195,645,787">
-<area shape="rect" id="node2" href="mvm_movement_group.html" title="mvm_movement_group" alt="" coords="5,701,208,952">
+<area shape="rect" id="node1" href="mvm_movement.html" title="mvm_movement" alt="" coords="252,195,645,811">
+<area shape="rect" id="node2" href="mvm_movement_group.html" title="mvm_movement_group" alt="" coords="5,725,208,976">
 <area shape="rect" id="node3" href="mvm_problem_history.html" title="mvm_problem_history" alt="" coords="689,5,881,280">
 </map>
   <a name='diagram'><img id='oneDegreeImg' src='../diagrams/mvm_movement.1degree.png' usemap='#oneDegreeRelationshipsDiagram' class='diagram' border='0' alt='' align='left'></a>

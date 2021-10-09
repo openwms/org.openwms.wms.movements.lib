@@ -16,16 +16,17 @@
          <column autoUpdated="false" digits="6" id="9" name="c_occurred" nullable="true" remarks="" size="29" type="timestamp"/>
          <column autoUpdated="false" digits="0" id="10" name="c_mode" nullable="false" remarks="" size="255" type="varchar"/>
          <column autoUpdated="false" digits="0" id="11" name="c_priority" nullable="false" remarks="" size="255" type="varchar"/>
-         <column autoUpdated="false" digits="0" id="12" name="c_source_location" nullable="true" remarks="" size="255" type="varchar"/>
-         <column autoUpdated="false" digits="0" id="13" name="c_source_location_group_name" nullable="true" remarks="" size="255" type="varchar"/>
-         <column autoUpdated="false" digits="0" id="14" name="c_start_date" nullable="true" remarks="" size="22" type="timestamp"/>
-         <column autoUpdated="false" digits="0" id="15" name="c_start_earliest_date" nullable="true" remarks="" size="22" type="timestamp"/>
-         <column autoUpdated="false" digits="0" id="16" name="c_state" nullable="true" remarks="" size="255" type="varchar"/>
-         <column autoUpdated="false" digits="0" id="17" name="c_target_location" nullable="true" remarks="" size="255" type="varchar"/>
-         <column autoUpdated="false" digits="0" id="18" name="c_target_location_group_name" nullable="false" remarks="" size="255" type="varchar"/>
-         <column autoUpdated="false" digits="0" id="19" name="c_transport_unit_bk" nullable="false" remarks="" size="255" type="varchar"/>
-         <column autoUpdated="false" digits="0" id="20" name="c_type" nullable="false" remarks="" size="255" type="varchar"/>
-         <column autoUpdated="false" digits="0" id="21" name="c_group_pk" nullable="true" remarks="" size="19" type="int8">
+         <column autoUpdated="false" digits="0" id="12" name="c_sku" nullable="true" remarks="" size="255" type="varchar"/>
+         <column autoUpdated="false" digits="0" id="13" name="c_source_location" nullable="true" remarks="" size="255" type="varchar"/>
+         <column autoUpdated="false" digits="0" id="14" name="c_source_location_group_name" nullable="true" remarks="" size="255" type="varchar"/>
+         <column autoUpdated="false" digits="0" id="15" name="c_start_date" nullable="true" remarks="" size="22" type="timestamp"/>
+         <column autoUpdated="false" digits="0" id="16" name="c_start_earliest_date" nullable="true" remarks="" size="22" type="timestamp"/>
+         <column autoUpdated="false" digits="0" id="17" name="c_state" nullable="true" remarks="" size="255" type="varchar"/>
+         <column autoUpdated="false" digits="0" id="18" name="c_target_location" nullable="true" remarks="" size="255" type="varchar"/>
+         <column autoUpdated="false" digits="0" id="19" name="c_target_location_group_name" nullable="false" remarks="" size="255" type="varchar"/>
+         <column autoUpdated="false" digits="0" id="20" name="c_transport_unit_bk" nullable="false" remarks="" size="255" type="varchar"/>
+         <column autoUpdated="false" digits="0" id="21" name="c_type" nullable="false" remarks="" size="255" type="varchar"/>
+         <column autoUpdated="false" digits="0" id="22" name="c_group_pk" nullable="true" remarks="" size="19" type="int8">
             <parent column="c_pk" foreignKey="fk_mvm_grp" implied="false" onDeleteCascade="false" table="mvm_movement_group"/>
          </column>
          <primaryKey column="c_pk" sequenceNumberInPK="1"/>

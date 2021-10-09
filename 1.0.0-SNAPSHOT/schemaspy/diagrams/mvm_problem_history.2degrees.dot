@@ -37,6 +37,7 @@ digraph "twoDegreesRelationshipsDiagram" {
       <TR><TD PORT="c_occurred" COLSPAN="3" ALIGN="LEFT">c_occurred</TD></TR>
       <TR><TD PORT="c_mode" COLSPAN="3" ALIGN="LEFT">c_mode</TD></TR>
       <TR><TD PORT="c_priority" COLSPAN="3" ALIGN="LEFT">c_priority</TD></TR>
+      <TR><TD PORT="c_sku" COLSPAN="3" ALIGN="LEFT">c_sku</TD></TR>
       <TR><TD PORT="c_source_location" COLSPAN="3" ALIGN="LEFT">c_source_location</TD></TR>
       <TR><TD PORT="c_source_location_group_name" COLSPAN="3" ALIGN="LEFT">c_source_location_group_name</TD></TR>
       <TR><TD PORT="c_start_date" COLSPAN="3" ALIGN="LEFT">c_start_date</TD></TR>
