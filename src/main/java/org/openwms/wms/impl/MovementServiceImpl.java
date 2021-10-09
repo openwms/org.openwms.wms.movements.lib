@@ -119,6 +119,7 @@ class MovementServiceImpl implements MovementService {
         TransportUnitVO transportUnit = resolveTransportUnit(bk).orElseThrow(() -> new NotFoundException(format("TransportUnit with BK [%s] does not exist", bk)));
         LocationVO sourceLocation = resolveLocation(vo);
         Movement movement = mapper.map(vo, Movement.class);
+        locationApi.findLocationByErpCode(vo.getTarget()).ifPresent( loc -> movement.setTargetLocation(loc.getErpCode()));
         movement.setSourceLocation(sourceLocation.getErpCode());
         movement.setSourceLocationGroupName(sourceLocation.getLocationGroupName());
         movement.setTransportUnitBk(Barcode.of(bk));
@@ -242,12 +243,20 @@ class MovementServiceImpl implements MovementService {
     @Measured
     @Override
     public MovementVO complete(@NotEmpty String pKey, @Valid @NotNull MovementVO vo) {
+        LOGGER.debug("Got request to complete movement [{}]", vo);
+        String transportUnit = vo.getTransportUnitBk();
         Movement movement = findInternal(pKey);
+        var location = locationApi.findLocationByErpCode(vo.getTarget()).orElseThrow(NotFoundException::new);
+        transportUnitApi.moveTU(vo.hasTransportUnitBK()
+                        ? vo.getTransportUnitBk()
+                        : movement.getTransportUnitBk().getValue()
+                , location.getLocationId());
         movement.setState(movementStateResolver.getCompletedState());
         movement.setEndDate(ZonedDateTime.now());
         movement.setTargetLocation(vo.getTarget());
         movement.setTargetLocationGroup(vo.getTarget());
         movement = repository.save(movement);
+        LOGGER.debug("Completed movement [{}]: ", movement);
         return convert(movement);
     }
 
@@ -258,9 +267,20 @@ class MovementServiceImpl implements MovementService {
     @Override
     public List<MovementVO> findAll() {
         var all = repository.findAll();
-        if (all == null) {
+        if (all.isEmpty()) {
             return Collections.emptyList();
         }
+        return all.stream().map(this::convert).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<MovementVO> findForTU(@NotEmpty String barcode) {
+        var all = repository.findByTransportUnitBkAndStateIsNot(Barcode.of(barcode), DefaultMovementState.DONE);
+        if (all.isEmpty()) {
+            LOGGER.debug("No Movements for TU [{}] in active state", barcode);
+            return Collections.emptyList();
+        }
+        LOGGER.debug("Movements for TU [{}] in active state exist", barcode);
         return all.stream().map(this::convert).collect(Collectors.toList());
     }
 

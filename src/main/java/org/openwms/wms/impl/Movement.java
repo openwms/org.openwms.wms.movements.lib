@@ -72,6 +72,9 @@ public class Movement extends ApplicationEntity implements Serializable {
     @JoinColumn(name = "C_GROUP_PK", nullable = true, foreignKey = @ForeignKey(name = "FK_MVM_GRP"))
     private MovementGroup group;
 
+    @Column(name = "C_SKU")
+    private String sku;
+
     /**
      * A priority level of the {@code Movement}. The lower the value the lower the priority. The priority level affects the execution of the
      * {@code Movement}. An order with high priority will be processed faster than those with lower priority.
@@ -181,6 +184,14 @@ public class Movement extends ApplicationEntity implements Serializable {
 
     public MovementGroup getGroup() {
         return group;
+    }
+
+    public String getSku() {
+        return sku;
+    }
+
+    public void setSku(String sku) {
+        this.sku = sku;
     }
 
     public PriorityLevel getPriority() {

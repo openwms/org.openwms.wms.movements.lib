@@ -57,6 +57,8 @@ public class MovementVO extends AbstractBase implements Serializable {
     /** Whether the {@code Movement} should be directly processed (AUTOMATIC) or delayed (MANUAL). */
     @JsonProperty("mode")
     private StartMode startMode = StartMode.AUTOMATIC;
+    @JsonProperty("sku")
+    private String sku;
     /** A priority how fast and prio the {@code Movement} needs to be processed; A higher value means less prio than lower values. */
     @JsonProperty("priority")
     private Integer priority;
@@ -78,6 +80,8 @@ public class MovementVO extends AbstractBase implements Serializable {
     @JsonProperty("target")
     @NotEmpty(groups = {Create.class, Complete.class})
     private String target;
+    @JsonProperty("targetLocationGroup")
+    private String targetLocationGroup;
     @JsonProperty("startedAt")
     @JsonFormat(pattern = DATE_TIME_WITH_TIMEZONE)
     private ZonedDateTime startedAt;
