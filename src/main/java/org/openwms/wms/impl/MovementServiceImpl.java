@@ -246,7 +246,7 @@ class MovementServiceImpl implements MovementService {
         LOGGER.debug("Got request to complete movement [{}]", vo);
         String transportUnit = vo.getTransportUnitBk();
         Movement movement = findInternal(pKey);
-        var location = locationApi.findLocationByErpCode(vo.getTarget()).orElseThrow(NotFoundException::new);
+        var location = locationApi.findLocationByErpCode(vo.getTarget()).orElseThrow(() -> new NotFoundException(format("Location with ERP Code [%s] does not exist", vo.getTarget())));
         transportUnitApi.moveTU(vo.hasTransportUnitBK()
                         ? vo.getTransportUnitBk()
                         : movement.getTransportUnitBk().getValue()
