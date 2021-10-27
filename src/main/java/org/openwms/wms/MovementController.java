@@ -24,6 +24,7 @@ import org.openwms.wms.impl.ValidationGroups;
 import org.openwms.wms.spi.DefaultMovementState;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -92,6 +93,13 @@ public class MovementController extends AbstractWebController {
         @Valid @RequestBody MovementVO movement) {
         MovementVO completed = service.complete(pKey, movement);
         return ResponseEntity.ok(completed);
+    }
+
+    @DeleteMapping("/v1/movements/{pKey}")
+    public ResponseEntity<MovementVO> cancel(
+            @PathVariable("pKey") String pKey) {
+        MovementVO updated = service.cancel(pKey);
+        return ResponseEntity.ok(updated);
     }
 
     @GetMapping(value = "/v1/movements")

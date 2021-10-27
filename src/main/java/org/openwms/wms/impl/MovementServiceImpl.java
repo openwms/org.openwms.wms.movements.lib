@@ -265,6 +265,21 @@ class MovementServiceImpl implements MovementService {
      */
     @Measured
     @Override
+    public MovementVO cancel(@NotEmpty String pKey) {
+        Movement movement = findInternal(pKey);
+        if (movement.getState() != DefaultMovementState.DONE) {
+            movement.setState(DefaultMovementState.CANCELLED);
+            movement = repository.save(movement);
+            LOGGER.debug("Cancelled movement [{}]: ", movement);
+        }
+        return convert(movement);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Measured
+    @Override
     public List<MovementVO> findAll() {
         var all = repository.findAll();
         if (all.isEmpty()) {

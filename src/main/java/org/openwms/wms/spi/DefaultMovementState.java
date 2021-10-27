@@ -31,6 +31,9 @@ public enum DefaultMovementState implements MovementState {
     /** Currently in execution. */
     ACTIVE,
 
+    /** Cancelled before final execution. */
+    CANCELLED,
+
     /** Executed and done. */
     DONE;
 

@@ -79,6 +79,14 @@ public interface MovementService {
     MovementVO complete(@NotEmpty String pKey, @Valid @NotNull MovementVO vo);
 
     /**
+     * Cancel an existing {@code Movement}.
+     *
+     * @param pKey The identifying persistent key of the Movement to complete
+     * @return The cancelled instance
+     */
+    MovementVO cancel(@NotEmpty String pKey);
+
+    /**
      * Find and return all existing {@code Movement}s.
      *
      * @return All instances, never {@literal null}
