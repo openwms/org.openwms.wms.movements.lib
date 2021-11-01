@@ -53,7 +53,7 @@ class InboundMovementHandler extends AbstractMovementHandler {
      */
     @Override
     @Measured
-    public List<Movement> findInStateAndSource(@NotEmpty MovementState state, @NotNull List<String> sources) {
+    public List<Movement> findInStateAndSource(@NotNull MovementState state, @NotEmpty List<String> sources) {
         return findInState(state, sources, MovementType.INBOUND);
     }
 }

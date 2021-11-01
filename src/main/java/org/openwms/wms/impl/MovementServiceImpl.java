@@ -288,6 +288,10 @@ class MovementServiceImpl implements MovementService {
         return all.stream().map(this::convert).collect(Collectors.toList());
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Measured
     @Override
     public List<MovementVO> findForTU(@NotEmpty String barcode) {
         var all = repository.findByTransportUnitBkAndStateIsNot(Barcode.of(barcode), DefaultMovementState.DONE);

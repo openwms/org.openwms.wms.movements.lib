@@ -51,5 +51,5 @@ public interface MovementHandler {
      * @param sources A list of sourceLocation or sourceLocationGroup names to search Movements for
      * @return A list of instances, never {@literal null}
      */
-    List<Movement> findInStateAndSource(@NotEmpty MovementState state, @NotNull List<String> sources);
+    List<Movement> findInStateAndSource(@NotNull MovementState state, @NotEmpty List<String> sources);
 }

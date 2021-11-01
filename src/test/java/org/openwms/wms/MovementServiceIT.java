@@ -156,13 +156,29 @@ class MovementServiceIT {
 
     @Sql(scripts = "classpath:import-TEST.sql")
     @Test
-    void findFor() {
+    void test_findFor() {
         var result = testee.findFor(DefaultMovementState.INACTIVE, "HRL.10.20.2.0", MovementType.INBOUND);
         assertThat(result).hasSize(1);
     }
 
+    @Sql(scripts = "classpath:import-TEST.sql")
     @Test
-    void getPriorityList() {
+    void test_findAll() {
+        var result = testee.findAll();
+        assertThat(result).hasSize(3);
+    }
+
+    @Sql(scripts = "classpath:import-TEST.sql")
+    @Test
+    void test_findForTU() {
+        var result = testee.findForTU("4712");
+        assertThat(result).hasSize(1);
+        result = testee.findForTU("4713");
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void test_getPriorityList() {
         var list = testee.getPriorityList();
         assertThat(list).hasSize(5);
     }
@@ -209,7 +225,7 @@ class MovementServiceIT {
 
     @Sql(scripts = "classpath:import-TEST.sql")
     @Test
-    void move() {
+    void test_move() {
         // arrange
         LocationVO sourceLocation = new LocationVO("PASS/PASS/PASS/PASS/PASS");
         sourceLocation.setErpCode("PASS");
@@ -253,7 +269,7 @@ class MovementServiceIT {
 
     @Sql(scripts = "classpath:import-TEST.sql")
     @Test
-    void complete() {
+    void test_complete() {
         // arrange
         LocationVO sourceLocation = new LocationVO("PASS/PASS/PASS/PASS/PASS");
         sourceLocation.setErpCode("ERPCODE");
