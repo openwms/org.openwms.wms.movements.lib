@@ -1,7 +1,6 @@
 org.openwms.common
 org.openwms.common.location
 org.openwms.common.transport
-org.openwms.common.transport.events
 org.openwms.wms
 org.openwms.wms.api
 org.openwms.wms.app
