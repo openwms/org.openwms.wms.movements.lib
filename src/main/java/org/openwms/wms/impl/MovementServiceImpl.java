@@ -19,6 +19,7 @@ import org.ameba.annotation.Measured;
 import org.ameba.annotation.TxService;
 import org.ameba.exception.BusinessRuntimeException;
 import org.ameba.exception.NotFoundException;
+import org.ameba.exception.ServiceLayerException;
 import org.ameba.i18n.Translator;
 import org.ameba.mapping.BeanMapper;
 import org.openwms.common.location.LocationPK;
@@ -28,7 +29,6 @@ import org.openwms.common.location.api.LocationGroupVO;
 import org.openwms.common.location.api.LocationVO;
 import org.openwms.common.transport.Barcode;
 import org.openwms.common.transport.api.TransportUnitApi;
-import org.openwms.common.transport.api.TransportUnitVO;
 import org.openwms.wms.MovementService;
 import org.openwms.wms.api.MovementState;
 import org.openwms.wms.api.MovementType;
@@ -52,7 +52,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -116,7 +115,7 @@ class MovementServiceImpl implements MovementService {
             throw new IllegalArgumentException(format("No handler registered for MovementType [%s]", vo.getType()));
         }
         validate(validator, vo, ValidationGroups.Movement.Create.class);
-        resolveTransportUnit(bk).orElseThrow(() -> new NotFoundException(format("TransportUnit with BK [%s] does not exist", bk)));
+        resolveTransportUnit(bk);
         var sourceLocation = resolveLocation(vo);
         var movement = mapper.map(vo, Movement.class);
         locationApi.findLocationByErpCode(vo.getTarget()).ifPresent( loc -> movement.setTargetLocation(loc.getErpCode()));
@@ -129,11 +128,11 @@ class MovementServiceImpl implements MovementService {
         return convert(result);
     }
 
-    private Optional<TransportUnitVO> resolveTransportUnit(String bk) {
+    private void resolveTransportUnit(String bk) {
         try {
-            return Optional.of(transportUnitApi.findTransportUnit(bk));
+            transportUnitApi.findTransportUnit(bk);
         } catch (Exception e) {
-            return Optional.empty();
+            throw new ServiceLayerException(e.getMessage(), e);
         }
     }
 
@@ -174,12 +173,8 @@ class MovementServiceImpl implements MovementService {
     @Measured
     @Override
     public List<MovementVO> findFor(@NotNull MovementState state, @NotEmpty String source, @NotNull MovementType... types) {
-        Optional<LocationGroupVO> locationGroupOpt = locationGroupApi.findByName(source);
-        List<String> sources;
-        sources = locationGroupOpt.map(lg -> lg
-                .streamLocationGroups()
-                .map(LocationGroupVO::getName)
-                .collect(Collectors.toList()))
+        var sources = locationGroupApi.findByName(source)
+                .map(lg -> lg.streamLocationGroups().map(LocationGroupVO::getName).collect(Collectors.toList()))
                 .orElseGet(() -> Collections.singletonList(source));
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Search for Movements of type [{}] in state [{}] and in [{}]", types, state, sources);

@@ -102,8 +102,8 @@ class MovementServiceIT {
         given(transportUnitApi.findTransportUnit("UNKNOWN")).willThrow(new NotFoundException());
         var mov = createValidMovement();
         assertThatThrownBy(() -> testee.create("UNKNOWN", mov))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessageContaining("TransportUnit with BK [UNKNOWN] does not exist");
+                .isInstanceOf(ServiceLayerException.class)
+                .hasMessageContaining("not.found");
     }
 
     @Test
