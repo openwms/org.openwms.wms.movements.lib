@@ -17,6 +17,7 @@ package org.openwms.wms.impl;
 
 import org.openwms.wms.api.MovementState;
 import org.openwms.wms.api.MovementType;
+import org.springframework.plugin.core.Plugin;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -27,14 +28,7 @@ import java.util.List;
  *
  * @author Heiko Scherrer
  */
-public interface MovementHandler {
-
-    /**
-     * Return the type the handler implementation can handle.
-     *
-     * @return The type
-     */
-    MovementType getType();
+public interface MovementHandler extends Plugin<MovementType> {
 
     /**
      * Create and return a {@code Movement}.

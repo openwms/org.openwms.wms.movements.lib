@@ -44,16 +44,15 @@ class ManualMovementHandler extends AbstractMovementHandler {
      */
     @Override
     @Measured
-    public MovementType getType() {
-        return MovementType.MANUAL;
+    public List<Movement> findInStateAndSource(@NotNull MovementState state, @NotEmpty List<String> sources) {
+        return findInState(state, sources, MovementType.MANUAL);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @Measured
-    public List<Movement> findInStateAndSource(@NotNull MovementState state, @NotEmpty List<String> sources) {
-        return findInState(state, sources, MovementType.MANUAL);
+    public boolean supports(MovementType delimiter) {
+        return delimiter == MovementType.MANUAL;
     }
 }

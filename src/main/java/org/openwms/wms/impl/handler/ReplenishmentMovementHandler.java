@@ -44,16 +44,15 @@ class ReplenishmentMovementHandler extends AbstractMovementHandler {
      */
     @Override
     @Measured
-    public MovementType getType() {
-        return MovementType.REPLENISHMENT;
+    public List<Movement> findInStateAndSource(@NotNull MovementState state, @NotEmpty List<String> sources) {
+        return findInState(state, sources, MovementType.REPLENISHMENT);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @Measured
-    public List<Movement> findInStateAndSource(@NotNull MovementState state, @NotEmpty List<String> sources) {
-        return findInState(state, sources, MovementType.REPLENISHMENT);
+    public boolean supports(MovementType delimiter) {
+        return delimiter == MovementType.REPLENISHMENT;
     }
 }

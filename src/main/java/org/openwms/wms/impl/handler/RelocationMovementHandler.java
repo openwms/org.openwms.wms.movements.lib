@@ -44,16 +44,15 @@ class RelocationMovementHandler extends AbstractMovementHandler {
      */
     @Override
     @Measured
-    public MovementType getType() {
-        return MovementType.RELOCATION;
+    public List<Movement> findInStateAndSource(@NotNull MovementState state, @NotEmpty List<String> sources) {
+        return findInState(state, sources, MovementType.RELOCATION);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @Measured
-    public List<Movement> findInStateAndSource(@NotNull MovementState state, @NotEmpty List<String> sources) {
-        return findInState(state, sources, MovementType.RELOCATION);
+    public boolean supports(MovementType delimiter) {
+        return delimiter == MovementType.RELOCATION;
     }
 }

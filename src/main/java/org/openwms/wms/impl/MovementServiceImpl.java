@@ -39,6 +39,7 @@ import org.openwms.wms.spi.MovementTypeResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.plugin.core.PluginRegistry;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
@@ -50,7 +51,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -77,23 +77,23 @@ class MovementServiceImpl implements MovementService {
     private final MovementStateResolver movementStateResolver;
     private final MovementRepository repository;
     private final MovementTypeResolver movementTypeResolver;
-    private final Map<MovementType, MovementHandler> handlers;
+    private final PluginRegistry<MovementHandler, MovementType> handlers;
     private final TransportUnitApi transportUnitApi;
     private final LocationApi locationApi;
     private final LocationGroupApi locationGroupApi;
 
-    MovementServiceImpl(List<MovementHandler> handlersList, BeanMapper mapper, Validator validator,
-                        Translator translator, MovementStateResolver movementStateResolver,
-                        MovementRepository repository,
+    MovementServiceImpl(BeanMapper mapper, Validator validator, Translator translator,
+                        MovementStateResolver movementStateResolver, MovementRepository repository,
                         @Autowired(required = false) MovementTypeResolver movementTypeResolver,
+                        PluginRegistry<MovementHandler, MovementType> handlers,
                         TransportUnitApi transportUnitApi, LocationApi locationApi, LocationGroupApi locationGroupApi) {
-        this.handlers = handlersList.stream().collect(Collectors.toMap(MovementHandler::getType, h -> h));
         this.mapper = mapper;
         this.validator = validator;
         this.translator = translator;
         this.movementStateResolver = movementStateResolver;
         this.repository = repository;
         this.movementTypeResolver = movementTypeResolver;
+        this.handlers = handlers;
         this.transportUnitApi = transportUnitApi;
         this.locationApi = locationApi;
         this.locationGroupApi = locationGroupApi;
@@ -110,10 +110,7 @@ class MovementServiceImpl implements MovementService {
             @NotNull(groups = ValidationGroups.Movement.Create.class) @Valid MovementVO vo) {
         LOGGER.debug("Create a Movement for [{}] with data [{}]", bk, vo);
         validateAndResolveType(vo);
-        var movementHandler = handlers.get(vo.getType());
-        if (movementHandler == null) {
-            throw new IllegalArgumentException(format("No handler registered for MovementType [%s]", vo.getType()));
-        }
+        var movementHandler = resolveHandler(vo.getType());
         validate(validator, vo, ValidationGroups.Movement.Create.class);
         resolveTransportUnit(bk);
         var sourceLocation = resolveLocation(vo);
@@ -126,6 +123,14 @@ class MovementServiceImpl implements MovementService {
         validate(validator, movement, ValidationGroups.Movement.Create.class);
         var result = movementHandler.create(movement);
         return convert(result);
+    }
+
+    private MovementHandler resolveHandler(MovementType type) {
+        var movementHandler = handlers.getPluginFor(type);
+        if (movementHandler.isEmpty()) {
+            throw new IllegalArgumentException(format("No handler registered for MovementType [%s]", type));
+        }
+        return movementHandler.get();
     }
 
     private void resolveTransportUnit(String bk) {
@@ -182,7 +187,7 @@ class MovementServiceImpl implements MovementService {
 
         return Arrays.stream(types)
                 .parallel()
-                .map(t -> handlers.get(t).findInStateAndSource(state, sources))
+                .map(t -> resolveHandler(t).findInStateAndSource(state, sources))
                 .reduce(new ArrayList<>(), (a, b) -> {
                     a.addAll(b);
                     return a;
