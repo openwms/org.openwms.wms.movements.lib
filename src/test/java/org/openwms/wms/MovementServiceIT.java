@@ -67,10 +67,10 @@ class MovementServiceIT {
         MovementVO inboundMove = createInvalidMovement();
         assertThatThrownBy(() -> testee.create("", inboundMove))
                 .isInstanceOf(ServiceLayerException.class)
-                .hasMessageMatching("create.[a-zA-Z0-9]*: must not be empty");
+                .hasMessageMatching("create.[a-zA-Z0-9]*: must not be empty.*");
         assertThatThrownBy(() -> testee.create(null, inboundMove))
                 .isInstanceOf(ServiceLayerException.class)
-                .hasMessageMatching("create.[a-zA-Z0-9]*: must not be empty");
+                .hasMessageMatching("create.[a-zA-Z0-9]*: must not be empty.*");
     }
 
     private MovementVO createInvalidMovement() {

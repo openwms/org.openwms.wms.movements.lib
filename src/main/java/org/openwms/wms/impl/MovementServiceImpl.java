@@ -84,8 +84,10 @@ class MovementServiceImpl implements MovementService {
     private final LocationGroupApi locationGroupApi;
 
     MovementServiceImpl(List<MovementHandler> handlersList, BeanMapper mapper, Validator validator,
-            Translator translator, MovementStateResolver movementStateResolver, MovementRepository repository, @Autowired(required = false) MovementTypeResolver movementTypeResolver,
-            TransportUnitApi transportUnitApi, LocationApi locationApi, LocationGroupApi locationGroupApi) {
+                        Translator translator, MovementStateResolver movementStateResolver,
+                        MovementRepository repository,
+                        @Autowired(required = false) MovementTypeResolver movementTypeResolver,
+                        TransportUnitApi transportUnitApi, LocationApi locationApi, LocationGroupApi locationGroupApi) {
         this.handlers = handlersList.stream().collect(Collectors.toMap(MovementHandler::getType, h -> h));
         this.mapper = mapper;
         this.validator = validator;
