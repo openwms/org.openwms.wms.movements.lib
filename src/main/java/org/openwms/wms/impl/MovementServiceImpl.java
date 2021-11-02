@@ -109,25 +109,23 @@ class MovementServiceImpl implements MovementService {
     public MovementVO create(
             @NotEmpty(groups = ValidationGroups.Movement.Create.class) String bk,
             @NotNull(groups = ValidationGroups.Movement.Create.class) @Valid MovementVO vo) {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Create a Movement for [{}] with data [{}]", bk, vo);
-        }
+        LOGGER.debug("Create a Movement for [{}] with data [{}]", bk, vo);
         validateAndResolveType(vo);
-        MovementHandler movementHandler = handlers.get(vo.getType());
+        var movementHandler = handlers.get(vo.getType());
         if (movementHandler == null) {
             throw new IllegalArgumentException(format("No handler registered for MovementType [%s]", vo.getType()));
         }
         validate(validator, vo, ValidationGroups.Movement.Create.class);
-        TransportUnitVO transportUnit = resolveTransportUnit(bk).orElseThrow(() -> new NotFoundException(format("TransportUnit with BK [%s] does not exist", bk)));
-        LocationVO sourceLocation = resolveLocation(vo);
-        Movement movement = mapper.map(vo, Movement.class);
+        resolveTransportUnit(bk).orElseThrow(() -> new NotFoundException(format("TransportUnit with BK [%s] does not exist", bk)));
+        var sourceLocation = resolveLocation(vo);
+        var movement = mapper.map(vo, Movement.class);
         locationApi.findLocationByErpCode(vo.getTarget()).ifPresent( loc -> movement.setTargetLocation(loc.getErpCode()));
         movement.setSourceLocation(sourceLocation.getErpCode());
         movement.setSourceLocationGroupName(sourceLocation.getLocationGroupName());
         movement.setTransportUnitBk(Barcode.of(bk));
         movement.setState(movementStateResolver.getNewState());
         validate(validator, movement, ValidationGroups.Movement.Create.class);
-        Movement result = movementHandler.create(movement);
+        var result = movementHandler.create(movement);
         return convert(result);
     }
 
@@ -246,8 +244,8 @@ class MovementServiceImpl implements MovementService {
     @Override
     public MovementVO complete(@NotEmpty String pKey, @Valid @NotNull MovementVO vo) {
         LOGGER.debug("Got request to complete movement [{}]", vo);
-        String transportUnit = vo.getTransportUnitBk();
-        Movement movement = findInternal(pKey);
+        vo.getTransportUnitBk();
+        var movement = findInternal(pKey);
         var location = locationApi.findLocationByErpCode(vo.getTarget()).orElseThrow(() -> new NotFoundException(format("Location with ERP Code [%s] does not exist", vo.getTarget())));
         transportUnitApi.moveTU(vo.hasTransportUnitBK()
                         ? vo.getTransportUnitBk()
@@ -271,6 +269,7 @@ class MovementServiceImpl implements MovementService {
         Movement movement = findInternal(pKey);
         if (movement.getState() != DefaultMovementState.DONE) {
             movement.setState(DefaultMovementState.CANCELLED);
+            movement.setEndDate(ZonedDateTime.now());
             movement = repository.save(movement);
             LOGGER.debug("Cancelled movement [{}]: ", movement);
         }

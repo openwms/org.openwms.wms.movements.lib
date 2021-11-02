@@ -15,8 +15,6 @@
  */
 package org.openwms.wms.spi;
 
-import org.openwms.wms.api.MovementState;
-
 /**
  * A MovementStateResolver requires to resolve the basic states of a {@code Movement}
  *

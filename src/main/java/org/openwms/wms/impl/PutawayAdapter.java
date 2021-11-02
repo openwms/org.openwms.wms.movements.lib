@@ -70,7 +70,7 @@ class PutawayAdapter {
                 movement.setTargetLocation(target.getErpCode());
             } catch (Exception e) {
                 LOGGER.error("Error calling the putaway strategy: " + e.getMessage(), e);
-                movement.addProblem(new ProblemHistory(movement, new Message.Builder().withMessage(e.getMessage()).build()));
+                movement.addProblem(new ProblemHistory(movement, new Message.Builder().withMessageText(e.getMessage()).build()));
             }
             repository.save(movement);
         } else {

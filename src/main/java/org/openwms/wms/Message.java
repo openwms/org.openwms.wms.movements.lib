@@ -15,8 +15,6 @@
  */
 package org.openwms.wms;
 
-import org.ameba.integration.jpa.ApplicationEntity;
-
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Temporal;
@@ -44,9 +42,9 @@ public class Message implements Serializable {
     @Column(name = "C_NO")
     private String messageNo;
 
-    /** Message text about the {@literal Message}. */
+    /** Message text of the {@literal Message}. */
     @Column(name = "C_MESSAGE", length = DEF_MESSAGE_LENGTH)
-    private String message;
+    private String messageText;
     /** Default length of {@code message}. */
     public static final int DEF_MESSAGE_LENGTH = 1024;
 
@@ -60,8 +58,8 @@ public class Message implements Serializable {
     private Message(Builder builder) {
         occurred = builder.occurred;
         messageNo = builder.messageNo;
-        if (builder.message != null) {
-            message = builder.message.length() > DEF_MESSAGE_LENGTH ? builder.message.substring(0, DEF_MESSAGE_LENGTH-1) : builder.message;
+        if (builder.messageText != null) {
+            messageText = builder.messageText.length() > DEF_MESSAGE_LENGTH ? builder.messageText.substring(0, DEF_MESSAGE_LENGTH-1) : builder.messageText;
         }
     }
 
@@ -88,8 +86,8 @@ public class Message implements Serializable {
      * 
      * @return The message.
      */
-    public String getMessage() {
-        return message;
+    public String getMessageText() {
+        return messageText;
     }
 
     /**
@@ -104,7 +102,7 @@ public class Message implements Serializable {
         Message message1 = (Message) o;
         return Objects.equals(occurred, message1.occurred) &&
                 Objects.equals(messageNo, message1.messageNo) &&
-                Objects.equals(message, message1.message);
+                Objects.equals(messageText, message1.messageText);
     }
 
     /**
@@ -117,7 +115,7 @@ public class Message implements Serializable {
         return new StringJoiner(", ", Message.class.getSimpleName() + "[", "]")
                 .add("occurred=" + occurred)
                 .add("messageNo='" + messageNo + "'")
-                .add("message='" + message + "'")
+                .add("messageText='" + messageText + "'")
                 .toString();
     }
 
@@ -128,7 +126,7 @@ public class Message implements Serializable {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(occurred, messageNo, message);
+        return Objects.hash(occurred, messageNo, messageText);
     }
 
 
@@ -139,7 +137,7 @@ public class Message implements Serializable {
 
         private Date occurred;
         private String messageNo;
-        private String message;
+        private String messageText;
 
         /**
          * Sets the {@code occurred} and returns a reference to this Builder so that the methods can be chained together.
@@ -164,13 +162,13 @@ public class Message implements Serializable {
         }
 
         /**
-         * Sets the {@code message} and returns a reference to this Builder so that the methods can be chained together.
+         * Sets the {@code messageText} and returns a reference to this Builder so that the methods can be chained together.
          *
-         * @param val the {@code message} to set
+         * @param val the {@code messageText} to set
          * @return a reference to this Builder
          */
-        public Builder withMessage(String val) {
-            message = val;
+        public Builder withMessageText(String val) {
+            messageText = val;
             return this;
         }
 

@@ -69,60 +69,52 @@ public class MovementController extends AbstractWebController {
 
     @PostMapping("/v1/transport-units/{bk}/movements")
     @Validated(ValidationGroups.Movement.Create.class)
-    public ResponseEntity<Void> create(
-        @PathVariable("bk") String bk,
-        @Valid @RequestBody MovementVO movement, HttpServletRequest req) {
+    public ResponseEntity<Void> create(@PathVariable("bk") String bk, @Valid @RequestBody MovementVO movement,
+                                       HttpServletRequest req) {
+
         movement.setTransportUnitBk(bk);
-        MovementVO created = null;
-        try {
-            created = service.create(bk, movement);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return ResponseEntity.created(getLocationURIForCreatedResource(req, created.getPersistentKey())).build();
+        return ResponseEntity.created(getLocationURIForCreatedResource(req, service.create(bk, movement).getPersistentKey())).build();
     }
 
     @PatchMapping("/v1/movements/{pKey}")
     @Validated(ValidationGroups.Movement.Move.class)
-    public ResponseEntity<MovementVO> move(
-            @PathVariable("pKey") String pKey,
+    public ResponseEntity<MovementVO> move(@PathVariable("pKey") String pKey,
             @Valid @RequestBody MovementVO movement) {
-        MovementVO updated = service.move(pKey, movement);
-        return ResponseEntity.ok(updated);
+
+        return ResponseEntity.ok(service.move(pKey, movement));
     }
 
     @PatchMapping("/v1/movements/{pKey}/complete")
     @Validated(ValidationGroups.Movement.Complete.class)
-    public ResponseEntity<MovementVO> complete(
-        @PathVariable("pKey") String pKey,
-        @Valid @RequestBody MovementVO movement) {
-        MovementVO completed = service.complete(pKey, movement);
-        return ResponseEntity.ok(completed);
+    public ResponseEntity<MovementVO> complete(@PathVariable("pKey") String pKey,
+                                               @Valid @RequestBody MovementVO movement) {
+
+        return ResponseEntity.ok(service.complete(pKey, movement));
     }
 
     @DeleteMapping("/v1/movements/{pKey}")
-    public ResponseEntity<MovementVO> cancel(
-            @PathVariable("pKey") String pKey) {
-        MovementVO updated = service.cancel(pKey);
-        return ResponseEntity.ok(updated);
+    public ResponseEntity<MovementVO> cancel(@PathVariable("pKey") String pKey) {
+
+        return ResponseEntity.ok(service.cancel(pKey));
     }
 
     @GetMapping(value = "/v1/movements")
     public ResponseEntity<List<MovementVO>> findAll(){
+
         return ResponseEntity.ok(service.findAll());
     }
 
     @GetMapping(value = "/v1/movements", params = {"barcode"})
     public ResponseEntity<List<MovementVO>> findForTU(@RequestParam("barcode") String barcode) {
+
         return ResponseEntity.ok(service.findForTU(barcode));
     }
 
     @GetMapping(value = "/v1/movements", params = {"state", "types"})
-    public ResponseEntity<List<MovementVO>> findForStateAndTypesAndSource(
-            @RequestParam("state") String state,
+    public ResponseEntity<List<MovementVO>> findForStateAndTypesAndSource(@RequestParam("state") String state,
             @RequestParam(value = "source", required = false) String source,
-            @RequestParam("types") MovementType... types){
-        // FIXME [openwms]: 11.08.21 Make extendable
+            @RequestParam("types") MovementType... types) {
+
         return ResponseEntity.ok(service.findFor(DefaultMovementState.valueOf(state), source, types));
     }
 }

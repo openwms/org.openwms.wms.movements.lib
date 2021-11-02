@@ -46,7 +46,7 @@ import static org.openwms.wms.impl.ValidationGroups.Movement.Move;
 @ToString
 @Builder
 @EqualsAndHashCode(callSuper = true)
-public class MovementVO extends AbstractBase implements Serializable {
+public class MovementVO extends AbstractBase<MovementVO> implements Serializable {
 
     /** The persistent key is returned from the service as soon as the {@code Movement} has been created. */
     @JsonProperty("pKey")
@@ -80,14 +80,18 @@ public class MovementVO extends AbstractBase implements Serializable {
     @JsonProperty("target")
     @NotEmpty(groups = {Create.class, Complete.class})
     private String target;
+    /** The target {@code LocationGroup} used to define in what area */
     @JsonProperty("targetLocationGroup")
     private String targetLocationGroup;
+    /** When the {@code Movement} has been started. */
     @JsonProperty("startedAt")
     @JsonFormat(pattern = DATE_TIME_WITH_TIMEZONE)
     private ZonedDateTime startedAt;
+    /** When the {@code Movement} has been finished. */
     @JsonProperty("finishedAt")
     @JsonFormat(pattern = DATE_TIME_WITH_TIMEZONE)
     private ZonedDateTime finishedAt;
+    /** When the {@code Movement} has been created. */
     @JsonProperty("createdAt")
     @JsonFormat(pattern = DATE_TIME_WITH_TIMEZONE)
     private ZonedDateTime createdAt;

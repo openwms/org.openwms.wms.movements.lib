@@ -20,8 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.net.URISyntaxException;
-
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -34,7 +32,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 class IndexController {
 
     @GetMapping("/index")
-    public ResponseEntity<Index> getIndex() throws URISyntaxException {
+    public ResponseEntity<Index> getIndex() {
         return ResponseEntity.ok(
                 new Index(
                         linkTo(methodOn(MovementController.class).index()).withRel("movement-index")

@@ -143,7 +143,7 @@ public class Movement extends ApplicationEntity implements Serializable {
 
     /*~ -------------- Constructors -------------- */
     /** Dear JPA... */
-    public Movement() {}
+    protected Movement() {}
 
     /*~ ---------------- Methods ----------------- */
 

@@ -29,6 +29,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 /**
  * A MovementCommandListener.
@@ -51,14 +52,11 @@ class MovementCommandListener {
 
     @Measured
     @RabbitListener(queues = "${owms.commands.movements.movement.queue-name}")
-    public void onCommand(@Valid @Payload MovementCommand command) {
-        switch (command.getType()) {
-            case CREATE:
-                MovementMO movement = command.getMovement();
-                LOGGER.debug("Got command to create a Movement [{}]", movement);
-                movementService.create(movement.getTransportUnitBK(), mapper.map(movement, MovementVO.class));
-                break;
-            default:
+    public void onCommand(@Valid @NotNull @Payload MovementCommand command) {
+        if (command.getType() == MovementCommand.Type.CREATE) {
+            MovementMO movement = command.getMovement();
+            LOGGER.debug("Got command to create a Movement [{}]", movement);
+            movementService.create(movement.getTransportUnitBK(), mapper.map(movement, MovementVO.class));
         }
     }
 }

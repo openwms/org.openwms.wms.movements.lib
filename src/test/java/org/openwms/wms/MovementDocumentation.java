@@ -54,7 +54,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Heiko Scherrer
  */
 @MovementsApplicationTest
-public class MovementDocumentation {
+class MovementDocumentation {
 
     protected MockMvc mockMvc;
     @Autowired
