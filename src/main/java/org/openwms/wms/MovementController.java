@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 
+import static org.openwms.wms.api.MovementApi.API_MOVEMENTS;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -54,7 +55,7 @@ public class MovementController extends AbstractWebController {
         this.service = service;
     }
 
-    @GetMapping("/v1/movements/index")
+    @GetMapping(API_MOVEMENTS + "/index")
     public ResponseEntity<Index> index() {
         return ResponseEntity.ok(
                 new Index(
@@ -76,7 +77,7 @@ public class MovementController extends AbstractWebController {
         return ResponseEntity.created(getLocationURIForCreatedResource(req, service.create(bk, movement).getPersistentKey())).build();
     }
 
-    @PatchMapping("/v1/movements/{pKey}")
+    @PatchMapping(API_MOVEMENTS + "/{pKey}")
     @Validated(ValidationGroups.Movement.Move.class)
     public ResponseEntity<MovementVO> move(@PathVariable("pKey") String pKey,
             @Valid @RequestBody MovementVO movement) {
@@ -84,7 +85,7 @@ public class MovementController extends AbstractWebController {
         return ResponseEntity.ok(service.move(pKey, movement));
     }
 
-    @PatchMapping("/v1/movements/{pKey}/complete")
+    @PatchMapping(API_MOVEMENTS + "/{pKey}/complete")
     @Validated(ValidationGroups.Movement.Complete.class)
     public ResponseEntity<MovementVO> complete(@PathVariable("pKey") String pKey,
                                                @Valid @RequestBody MovementVO movement) {
@@ -92,25 +93,25 @@ public class MovementController extends AbstractWebController {
         return ResponseEntity.ok(service.complete(pKey, movement));
     }
 
-    @DeleteMapping("/v1/movements/{pKey}")
+    @DeleteMapping(API_MOVEMENTS + "/{pKey}")
     public ResponseEntity<MovementVO> cancel(@PathVariable("pKey") String pKey) {
 
         return ResponseEntity.ok(service.cancel(pKey));
     }
 
-    @GetMapping(value = "/v1/movements")
+    @GetMapping(value = API_MOVEMENTS)
     public ResponseEntity<List<MovementVO>> findAll(){
 
         return ResponseEntity.ok(service.findAll());
     }
 
-    @GetMapping(value = "/v1/movements", params = {"barcode"})
+    @GetMapping(value = API_MOVEMENTS, params = {"barcode"})
     public ResponseEntity<List<MovementVO>> findForTU(@RequestParam("barcode") String barcode) {
 
         return ResponseEntity.ok(service.findForTU(barcode));
     }
 
-    @GetMapping(value = "/v1/movements", params = {"state", "types"})
+    @GetMapping(value = API_MOVEMENTS, params = {"state", "types"})
     public ResponseEntity<List<MovementVO>> findForStateAndTypesAndSource(@RequestParam("state") String state,
             @RequestParam(value = "source", required = false) String source,
             @RequestParam("types") MovementType... types) {

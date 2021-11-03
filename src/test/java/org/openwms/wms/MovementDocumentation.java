@@ -41,8 +41,10 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 import java.util.Optional;
 
 import static org.mockito.BDDMockito.given;
+import static org.openwms.wms.api.MovementApi.API_MOVEMENTS;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -103,6 +105,17 @@ class MovementDocumentation {
                 .andExpect(status().isCreated())
                 .andExpect(header().exists(HttpHeaders.LOCATION))
                 .andDo(document("move-create"))
+        ;
+    }
+
+    @Sql(scripts = "classpath:import-TEST.sql")
+    @Test void shall_cancel_a_movement() throws Exception {
+        TransportUnitVO transportUnit = TransportUnitVO.newBuilder().barcode("4711").build();
+        mockMvc.perform(
+                    delete(API_MOVEMENTS + "/1000")
+                )
+                .andExpect(status().isOk())
+                .andDo(document("move-cancel"))
         ;
     }
 

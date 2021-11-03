@@ -32,6 +32,11 @@ import java.util.List;
 @FeignClient(name = "movement-service", qualifier = "movementApi", decode404 = true)
 public interface MovementApi {
 
+    /** API version. */
+    public static final String API_VERSION = "v1";
+    /** API root to hit Movements (plural). */
+    public static final String API_MOVEMENTS = "/" + API_VERSION + "/movements";
+
     /**
      * Create a {@code Movement} for a {@code TransportUnit}.
      *
