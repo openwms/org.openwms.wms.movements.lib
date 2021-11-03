@@ -52,6 +52,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -111,11 +112,16 @@ class MovementServiceImpl implements MovementService {
         LOGGER.debug("Create a Movement for [{}] with data [{}]", bk, vo);
         validateAndResolveType(vo);
         var movementHandler = resolveHandler(vo.getType());
-        validate(validator, vo, ValidationGroups.Movement.Create.class);
         resolveTransportUnit(bk);
-        var sourceLocation = resolveLocation(vo);
+        var sourceLocation = resolveLocation(vo.getSourceLocation());
         var movement = mapper.map(vo, Movement.class);
-        locationApi.findLocationByErpCode(vo.getTarget()).ifPresent( loc -> movement.setTargetLocation(loc.getErpCode()));
+        try {
+            resolveLocation(vo.getTarget());
+        } catch ( NotFoundException nfe) {
+            LOGGER.debug("The Movement [{}] has no valid target [{}] set, trying to resolve it later",
+                    vo.getPersistentKey(),
+                    vo.getTarget());
+        }
         movement.setSourceLocation(sourceLocation.getErpCode());
         movement.setSourceLocationGroupName(sourceLocation.getLocationGroupName());
         movement.setTransportUnitBk(Barcode.of(bk));
@@ -136,26 +142,35 @@ class MovementServiceImpl implements MovementService {
     private void resolveTransportUnit(String bk) {
         try {
             transportUnitApi.findTransportUnit(bk);
-        } catch (Exception e) {
-            throw new ServiceLayerException(e.getMessage(), e);
+        } catch (Exception ex) {
+            throw new ServiceLayerException(ex.getMessage(), ex);
         }
     }
 
-    private LocationVO resolveLocation(MovementVO vo) {
-        if (LocationPK.isValid(vo.getSourceLocation())) {
+    private LocationVO resolveLocation(String locationIdentifier) {
+        Optional<LocationVO> optLocation;
+        if (LocationPK.isValid(locationIdentifier)) {
             try {
-                return locationApi.findLocationByCoordinate(vo.getSourceLocation())
-                        .orElseThrow(NotFoundException::new);
-            } catch (Exception e) {
-                throw new NotFoundException(translator, LOCATION_NOT_FOUND_BY_ID, new String[]{vo.getSourceLocation()}, vo.getSourceLocation());
+                optLocation = locationApi.findLocationByCoordinate(locationIdentifier);
+            } catch (Exception ex) {
+                // Any technical reasons
+                throw new ServiceLayerException(ex.getMessage(), ex);
+            }
+            if (optLocation.isEmpty()) {
+                throw new NotFoundException(translator, LOCATION_NOT_FOUND_BY_ID, new String[]{locationIdentifier}, locationIdentifier);
             }
         } else {
             try {
-                return locationApi.findLocationByErpCode(vo.getSourceLocation()).orElseThrow(NotFoundException::new);
-            } catch (Exception e) {
-                throw new NotFoundException(translator, LOCATION_NOT_FOUND_BY_ERP_CODE, new String[]{vo.getSourceLocation()}, vo.getSourceLocation());
+                optLocation = locationApi.findLocationByErpCode(locationIdentifier);
+            } catch (Exception ex) {
+                // Any technical reasons
+                throw new ServiceLayerException(ex.getMessage(), ex);
+            }
+            if (optLocation.isEmpty()) {
+                throw new NotFoundException(translator, LOCATION_NOT_FOUND_BY_ERP_CODE, new String[]{locationIdentifier}, locationIdentifier);
             }
         }
+        return optLocation.get();
     }
 
     private void validateAndResolveType(MovementVO vo) {
@@ -229,7 +244,7 @@ class MovementServiceImpl implements MovementService {
         if (vo.hasTransportUnitBK()) {
             movement.setTransportUnitBk(Barcode.of(vo.getTransportUnitBk()));
         }
-        LocationVO sourceLocation = resolveLocation(vo);
+        LocationVO sourceLocation = resolveLocation(vo.getSourceLocation());
         movement.setSourceLocation(sourceLocation.getErpCode());
         movement.setSourceLocationGroupName(sourceLocation.getLocationGroupName());
         movement = repository.save(movement);
@@ -243,14 +258,12 @@ class MovementServiceImpl implements MovementService {
     @Measured
     @Override
     public MovementVO complete(@NotEmpty String pKey, @Valid @NotNull MovementVO vo) {
-        LOGGER.debug("Got request to complete movement [{}]", vo);
-        vo.getTransportUnitBk();
+        LOGGER.debug("Got request to complete Movement [{}]", vo);
         var movement = findInternal(pKey);
-        var location = locationApi.findLocationByErpCode(vo.getTarget()).orElseThrow(() -> new NotFoundException(format("Location with ERP Code [%s] does not exist", vo.getTarget())));
+        var location = resolveLocation(vo.getTarget());
         transportUnitApi.moveTU(vo.hasTransportUnitBK()
                         ? vo.getTransportUnitBk()
-                        : movement.getTransportUnitBk().getValue()
-                , location.getLocationId());
+                        : movement.getTransportUnitBk().getValue(), location.getLocationId());
         movement.setState(movementStateResolver.getCompletedState());
         movement.setEndDate(ZonedDateTime.now());
         movement.setTargetLocation(vo.getTarget());
@@ -266,12 +279,15 @@ class MovementServiceImpl implements MovementService {
     @Measured
     @Override
     public MovementVO cancel(@NotEmpty String pKey) {
+        LOGGER.debug("Got request to cancel Movement with pKey [{}]", pKey);
         Movement movement = findInternal(pKey);
-        if (movement.getState() != DefaultMovementState.DONE) {
+        if (movement.getState().ordinal() < DefaultMovementState.CANCELLED.ordinal()) {
             movement.setState(DefaultMovementState.CANCELLED);
             movement.setEndDate(ZonedDateTime.now());
             movement = repository.save(movement);
             LOGGER.debug("Cancelled movement [{}]: ", movement);
+        } else {
+            LOGGER.info("Movement [{}] is already in state [{}] and cannot ce cancelled", pKey, movement.getState());
         }
         return convert(movement);
     }

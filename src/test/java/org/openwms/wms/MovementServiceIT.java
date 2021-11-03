@@ -62,17 +62,6 @@ class MovementServiceIT {
     @Autowired
     private MovementService testee;
 
-    @Test
-    void test_create_with_empty_Barcode() {
-        MovementVO inboundMove = createInvalidMovement();
-        assertThatThrownBy(() -> testee.create("", inboundMove))
-                .isInstanceOf(ServiceLayerException.class)
-                .hasMessageMatching("create.[a-zA-Z0-9]*: must not be empty.*");
-        assertThatThrownBy(() -> testee.create(null, inboundMove))
-                .isInstanceOf(ServiceLayerException.class)
-                .hasMessageMatching("create.[a-zA-Z0-9]*: must not be empty.*");
-    }
-
     private MovementVO createInvalidMovement() {
         var inboundMove = new MovementVO();
         inboundMove.setType(MovementType.INBOUND);
@@ -88,6 +77,16 @@ class MovementServiceIT {
         inboundMove.setSourceLocation("KNOWN");
         inboundMove.setTarget("KNOWN");
         return inboundMove;
+    }
+
+    @Test void test_create_with_empty_Barcode() {
+        MovementVO inboundMove = createInvalidMovement();
+        assertThatThrownBy(() -> testee.create("", inboundMove))
+                .isInstanceOf(ServiceLayerException.class)
+                .hasMessageMatching("create.[a-zA-Z0-9]*: must not be empty.*");
+        assertThatThrownBy(() -> testee.create(null, inboundMove))
+                .isInstanceOf(ServiceLayerException.class)
+                .hasMessageMatching("create.[a-zA-Z0-9]*: must not be empty.*");
     }
 
     @Test
@@ -109,12 +108,12 @@ class MovementServiceIT {
     @Test
     void test_create_with_unknown_SourceLocationId() {
         given(transportUnitApi.findTransportUnit("4711")).willReturn(new TransportUnitVO("4711"));
-        given(locationApi.findLocationByCoordinate("UNKN/UNKN/UNKN/UNKN/UNKN")).willThrow(new NotFoundException());
-        var mov = new MovementVO();
-        mov.setType(MovementType.INBOUND);
-        mov.setSourceLocation("UNKN/UNKN/UNKN/UNKN/UNKN");
-        mov.setTarget("KNOWN");
-        assertThatThrownBy(() -> testee.create("4711", mov))
+        given(locationApi.findLocationByCoordinate("UNKN/UNKN/UNKN/UNKN/UNKN")).willReturn(Optional.empty());
+        var vo = new MovementVO();
+        vo.setType(MovementType.INBOUND);
+        vo.setSourceLocation("UNKN/UNKN/UNKN/UNKN/UNKN");
+        vo.setTarget("KNOWN");
+        assertThatThrownBy(() -> testee.create("4711", vo))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessageContaining("Location with locationId [UNKN/UNKN/UNKN/UNKN/UNKN] does not exist");
     }
@@ -122,12 +121,12 @@ class MovementServiceIT {
     @Test
     void test_create_with_unknown_SourceErpCode() {
         given(transportUnitApi.findTransportUnit("4711")).willReturn(new TransportUnitVO("4711"));
-        given(locationApi.findLocationByErpCode("UNKNOWN")).willThrow(new NotFoundException());
-        var mov = new MovementVO();
-        mov.setType(MovementType.INBOUND);
-        mov.setSourceLocation("UNKNOWN");
-        mov.setTarget("KNOWN");
-        assertThatThrownBy(() -> testee.create("4711", mov))
+        given(locationApi.findLocationByErpCode("UNKNOWN")).willReturn(Optional.empty());
+        var vo = new MovementVO();
+        vo.setType(MovementType.INBOUND);
+        vo.setSourceLocation("UNKNOWN");
+        vo.setTarget("KNOWN");
+        assertThatThrownBy(() -> testee.create("4711", vo))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessageContaining("Location with erpCode [UNKNOWN] does not exist");
     }
@@ -139,13 +138,13 @@ class MovementServiceIT {
         sourceLocation.setErpCode("PASS");
         given(transportUnitApi.findTransportUnit("4711")).willReturn(new TransportUnitVO("4711"));
         given(locationApi.findLocationByCoordinate("PASS/PASS/PASS/PASS/PASS")).willReturn(Optional.of(sourceLocation));
-        var mov = new MovementVO();
-        mov.setType(MovementType.INBOUND);
-        mov.setSourceLocation("PASS/PASS/PASS/PASS/PASS");
-        mov.setTarget("KNOWN");
+        var vo = new MovementVO();
+        vo.setType(MovementType.INBOUND);
+        vo.setSourceLocation("PASS/PASS/PASS/PASS/PASS");
+        vo.setTarget("KNOWN");
 
         // act
-        MovementVO result = testee.create("4711", mov);
+        MovementVO result = testee.create("4711", vo);
 
         // assert
         assertThat(result.getPersistentKey()).isNotEmpty();
