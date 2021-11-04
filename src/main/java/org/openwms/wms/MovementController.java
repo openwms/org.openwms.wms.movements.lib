@@ -63,6 +63,7 @@ public class MovementController extends AbstractWebController {
                         linkTo(methodOn(MovementController.class).findAll()).withRel("movement-findAll"),
                         linkTo(methodOn(MovementController.class).findForStateAndTypesAndSource("state", "source", MovementType.INBOUND)).withRel("movement-findForStateAndTypesAndSource"),
                         linkTo(methodOn(MovementController.class).move("pKey", new MovementVO())).withRel("movement-move"),
+                        linkTo(methodOn(MovementController.class).cancel("pKey")).withRel("movement-cancel"),
                         linkTo(methodOn(MovementController.class).complete("pKey", new MovementVO())).withRel("movement-complete")
                 )
         );

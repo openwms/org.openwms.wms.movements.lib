@@ -45,6 +45,7 @@ import static org.openwms.wms.api.MovementApi.API_MOVEMENTS;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -109,10 +110,20 @@ class MovementDocumentation {
     }
 
     @Sql(scripts = "classpath:import-TEST.sql")
+    @Test void shall_findAll() throws Exception {
+        mockMvc.perform(
+                    get(API_MOVEMENTS)
+                )
+                .andExpect(status().isOk())
+                .andDo(document("move-find-all"))
+        ;
+    }
+
+    @Sql(scripts = "classpath:import-TEST.sql")
     @Test void shall_cancel_a_movement() throws Exception {
         TransportUnitVO transportUnit = TransportUnitVO.newBuilder().barcode("4711").build();
         mockMvc.perform(
-                    delete(API_MOVEMENTS + "/1000")
+                        delete(API_MOVEMENTS + "/1000")
                 )
                 .andExpect(status().isOk())
                 .andDo(document("move-cancel"))
@@ -120,7 +131,7 @@ class MovementDocumentation {
     }
 
     @Sql(scripts = "classpath:import-TEST.sql")
-    @Test void shall_drive_a_movement() throws Exception {
+    @Test void shall_move_a_movement() throws Exception {
         TransportUnitVO transportUnit = TransportUnitVO.newBuilder().barcode("4711").build();
         given(transportUnitApi.findTransportUnit("4711")).willReturn(transportUnit);
         LocationVO sourceLocation = new LocationVO("LOC_/0002/0000/0000/0000");
@@ -142,7 +153,7 @@ class MovementDocumentation {
     }
 
     @Sql(scripts = "classpath:import-TEST.sql")
-    @Test void shall_drive_a_completed_movement_fails() throws Exception {
+    @Test void shall_move_a_completed_movement_fails() throws Exception {
         TransportUnitVO transportUnit = TransportUnitVO.newBuilder().barcode("4711").build();
         given(transportUnitApi.findTransportUnit("4711")).willReturn(transportUnit);
         LocationVO sourceLocation = new LocationVO("LOC_/0002/0000/0000/0000");
