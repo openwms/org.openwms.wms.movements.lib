@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
-<meta name="author" content="(1.0.0-SNAPSHOT-28)">
+<meta name="author" content="(1.0.0-SNAPSHOT-29)">
 <title>OpenWMS.org TMS: RESTful API (Movements Service)</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -442,7 +442,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="header">
 <h1>OpenWMS.org TMS: RESTful API (Movements Service)</h1>
 <div class="details">
-<span id="author" class="author">(1.0.0-SNAPSHOT-28)</span><br>
+<span id="author" class="author">(1.0.0-SNAPSHOT-29)</span><br>
 <span id="revdate">Heiko Scherrer;</span>
 </div>
 <div id="toc" class="toc">
@@ -464,13 +464,15 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#resources-prg">Resources</a>
 <ul class="sectlevel1">
 <li><a href="#resources-index">4. Index</a></li>
-<li><a href="#resources-receiving-order">5. Movements</a>
+<li><a href="#resources-movement-order">5. Movements</a>
 <ul class="sectlevel2">
 <li><a href="#movement-index">5.1. Movement Index</a></li>
 <li><a href="#movement-create">5.2. Create a Movement</a></li>
-<li><a href="#movement-findForStateAndTypesAndSource">5.3. Find Movements</a></li>
-<li><a href="#movement-move">5.4. Move a Movement</a></li>
-<li><a href="#movement-complete">5.5. Complete a Movement</a></li>
+<li><a href="#movement-findForStateAndTypesAndSource">5.3. Find all Movements</a></li>
+<li><a href="#movement-findForStateAndTypesAndSource">5.4. Find Movements</a></li>
+<li><a href="#movement-move">5.5. Move a Movement</a></li>
+<li><a href="#movement-cancel">5.6. Cancel a Movement</a></li>
+<li><a href="#movement-complete">5.7. Complete a Movement</a></li>
 </ul>
 </li>
 </ul>
@@ -709,7 +711,7 @@ to follow next.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="resources-receiving-order"><a class="anchor" href="#resources-receiving-order"></a><a class="link" href="#resources-receiving-order">5. Movements</a></h2>
+<h2 id="resources-movement-order"><a class="anchor" href="#resources-movement-order"></a><a class="link" href="#resources-movement-order">5. Movements</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>A <code>Movement</code> is a manual move of a <code>TransportUnit</code> from a <code>Location</code> A to <code>Location</code> B. It always refers to a <code>TransportUnit</code> and not to any
@@ -723,24 +725,25 @@ up or dropped off but has no assignment to the human user. The operator/user may
 <div class="sect2">
 <h3 id="movement-index"><a class="anchor" href="#movement-index"></a><a class="link" href="#movement-index">5.1. Movement Index</a></h3>
 <div class="paragraph">
-<p>The index with all possible operations on a <code>Movements</code> can be retrieved with a GET request:</p>
+<p>The index with all possible operations on <code>Movements</code> can be retrieved with a GET request:</p>
 </div>
 <div class="paragraph">
-<p>Unresolved directive in 2-movements.adoc - include::/home/runner/work/org.openwms.tms.movements/org.openwms.tms.movements/target/generated-snippets/get-move-index/http-request.adoc[]</p>
+<p>Unresolved directive in 2-movements.adoc - include::/home/runner/work/org.openwms.tms.movements/org.openwms.tms.movements/target/generated-snippets/move-index/http-request.adoc[]</p>
 </div>
 <div class="paragraph">
 <p>The response lists all the operations possible on <code>Movements</code> with a name and the corresponding href link:</p>
 </div>
 <div class="paragraph">
-<p>Unresolved directive in 2-movements.adoc - include::/home/runner/work/org.openwms.tms.movements/org.openwms.tms.movements/target/generated-snippets/get-move-index/http-response.adoc[]</p>
+<p>Unresolved directive in 2-movements.adoc - include::/home/runner/work/org.openwms.tms.movements/org.openwms.tms.movements/target/generated-snippets/move-index/http-response.adoc[]</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="movement-create"><a class="anchor" href="#movement-create"></a><a class="link" href="#movement-create">5.2. Create a Movement</a></h3>
 <div class="paragraph">
-<p>To place a <code>Movement</code> a client must send a <code>POST</code> request to <code>movements</code> sub resource of the primary <code>transport-units</code> resource with the
-required data in the request body. The required data contains the source where to pick up the <code>TransportUnit</code> and the target where to drop
-it. The <code>TransportUnit</code> that shall be moved is directly referenced as the primary resource in the URI.</p>
+<p>To create a new <code>Movement</code> a client needs to send a <code>POST</code> request to <code>Movements</code> sub resource of the primary
+<code>TransportUnits</code> resource with the required data in the request body. The required data must contain the source where to
+pick up the <code>TransportUnit</code> and the target where to drop it. The <code>TransportUnit</code> that shall be moved is directly
+referenced as the primary resource in the URI.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -764,55 +767,211 @@ Host: localhost:8080
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 201 Created
-Location: http://localhost:8080/v1/transport-units/4711/movements/6efad40d-7b9d-4e40-a90e-ab455c87ba8b/</code></pre>
+Location: http://localhost:8080/v1/transport-units/4711/movements/0321d3df-19d1-4664-992e-116709db6414/</code></pre>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="movement-findForStateAndTypesAndSource"><a class="anchor" href="#movement-findForStateAndTypesAndSource"></a><a class="link" href="#movement-findForStateAndTypesAndSource">5.3. Find Movements</a></h3>
+<h3 id="movement-findForStateAndTypesAndSource"><a class="anchor" href="#movement-findForStateAndTypesAndSource"></a><a class="link" href="#movement-findForStateAndTypesAndSource">5.3. Find all Movements</a></h3>
 <div class="paragraph">
-<p>A HTTP GET request to the primary resource is required to find all <code>ReceivingOrders</code>.</p>
+<p>A HTTP <code>GET</code> request to the primary resource without any query parameters returns an array of all existing <code>Movements</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">GET /v1/movements HTTP/1.1
+Host: localhost:8080</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Returns in this example an array of three <code>Movements</code> or an empty array if none exist:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+Content-Length: 889
+
+[ {
+  "links" : [ ],
+  "pKey" : "1000",
+  "transportUnitBk" : "4711",
+  "mode" : "MANUAL",
+  "priority" : 30,
+  "state" : "INACTIVE",
+  "type" : "INBOUND",
+  "sourceLocation" : "HRL.10.20.2.0",
+  "sourceLocationGroupName" : "STOCK",
+  "target" : "WA_01",
+  "createdAt" : "2021-11-04T20:30:08Z"
+}, {
+  "links" : [ ],
+  "pKey" : "1001",
+  "transportUnitBk" : "4712",
+  "mode" : "AUTOMATIC",
+  "priority" : 20,
+  "state" : "ACTIVE",
+  "type" : "OUTBOUND",
+  "sourceLocation" : "HRL.10.21.2.0",
+  "sourceLocationGroupName" : "STOCK",
+  "target" : "WA_02",
+  "createdAt" : "2021-11-04T20:30:08Z"
+}, {
+  "links" : [ ],
+  "pKey" : "1002",
+  "transportUnitBk" : "4713",
+  "mode" : "AUTOMATIC",
+  "priority" : 20,
+  "state" : "DONE",
+  "type" : "OUTBOUND",
+  "sourceLocation" : "HRL.10.22.2.0",
+  "sourceLocationGroupName" : "STOCK",
+  "target" : "WA_02",
+  "createdAt" : "2021-11-04T20:30:08Z"
+} ]</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="movement-findForStateAndTypesAndSource"><a class="anchor" href="#movement-findForStateAndTypesAndSource"></a><a class="link" href="#movement-findForStateAndTypesAndSource">5.4. Find Movements</a></h3>
+<div class="paragraph">
+<p>A HTTP <code>GET</code> request to the primary resource with additional query parameters is required to find <code>Movements</code> in a
+particular <code>state</code>, <code>type</code> and <code>source</code>.</p>
 </div>
 <div class="paragraph">
 <p>Unresolved directive in 2-movements.adoc - include::/home/runner/work/org.openwms.tms.movements/org.openwms.tms.movements/target/generated-snippets/order-find-all/http-request.adoc[]</p>
 </div>
 <div class="paragraph">
-<p>Returns an array of <code>ReceivingOrders</code> or an empty array:</p>
+<p>Returns an array of <code>Movements</code> or an empty array:</p>
 </div>
 <div class="paragraph">
 <p>Unresolved directive in 2-movements.adoc - include::/home/runner/work/org.openwms.tms.movements/org.openwms.tms.movements/target/generated-snippets/order-find-all/http-response.adoc[]</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="movement-move"><a class="anchor" href="#movement-move"></a><a class="link" href="#movement-move">5.4. Move a Movement</a></h3>
+<h3 id="movement-move"><a class="anchor" href="#movement-move"></a><a class="link" href="#movement-move">5.5. Move a Movement</a></h3>
 <div class="paragraph">
-<p>An earlier posted <code>ReceivingOrder</code> can be cancelled for further processing. The client needs to send a HTTP DELETE request with the unique
-identifier of the order.</p>
+<p>An already existing <code>Movement</code> can be moved from one <code>Location</code> to another. The client needs to send a HTTP <code>PATCH</code>
+request to the identified resource and pass a subset of a <code>Movement</code> in the request body.</p>
 </div>
 <div class="paragraph">
-<p>Unresolved directive in 2-movements.adoc - include::/home/runner/work/org.openwms.tms.movements/org.openwms.tms.movements/target/generated-snippets/order-cancel/http-request.adoc[]</p>
+<p>The request could look like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">PATCH /v1/movements/1000 HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Content-Length: 124
+Host: localhost:8080
+
+{
+  "links" : [ ],
+  "transportUnitBk" : "4711",
+  "mode" : "AUTOMATIC",
+  "state" : "ACTIVE",
+  "sourceLocation" : "LOC2"
+}</code></pre>
+</div>
 </div>
 <div class="paragraph">
-<p>If the <code>ReceivingOrder</code> has been cancelled, the server returns the order as part of the response body:</p>
+<p>If the <code>Movement</code> has been moved successfully, the server returns the updated representation of the <code>Movement</code> as part
+of the response body:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 200 OK
+Content-Type: application/hal+json;charset=UTF-8
+Content-Length: 305
+
+{
+  "pKey" : "1000",
+  "transportUnitBk" : "4711",
+  "mode" : "MANUAL",
+  "priority" : 30,
+  "state" : "ACTIVE",
+  "type" : "INBOUND",
+  "sourceLocation" : "LOC2",
+  "sourceLocationGroupName" : "STOCK",
+  "target" : "WA_01",
+  "startedAt" : "2021-11-04T20:30:09Z",
+  "createdAt" : "2021-11-04T20:30:09Z"
+}</code></pre>
+</div>
 </div>
 <div class="paragraph">
-<p>Unresolved directive in 2-movements.adoc - include::/home/runner/work/org.openwms.tms.movements/org.openwms.tms.movements/target/generated-snippets/order-cancel/http-response.adoc[]</p>
+<p>But if the <code>Movement</code> to be moved is already completed the server rejects the operation and responds with:</p>
 </div>
-<div class="paragraph">
-<p>In case the order couldn&#8217;t be cancelled because the order is already in process or has been processed, the server responds with:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 500 Internal Server Error
+Content-Type: application/hal+json;charset=UTF-8
+Content-Length: 196
+
+{
+  "message" : "Movement [1002] cant be moved it is already completed",
+  "messageKey" : "owms.wms.mov.mov.completedNotMoved",
+  "obj" : [ "1002" ],
+  "httpStatus" : "500",
+  "class" : "String"
+}</code></pre>
 </div>
-<div class="paragraph">
-<p>Unresolved directive in 2-movements.adoc - include::/home/runner/work/org.openwms.tms.movements/org.openwms.tms.movements/target/generated-snippets/order-cancel-403/http-response.adoc[]</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="movement-complete"><a class="anchor" href="#movement-complete"></a><a class="link" href="#movement-complete">5.5. Complete a Movement</a></h3>
+<h3 id="movement-cancel"><a class="anchor" href="#movement-cancel"></a><a class="link" href="#movement-cancel">5.6. Cancel a Movement</a></h3>
 <div class="paragraph">
-<p>To complete a <code>Movement</code> a client needs to explicitly send the <code>COMPLETE</code> action to the <code>Movement</code> resource. This completes the <code>Movement</code>
-and sets the target to the required <code>target</code> that is passed from the caller in the response body.</p>
+<p>An existing <code>Movement</code> can be cancelled by a client. Therefore a <code>DELETE</code> request needs to be sent to the <code>Movement</code>
+resource. Cancellation is not always supported and depends on the current state of the <code>Movement</code>. In the standard
+implementation a <code>Movement</code> can only be cancelled if the state is not already <code>CANCELLED</code> or higher, otherwise an
+exception is thrown.</p>
 </div>
 <div class="paragraph">
-<p>Unresolved directive in 2-movements.adoc - include::/home/runner/work/org.openwms.tms.movements/org.openwms.tms.movements/target/generated-snippets/order-complete/http-response.adoc[]</p>
+<p>The request could look like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">DELETE /v1/movements/1000 HTTP/1.1
+Host: localhost:8080</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If the <code>Movement</code> has been cancelled, the server returns the order as part of the response body:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 200 OK
+Content-Type: application/hal+json;charset=UTF-8
+Content-Length: 318
+
+{
+  "pKey" : "1000",
+  "transportUnitBk" : "4711",
+  "mode" : "MANUAL",
+  "priority" : 30,
+  "state" : "CANCELLED",
+  "type" : "INBOUND",
+  "sourceLocation" : "HRL.10.20.2.0",
+  "sourceLocationGroupName" : "STOCK",
+  "target" : "WA_01",
+  "finishedAt" : "2021-11-04T20:30:09Z",
+  "createdAt" : "2021-11-04T20:30:09Z"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="movement-complete"><a class="anchor" href="#movement-complete"></a><a class="link" href="#movement-complete">5.7. Complete a Movement</a></h3>
+<div class="paragraph">
+<p>To complete a <code>Movement</code> a client needs to explicitly send the <code>COMPLETE</code> action along a <code>POST</code> request to the
+<code>Movement</code> resource. This completes the <code>Movement</code> and sets the target to the required <code>target</code> that is passed from the
+caller in the response body.</p>
+</div>
+<div class="paragraph">
+<p>A valid request looks like:
+Unresolved directive in 2-movements.adoc - include::/home/runner/work/org.openwms.tms.movements/org.openwms.tms.movements/target/generated-snippets/move-complete/http-request.adoc[]</p>
+</div>
+<div class="paragraph">
+<p>Whereas the server responds on success:
+Unresolved directive in 2-movements.adoc - include::/home/runner/work/org.openwms.tms.movements/org.openwms.tms.movements/target/generated-snippets/move-complete/http-response.adoc[]</p>
 </div>
 </div>
 </div>
@@ -820,7 +979,7 @@ and sets the target to the required <code>target</code> that is passed from the 
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-11-02 20:23:15 UTC
+Last updated 2021-11-04 20:24:51 UTC
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css">
