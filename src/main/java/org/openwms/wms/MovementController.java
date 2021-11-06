@@ -71,11 +71,14 @@ public class MovementController extends AbstractWebController {
 
     @PostMapping("/v1/transport-units/{bk}/movements")
     @Validated(ValidationGroups.Movement.Create.class)
-    public ResponseEntity<Void> create(@PathVariable("bk") String bk, @Valid @RequestBody MovementVO movement,
+    public ResponseEntity<MovementVO> create(@PathVariable("bk") String bk, @Valid @RequestBody MovementVO movement,
                                        HttpServletRequest req) {
 
         movement.setTransportUnitBk(bk);
-        return ResponseEntity.created(getLocationURIForCreatedResource(req, service.create(bk, movement).getPersistentKey())).build();
+        MovementVO created = service.create(bk, movement);
+        return ResponseEntity
+                .created(getLocationURIForCreatedResource(req, created.getPersistentKey()))
+                .body(created);
     }
 
     @PatchMapping(API_MOVEMENTS + "/{pKey}")

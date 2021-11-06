@@ -44,7 +44,7 @@ public interface MovementApi {
      * @param movement The details of the Movement
      */
     @PostMapping("/v1/transport-units/{bk}/movements")
-    void create(
+    MovementVO create(
             @PathVariable("bk") String bk,
             @RequestBody MovementVO movement);
 
