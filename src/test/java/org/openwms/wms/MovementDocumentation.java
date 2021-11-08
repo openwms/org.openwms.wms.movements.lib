@@ -25,7 +25,7 @@ import org.openwms.common.location.api.LocationGroupApi;
 import org.openwms.common.location.api.LocationVO;
 import org.openwms.common.transport.api.TransportUnitApi;
 import org.openwms.common.transport.api.TransportUnitVO;
-import org.openwms.wms.api.MovementVO;
+import org.openwms.wms.movements.api.MovementVO;
 import org.openwms.wms.movements.spi.common.putaway.PutawayApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -41,7 +41,7 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 import java.util.Optional;
 
 import static org.mockito.BDDMockito.given;
-import static org.openwms.wms.api.MovementApi.API_MOVEMENTS;
+import static org.openwms.wms.movements.api.MovementApi.API_MOVEMENTS;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
