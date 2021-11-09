@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
-<meta name="author" content="(1.0.0-SNAPSHOT-31)">
+<meta name="author" content="(1.0.0-SNAPSHOT-33)">
 <title>OpenWMS.org TMS: RESTful API (Movements Service)</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -442,7 +442,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="header">
 <h1>OpenWMS.org TMS: RESTful API (Movements Service)</h1>
 <div class="details">
-<span id="author" class="author">(1.0.0-SNAPSHOT-31)</span><br>
+<span id="author" class="author">(1.0.0-SNAPSHOT-33)</span><br>
 <span id="revdate">Heiko Scherrer;</span>
 </div>
 <div id="toc" class="toc">
@@ -749,12 +749,13 @@ referenced as the primary resource in the URI.</p>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">POST /v1/transport-units/4711/movements HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-Content-Length: 144
+Content-Length: 168
 Host: localhost:8080
 
 {
   "links" : [ ],
   "transportUnitBk" : "4711",
+  "initiator" : "test",
   "mode" : "AUTOMATIC",
   "sourceLocation" : "WE_01",
   "target" : "ERR_/0001/0000/0000/0000"
@@ -767,21 +768,22 @@ Host: localhost:8080
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 201 Created
-Location: http://localhost:8080/v1/transport-units/4711/movements/a5a88693-2ba1-4fd4-9ad9-10ec0cc95d99/
+Location: http://localhost:8080/v1/transport-units/4711/movements/8e0ff652-b449-4471-8056-f26f6612ad2c/
 Content-Type: application/hal+json;charset=UTF-8
-Content-Length: 317
+Content-Length: 341
 
 {
-  "pKey" : "a5a88693-2ba1-4fd4-9ad9-10ec0cc95d99",
+  "pKey" : "8e0ff652-b449-4471-8056-f26f6612ad2c",
   "transportUnitBk" : "4711",
+  "type" : "INBOUND",
+  "initiator" : "test",
   "mode" : "AUTOMATIC",
   "priority" : 30,
   "state" : "ACTIVE",
-  "type" : "INBOUND",
   "sourceLocation" : "WE_01",
   "sourceLocationGroupName" : "WE",
   "target" : "ERR_/0001/0000/0000/0000",
-  "createdAt" : "2021-11-08T20:47:12Z"
+  "createdAt" : "2021-11-09T15:08:53Z"
 }</code></pre>
 </div>
 </div>
@@ -804,44 +806,47 @@ Host: localhost:8080</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 889
+Content-Length: 963
 
 [ {
   "links" : [ ],
   "pKey" : "1000",
   "transportUnitBk" : "4711",
+  "type" : "INBOUND",
+  "initiator" : "POP::1",
   "mode" : "MANUAL",
   "priority" : 30,
   "state" : "INACTIVE",
-  "type" : "INBOUND",
   "sourceLocation" : "HRL.10.20.2.0",
   "sourceLocationGroupName" : "STOCK",
   "target" : "WA_01",
-  "createdAt" : "2021-11-08T20:47:12Z"
+  "createdAt" : "2021-11-09T15:08:53Z"
 }, {
   "links" : [ ],
   "pKey" : "1001",
   "transportUnitBk" : "4712",
+  "type" : "OUTBOUND",
+  "initiator" : "SOP::1",
   "mode" : "AUTOMATIC",
   "priority" : 20,
   "state" : "ACTIVE",
-  "type" : "OUTBOUND",
   "sourceLocation" : "HRL.10.21.2.0",
   "sourceLocationGroupName" : "STOCK",
   "target" : "WA_02",
-  "createdAt" : "2021-11-08T20:47:12Z"
+  "createdAt" : "2021-11-09T15:08:53Z"
 }, {
   "links" : [ ],
   "pKey" : "1002",
   "transportUnitBk" : "4713",
+  "type" : "OUTBOUND",
+  "initiator" : "UI",
   "mode" : "AUTOMATIC",
   "priority" : 20,
   "state" : "DONE",
-  "type" : "OUTBOUND",
   "sourceLocation" : "HRL.10.22.2.0",
   "sourceLocationGroupName" : "STOCK",
   "target" : "WA_02",
-  "createdAt" : "2021-11-08T20:47:12Z"
+  "createdAt" : "2021-11-09T15:08:53Z"
 } ]</code></pre>
 </div>
 </div>
@@ -895,20 +900,21 @@ of the response body:</p>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 200 OK
 Content-Type: application/hal+json;charset=UTF-8
-Content-Length: 305
+Content-Length: 331
 
 {
   "pKey" : "1000",
   "transportUnitBk" : "4711",
+  "type" : "INBOUND",
+  "initiator" : "POP::1",
   "mode" : "MANUAL",
   "priority" : 30,
   "state" : "ACTIVE",
-  "type" : "INBOUND",
   "sourceLocation" : "LOC2",
   "sourceLocationGroupName" : "STOCK",
   "target" : "WA_01",
-  "startedAt" : "2021-11-08T20:47:13Z",
-  "createdAt" : "2021-11-08T20:47:13Z"
+  "startedAt" : "2021-11-09T15:08:53Z",
+  "createdAt" : "2021-11-09T15:08:53Z"
 }</code></pre>
 </div>
 </div>
@@ -955,20 +961,21 @@ Host: localhost:8080</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 200 OK
 Content-Type: application/hal+json;charset=UTF-8
-Content-Length: 318
+Content-Length: 344
 
 {
   "pKey" : "1000",
   "transportUnitBk" : "4711",
+  "type" : "INBOUND",
+  "initiator" : "POP::1",
   "mode" : "MANUAL",
   "priority" : 30,
   "state" : "CANCELLED",
-  "type" : "INBOUND",
   "sourceLocation" : "HRL.10.20.2.0",
   "sourceLocationGroupName" : "STOCK",
   "target" : "WA_01",
-  "finishedAt" : "2021-11-08T20:47:12Z",
-  "createdAt" : "2021-11-08T20:47:12Z"
+  "finishedAt" : "2021-11-09T15:08:53Z",
+  "createdAt" : "2021-11-09T15:08:53Z"
 }</code></pre>
 </div>
 </div>
@@ -994,7 +1001,7 @@ Unresolved directive in 2-movements.adoc - include::/home/runner/work/org.openwm
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-11-08 20:42:19 UTC
+Last updated 2021-11-09 15:04:32 UTC
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css">
