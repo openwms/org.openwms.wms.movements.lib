@@ -140,6 +140,7 @@ class MovementServiceIT {
         given(transportUnitApi.findTransportUnit("4711")).willReturn(new TransportUnitVO("4711"));
         given(locationApi.findLocationByCoordinate("PASS/PASS/PASS/PASS/PASS")).willReturn(Optional.of(sourceLocation));
         var vo = new MovementVO();
+        vo.setInitiator("test");
         vo.setType(MovementType.INBOUND);
         vo.setSourceLocation("PASS/PASS/PASS/PASS/PASS");
         vo.setTarget("KNOWN");

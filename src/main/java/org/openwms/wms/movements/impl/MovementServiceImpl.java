@@ -124,8 +124,7 @@ class MovementServiceImpl implements MovementService {
         try {
             resolveLocation(vo.getTarget());
         } catch ( NotFoundException nfe) {
-            LOGGER.debug("The Movement [{}] has no valid target [{}] set, trying to resolve it later",
-                    vo.getPersistentKey(),
+            LOGGER.debug("The Movement has no valid target [{}] set, trying to resolve it later",
                     vo.getTarget());
         }
         movement.setSourceLocation(sourceLocation.getErpCode());

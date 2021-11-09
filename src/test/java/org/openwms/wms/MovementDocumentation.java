@@ -96,6 +96,7 @@ class MovementDocumentation {
         given(locationApi.findLocationByErpCode("WE_01")).willReturn(Optional.of(sourceLocation));
 
         MovementVO m = new MovementVO();
+        m.setInitiator("test");
         m.setTransportUnitBk("4711");
         m.setSourceLocation("WE_01");
         m.setTarget("ERR_/0001/0000/0000/0000");
