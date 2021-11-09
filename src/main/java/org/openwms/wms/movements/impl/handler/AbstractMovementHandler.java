@@ -19,7 +19,7 @@ import org.ameba.annotation.Measured;
 import org.openwms.wms.movements.api.MovementState;
 import org.openwms.wms.movements.api.MovementType;
 import org.openwms.wms.movements.impl.Movement;
-import org.openwms.wms.movements.impl.MovementCreated;
+import org.openwms.wms.movements.impl.MovementEvent;
 import org.openwms.wms.movements.impl.MovementHandler;
 import org.openwms.wms.movements.impl.MovementRepository;
 import org.springframework.context.ApplicationEventPublisher;
@@ -52,7 +52,7 @@ abstract class AbstractMovementHandler implements MovementHandler {
             throw new IllegalArgumentException("Movement has no target set and cannot be created");
         }
         Movement saved = repository.save(movement);
-        publisher.publishEvent(new MovementCreated(saved));
+        publisher.publishEvent(new MovementEvent(saved, MovementEvent.Type.CREATED));
         return saved;
     }
 

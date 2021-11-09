@@ -54,6 +54,12 @@ public class MovementVO extends AbstractBase<MovementVO> implements Serializable
     /** The business key of the {@code TransportUnit} to move. */
     @JsonProperty("transportUnitBk")
     private String transportUnitBk;
+    /** The type of {@code Movement} must be passed by the caller. */
+    @JsonProperty("type") // Not required at creation because it can be resolved from the TU and the target
+    private MovementType type;
+    /** Initiator of the {@code Movement}, who ordered or triggered it. */
+    @JsonProperty("initiator")
+    private String initiator;
     /** Whether the {@code Movement} should be directly processed (AUTOMATIC) or delayed (MANUAL). */
     @JsonProperty("mode")
     private StartMode startMode = StartMode.AUTOMATIC;
@@ -66,9 +72,6 @@ public class MovementVO extends AbstractBase<MovementVO> implements Serializable
     @JsonProperty("state")
     @NotEmpty(groups = Move.class)
     private String state;
-    /** The type of {@code Movement} must be passed by the caller. */
-    @JsonProperty("type") // Not required at creation because it can be resolved from the TU and the target
-    private MovementType type;
     /** The source {@code Location} where the {@code TransportUnit} shall be picked up (must be passed by the caller). */
     @JsonProperty("sourceLocation")
     @NotEmpty(groups = {Create.class, Move.class})

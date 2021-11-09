@@ -39,6 +39,10 @@
 			<b is-accessible="true">type</b>
 		</field>
 		<field>
+			<a is-accessible="true">initiator</a>
+			<b is-accessible="true">initiator</b>
+		</field>
+		<field>
 			<a is-accessible="true">priority</a>
 			<b is-accessible="true">priority</b>
 		</field>
@@ -82,6 +86,10 @@
 		<field>
 			<a is-accessible="true">transportUnitBK</a>
 			<b is-accessible="true">transportUnitBk</b>
+		</field>
+		<field>
+			<a is-accessible="true">initiator</a>
+			<b is-accessible="true">initiator</b>
 		</field>
 		<field>
 			<a is-accessible="true">target</a>

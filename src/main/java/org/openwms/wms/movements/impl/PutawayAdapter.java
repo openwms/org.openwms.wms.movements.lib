@@ -16,7 +16,6 @@
 package org.openwms.wms.movements.impl;
 
 import org.ameba.annotation.TxService;
-import org.ameba.exception.NotFoundException;
 import org.openwms.common.location.api.LocationVO;
 import org.openwms.wms.movements.Message;
 import org.openwms.wms.movements.MovementProperties;
@@ -29,8 +28,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
-
-import static java.lang.String.format;
 
 /**
  * A PutawayAdapter is a Spring managed transactional event listener that acts as an adapter to the {@link PutawayApi} that is called after
@@ -55,26 +52,31 @@ class PutawayAdapter {
     @ConditionalOnExpression("${owms.movement.putaway-resolution-enabled}")
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW, noRollbackFor = {Exception.class})
-    public void onEvent(MovementCreated event) {
-        if (event.getMovement().emptyTargetLocation()) {
-            Movement movement = repository.findById(event.getMovement().getPk()).orElseThrow(() -> new NotFoundException(format("Movement with PK [%d] does not exist", event.getMovement().getPk())));
-            try {
-                MovementTarget movementTarget = properties.findTarget(event.getMovement().getTargetLocationGroup());
-                LOGGER.debug("Call putaway strategy to find target location for movement [{}] in [{}]", event.getMovement().getPersistentKey(), movementTarget.getSearchLocationGroupNames());
-                LocationVO target = putawayApi.findAndAssignNextInLocGroup(
-                        movementTarget.getSearchLocationGroupNames(),
-                        event.getMovement().getTransportUnitBk().getValue(),
-                        2
-                );
-                LOGGER.debug("Putaway strategy returned [{}] as next target for movement [{}]", target.getLocationId(), event.getMovement().getPersistentKey());
-                movement.setTargetLocation(target.getErpCode());
-            } catch (Exception e) {
-                LOGGER.error("Error calling the putaway strategy: " + e.getMessage(), e);
-                movement.addProblem(new ProblemHistory(movement, new Message.Builder().withMessageText(e.getMessage()).build()));
-            }
-            repository.save(movement);
-        } else {
-            LOGGER.debug("Target is already set and not being resolved");
+    public void onEvent(MovementEvent event) {
+        var movement = event.getSource();
+        switch (event.getType()) {
+            case CREATED:
+                if (movement.emptyTargetLocation()) {
+                    try {
+                        MovementTarget movementTarget = properties.findTarget(movement.getTargetLocationGroup());
+                        LOGGER.debug("Call putaway strategy to find target location for movement [{}] in [{}]", movement.getPersistentKey(), movementTarget.getSearchLocationGroupNames());
+                        LocationVO target = putawayApi.findAndAssignNextInLocGroup(
+                                movementTarget.getSearchLocationGroupNames(),
+                                movement.getTransportUnitBk().getValue(),
+                                2
+                        );
+                        LOGGER.debug("Putaway strategy returned [{}] as next target for movement [{}]", target.getLocationId(), movement.getPersistentKey());
+                        movement.setTargetLocation(target.getErpCode());
+                    } catch (Exception e) {
+                        LOGGER.error("Error calling the putaway strategy: " + e.getMessage(), e);
+                        movement.addProblem(new ProblemHistory(movement, new Message.Builder().withMessageText(e.getMessage()).build()));
+                    }
+                    repository.save(movement);
+                } else {
+                    LOGGER.debug("Target is already set and not being resolved");
+                }
+                break;
+            default:
         }
     }
 }

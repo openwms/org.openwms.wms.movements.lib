@@ -7,6 +7,9 @@
     <entity class="org.openwms.wms.movements.impl.Movement" name="Movement" access="FIELD">
         <sequence-generator name="generator" sequence-name="mvm_mvm_seq" allocation-size="1" />
     </entity>
+    <entity class="org.openwms.wms.movements.impl.MovementGroup" name="MovementGroup" access="FIELD">
+        <sequence-generator name="generator" sequence-name="mvm_mvm_group_seq" allocation-size="1" />
+    </entity>
     <entity class="org.openwms.wms.movements.impl.ProblemHistory" name="ProblemHistory" access="FIELD">
         <sequence-generator name="generator" sequence-name="mvm_problem_history_seq" allocation-size="1" />
     </entity>

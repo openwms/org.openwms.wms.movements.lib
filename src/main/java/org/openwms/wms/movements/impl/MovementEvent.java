@@ -15,20 +15,35 @@
  */
 package org.openwms.wms.movements.impl;
 
+import org.openwms.core.event.RootApplicationEvent;
+
 /**
- * A MovementCreated signals that a {@link Movement} has been created.
+ * A MovementEvent signals changes on a {@link Movement}s lifecycle.
  *
  * @author Heiko Scherrer
  */
-public class MovementCreated {
+public class MovementEvent extends RootApplicationEvent {
 
-    private Movement movement;
+    private final Type type;
 
-    public MovementCreated(Movement movement) {
-        this.movement = movement;
+    public enum Type {
+        CREATED, CANCELLED, COMPLETED, MOVED
     }
 
-    public Movement getMovement() {
-        return movement;
+    public MovementEvent(Movement movement, Type type) {
+        super(movement);
+        if (type == null) {
+            throw new IllegalArgumentException("null type");
+        }
+        this.type = type;
+    }
+
+    @Override
+    public Movement getSource() {
+        return (Movement) super.getSource();
+    }
+
+    public Type getType() {
+        return type;
     }
 }

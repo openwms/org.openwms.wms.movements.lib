@@ -40,6 +40,7 @@ import org.openwms.wms.movements.spi.Validators;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.plugin.core.PluginRegistry;
 import org.springframework.validation.annotation.Validated;
 
@@ -73,6 +74,7 @@ import static org.openwms.wms.movements.MovementsMessages.MOVEMENT_NOT_FOUND;
 class MovementServiceImpl implements MovementService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MovementServiceImpl.class);
+    private final ApplicationEventPublisher eventPublisher;
     private final BeanMapper mapper;
     private final Validator validator;
     private final Translator translator;
@@ -85,11 +87,12 @@ class MovementServiceImpl implements MovementService {
     private final LocationApi locationApi;
     private final LocationGroupApi locationGroupApi;
 
-    MovementServiceImpl(BeanMapper mapper, Validator validator, Translator translator,
+    MovementServiceImpl(ApplicationEventPublisher eventPublisher, BeanMapper mapper, Validator validator, Translator translator,
                         MovementStateResolver movementStateResolver, MovementRepository repository,
                         @Autowired(required = false) MovementTypeResolver movementTypeResolver,
                         PluginRegistry<MovementHandler, MovementType> handlers,
                         Validators validators, TransportUnitApi transportUnitApi, LocationApi locationApi, LocationGroupApi locationGroupApi) {
+        this.eventPublisher = eventPublisher;
         this.mapper = mapper;
         this.validator = validator;
         this.translator = translator;
@@ -253,6 +256,7 @@ class MovementServiceImpl implements MovementService {
         movement.setSourceLocation(sourceLocation.getErpCode());
         movement.setSourceLocationGroupName(sourceLocation.getLocationGroupName());
         movement = repository.save(movement);
+        eventPublisher.publishEvent(new MovementEvent(movement, MovementEvent.Type.MOVED));
         return convert(movement);
     }
 
@@ -265,16 +269,20 @@ class MovementServiceImpl implements MovementService {
     public MovementVO complete(@NotEmpty String pKey, @Valid @NotNull MovementVO vo) {
         LOGGER.debug("Got request to complete Movement [{}]", vo);
         var movement = findInternal(pKey);
-        var location = resolveLocation(vo.getTarget());
-        transportUnitApi.moveTU(vo.hasTransportUnitBK()
-                        ? vo.getTransportUnitBk()
-                        : movement.getTransportUnitBk().getValue(), location.getLocationId());
-        movement.setState(movementStateResolver.getCompletedState());
-        movement.setEndDate(ZonedDateTime.now());
-        movement.setTargetLocation(vo.getTarget());
-        movement.setTargetLocationGroup(vo.getTarget());
-        movement = repository.save(movement);
-        LOGGER.debug("Completed movement [{}]: ", movement);
+        if (movement.getState().ordinal() < DefaultMovementState.DONE.ordinal()) {
+            var location = resolveLocation(vo.getTarget());
+            transportUnitApi.moveTU(vo.hasTransportUnitBK()
+                    ? vo.getTransportUnitBk()
+                    : movement.getTransportUnitBk().getValue(), location.getLocationId());
+            movement.setState(movementStateResolver.getCompletedState());
+            movement.setEndDate(ZonedDateTime.now());
+            movement.setTargetLocation(vo.getTarget());
+            movement.setTargetLocationGroup(vo.getTarget());
+            movement = repository.save(movement);
+            eventPublisher.publishEvent(new MovementEvent(movement, MovementEvent.Type.COMPLETED));
+        } else {
+            LOGGER.info("Movement [{}] is already in state [{}] and cannot be completed", pKey, movement.getState());
+        }
         return convert(movement);
     }
 
@@ -290,9 +298,9 @@ class MovementServiceImpl implements MovementService {
             movement.setState(DefaultMovementState.CANCELLED);
             movement.setEndDate(ZonedDateTime.now());
             movement = repository.save(movement);
-            LOGGER.debug("Cancelled movement [{}]: ", movement);
+            eventPublisher.publishEvent(new MovementEvent(movement, MovementEvent.Type.CANCELLED));
         } else {
-            LOGGER.info("Movement [{}] is already in state [{}] and cannot ce cancelled", pKey, movement.getState());
+            LOGGER.info("Movement [{}] is already in state [{}] and cannot be cancelled", pKey, movement.getState());
         }
         return convert(movement);
     }

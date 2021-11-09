@@ -59,7 +59,13 @@ public class MovementEvent implements Serializable {
 
     public enum Type {
         /** Movement has been created. */
-        CREATED
+        CREATED,
+        /** Movement has been cancelled. */
+        CANCELLED,
+        /** Movement has been completed. */
+        COMPLETED,
+        /** Movement has been moved. */
+        MOVED
     }
 
     public static final class Builder {

@@ -26,6 +26,7 @@ public class MovementMO implements Serializable {
 
     private String pKey;
     private String transportUnitBK;
+    private String initiator;
     private String target;
 
     public MovementMO() {
@@ -34,6 +35,7 @@ public class MovementMO implements Serializable {
     private MovementMO(Builder builder) {
         pKey = builder.pKey;
         transportUnitBK = builder.transportUnitBK;
+        initiator = builder.initiator;
         target = builder.target;
     }
 
@@ -49,6 +51,10 @@ public class MovementMO implements Serializable {
         return transportUnitBK;
     }
 
+    public String getInitiator() {
+        return initiator;
+    }
+
     public String getTarget() {
         return target;
     }
@@ -56,6 +62,7 @@ public class MovementMO implements Serializable {
     public static final class Builder {
         private String pKey;
         private String transportUnitBK;
+        private String initiator;
         private String target;
 
         private Builder() {
@@ -68,6 +75,11 @@ public class MovementMO implements Serializable {
 
         public Builder transportUnitBK(String val) {
             transportUnitBK = val;
+            return this;
+        }
+
+        public Builder initiator(String val) {
+            initiator = val;
             return this;
         }
 

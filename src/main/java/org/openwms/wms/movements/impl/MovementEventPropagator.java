@@ -16,14 +16,20 @@
 package org.openwms.wms.movements.impl;
 
 import org.openwms.core.SpringProfiles;
-import org.openwms.wms.movements.events.api.MovementEvent;
 import org.openwms.wms.movements.commands.MovementMO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
+
+import static org.openwms.wms.movements.events.api.MovementEvent.Type.CANCELLED;
+import static org.openwms.wms.movements.events.api.MovementEvent.Type.COMPLETED;
+import static org.openwms.wms.movements.events.api.MovementEvent.Type.CREATED;
+import static org.openwms.wms.movements.events.api.MovementEvent.Type.MOVED;
 
 /**
  * A MovementEventPropagator is active with the {@value SpringProfiles#ASYNCHRONOUS_PROFILE} profile and propagates internal events to the
@@ -35,6 +41,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @Component
 class MovementEventPropagator {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MovementEventPropagator.class);
     private final String exchangeName;
     private final AmqpTemplate amqpTemplate;
 
@@ -46,17 +53,53 @@ class MovementEventPropagator {
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void onEvent(MovementCreated event) {
-        Movement movement = event.getMovement();
-        amqpTemplate.convertAndSend(exchangeName, "movement.event.created",
-                MovementEvent.newBuilder()
-                        .type(MovementEvent.Type.CREATED)
-                        .movement(MovementMO.newBuilder()
-                                .transportUnitBK(movement.getTransportUnitBk().getValue())
-                                .target(movement.getTargetLocationGroup())
+    public void onEvent(MovementEvent event) {
+        var movement = event.getSource();
+        var vo = MovementMO.newBuilder()
+                .pKey(movement.getPersistentKey())
+                .transportUnitBK(movement.getTransportUnitBk().getValue())
+                .initiator(movement.getInitiator())
+                .target(movement.getTargetLocationGroup())
+                .build();
+        switch (event.getType()) {
+            case CREATED:
+                LOGGER.info("Movement has been CREATED [{}]", movement);
+                amqpTemplate.convertAndSend(exchangeName, "movement.event.created",
+                        org.openwms.wms.movements.events.api.MovementEvent.newBuilder()
+                                .type(CREATED)
+                                .movement(vo)
                                 .build()
-                        )
-                        .build()
-        );
+                );
+                break;
+            case CANCELLED:
+                LOGGER.info("Movement has been CANCELLED [{}]", movement);
+                amqpTemplate.convertAndSend(exchangeName, "movement.event.cancelled",
+                        org.openwms.wms.movements.events.api.MovementEvent.newBuilder()
+                                .type(CANCELLED)
+                                .movement(vo)
+                                .build()
+                );
+                break;
+            case COMPLETED:
+                LOGGER.info("Movement has been COMPLETED [{}]", movement);
+                amqpTemplate.convertAndSend(exchangeName, "movement.event.completed",
+                        org.openwms.wms.movements.events.api.MovementEvent.newBuilder()
+                                .type(COMPLETED)
+                                .movement(vo)
+                                .build()
+                );
+                break;
+            case MOVED:
+                LOGGER.info("Movement has been MOVED [{}]", movement);
+                amqpTemplate.convertAndSend(exchangeName, "movement.event.moved",
+                        org.openwms.wms.movements.events.api.MovementEvent.newBuilder()
+                                .type(MOVED)
+                                .movement(vo)
+                                .build()
+                );
+                break;
+            default:
+                LOGGER.warn("MovementEvent of type [{}] is currently not supported", event.getType());
+        }
     }
 }

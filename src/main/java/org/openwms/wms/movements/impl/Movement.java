@@ -61,11 +61,16 @@ public class Movement extends ApplicationEntity implements Serializable {
     @AttributeOverride(name = "value", column = @Column(name = "C_TRANSPORT_UNIT_BK", nullable = false))
     private Barcode transportUnitBk;
 
-    /** Type of {@code Movement}. */
+    /** Type of the {@code Movement}. */
     @Column(name = "C_TYPE", nullable = false)
     @Enumerated(EnumType.STRING)
     @NotNull
     private MovementType type;
+
+    /** Initiator of the {@code Movement}, who ordered or triggered it. */
+    @Column(name = "C_INITIATOR", nullable = false)
+    @NotNull
+    private String initiator;
 
     /** The {@link MovementGroup}, the {@code Movement} belongs to. */
     @ManyToOne
@@ -182,6 +187,14 @@ public class Movement extends ApplicationEntity implements Serializable {
         return type;
     }
 
+    public String getInitiator() {
+        return initiator;
+    }
+
+    public void setInitiator(String initiator) {
+        this.initiator = initiator;
+    }
+
     public MovementGroup getGroup() {
         return group;
     }
@@ -296,6 +309,7 @@ public class Movement extends ApplicationEntity implements Serializable {
         return "Movement{" +
                 "transportUnitBk=" + transportUnitBk +
                 ", type=" + type +
+                ", initiator=" + initiator +
                 ", priority=" + priority +
                 ", mode=" + mode +
                 ", state=" + state +
@@ -322,16 +336,11 @@ public class Movement extends ApplicationEntity implements Serializable {
         if (!(o instanceof Movement)) return false;
         if (!super.equals(o)) return false;
         Movement movement = (Movement) o;
-        return Objects.equals(transportUnitBk, movement.transportUnitBk) && type == movement.type && priority == movement.priority && mode == movement.mode && state == movement.state && Objects.equals(message, movement.message) && Objects.equals(sourceLocation, movement.sourceLocation) && Objects.equals(sourceLocationGroupName, movement.sourceLocationGroupName) && Objects.equals(targetLocation, movement.targetLocation) && Objects.equals(targetLocationGroup, movement.targetLocationGroup) && Objects.equals(startEarliestDate, movement.startEarliestDate) && Objects.equals(startDate, movement.startDate) && Objects.equals(latestDueDate, movement.latestDueDate) && Objects.equals(endDate, movement.endDate);
+        return Objects.equals(transportUnitBk, movement.transportUnitBk) && type == movement.type && Objects.equals(initiator, movement.initiator) && Objects.equals(sku, movement.sku) && priority == movement.priority && mode == movement.mode && state == movement.state && Objects.equals(message, movement.message) && Objects.equals(sourceLocation, movement.sourceLocation) && Objects.equals(sourceLocationGroupName, movement.sourceLocationGroupName) && Objects.equals(targetLocation, movement.targetLocation) && Objects.equals(targetLocationGroup, movement.targetLocationGroup) && Objects.equals(startEarliestDate, movement.startEarliestDate) && Objects.equals(startDate, movement.startDate) && Objects.equals(latestDueDate, movement.latestDueDate) && Objects.equals(endDate, movement.endDate);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * Not the group and not the history.
-     */
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), transportUnitBk, type, priority, mode, state, message, sourceLocation, sourceLocationGroupName, targetLocation, targetLocationGroup, startEarliestDate, startDate, latestDueDate, endDate);
+        return Objects.hash(super.hashCode(), transportUnitBk, type, initiator, sku, priority, mode, state, message, sourceLocation, sourceLocationGroupName, targetLocation, targetLocationGroup, startEarliestDate, startDate, latestDueDate, endDate);
     }
 }
