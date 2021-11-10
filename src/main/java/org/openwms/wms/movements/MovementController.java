@@ -71,7 +71,8 @@ public class MovementController extends AbstractWebController {
 
     @PostMapping("/v1/transport-units/{bk}/movements")
     @Validated(ValidationGroups.Movement.Create.class)
-    public ResponseEntity<MovementVO> create(@PathVariable("bk") String bk, @Valid @RequestBody MovementVO movement,
+    public ResponseEntity<MovementVO> create(@PathVariable("bk") String bk,
+                                             @Valid @RequestBody MovementVO movement,
                                        HttpServletRequest req) {
 
         movement.setTransportUnitBk(bk);

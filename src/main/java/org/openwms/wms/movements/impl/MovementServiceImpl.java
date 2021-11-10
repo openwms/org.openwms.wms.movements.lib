@@ -127,6 +127,7 @@ class MovementServiceImpl implements MovementService {
             LOGGER.debug("The Movement has no valid target [{}] set, trying to resolve it later",
                     vo.getTarget());
         }
+        movement.setInitiatorOrDefault(movement.getInitiator(), "n/a");
         movement.setSourceLocation(sourceLocation.getErpCode());
         movement.setSourceLocationGroupName(sourceLocation.getLocationGroupName());
         movement.setTransportUnitBk(Barcode.of(bk));

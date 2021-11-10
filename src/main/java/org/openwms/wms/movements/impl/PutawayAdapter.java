@@ -61,6 +61,7 @@ class PutawayAdapter {
                         MovementTarget movementTarget = properties.findTarget(movement.getTargetLocationGroup());
                         LOGGER.debug("Call putaway strategy to find target location for movement [{}] in [{}]", movement.getPersistentKey(), movementTarget.getSearchLocationGroupNames());
                         LocationVO target = putawayApi.findAndAssignNextInLocGroup(
+                                movement.getInitiator(),
                                 movementTarget.getSearchLocationGroupNames(),
                                 movement.getTransportUnitBk().getValue(),
                                 2

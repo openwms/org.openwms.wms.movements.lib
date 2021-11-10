@@ -22,6 +22,7 @@ import org.openwms.wms.movements.api.MovementType;
 import org.openwms.wms.movements.api.StartMode;
 import org.openwms.wms.movements.spi.DefaultMovementState;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.util.Assert;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
@@ -172,6 +173,21 @@ public class Movement extends ApplicationEntity implements Serializable {
      */
     public boolean emptyTargetLocation() {
         return targetLocation == null || targetLocation.isEmpty();
+    }
+
+    /**
+     * Set the initiator, or the given default value.
+     *
+     * @param initiator The initiator
+     * @param defaultVal The default value
+     */
+    public void setInitiatorOrDefault(String initiator, String defaultVal) {
+        if (initiator == null || initiator.isEmpty()) {
+            Assert.hasText(defaultVal, "The default value for initiator must be given");
+            this.initiator = defaultVal;
+        } else {
+            this.initiator = initiator;
+        }
     }
 
     /*~ --------------- Accessors ---------------- */

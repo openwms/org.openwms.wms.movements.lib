@@ -34,10 +34,11 @@ public interface PutawayApi {
     /**
      * Find the next available Location for Putaway in the given {@code LocationGroup}s .
      *
+     * @param strategy An identifying attribute that is used in the Putaway to choose the correct strategy
      * @param locationGroupNames Name of the LocationGroups to search a Location for. The ordering is relevant, LG first in the list are
      * preferred to those later in the list
      * @param transportUnitBK The TransportUnit barcode to search a Location for
-     * @param sku The SKU of the Product
+     * @param numberOfExpectedTransportUnits How many TU are expected
      * @return Assigned Location for Putaway
      * @throws org.ameba.exception.NotFoundException May throw in case no TransportUnit exists
      */
@@ -45,6 +46,7 @@ public interface PutawayApi {
             params = {"locationGroupNames", "transportUnitBK", "numberOfExpectedTransportUnits"},
             produces = "application/vnd.openwms.location.single-v1+json")
     LocationVO findAndAssignNextInLocGroup(
+            @RequestParam("strategy") String strategy,
             @RequestParam("locationGroupNames") List<String> locationGroupNames,
             @RequestParam("transportUnitBK") String transportUnitBK,
             @RequestParam("numberOfExpectedTransportUnits") int numberOfExpectedTransportUnits
