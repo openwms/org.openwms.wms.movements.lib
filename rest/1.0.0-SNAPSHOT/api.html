@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
-<meta name="author" content="(1.0.0-SNAPSHOT-34)">
+<meta name="author" content="(1.0.0-SNAPSHOT-35)">
 <title>OpenWMS.org TMS: RESTful API (Movements Service)</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -442,7 +442,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="header">
 <h1>OpenWMS.org TMS: RESTful API (Movements Service)</h1>
 <div class="details">
-<span id="author" class="author">(1.0.0-SNAPSHOT-34)</span><br>
+<span id="author" class="author">(1.0.0-SNAPSHOT-35)</span><br>
 <span id="revdate">Heiko Scherrer;</span>
 </div>
 <div id="toc" class="toc">
@@ -616,7 +616,7 @@ format or has produced an error on server side, the API will decline the request
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-none hljs">{
     "message": "LocationGroup with name [NOT_EXISTS] not found",
-    "messageKey": "COMMON.LOCATION_GROUP_NOT_FOUND",
+    "messageKey": "owms.common.common.lg.notFoundByName",
     "obj" : [ "NOT_EXISTS" ],
     "httpStatus" : "404",
     "class" : "String"
@@ -768,12 +768,12 @@ Host: localhost:8080
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 201 Created
-Location: http://localhost:8080/v1/transport-units/4711/movements/ec73f0cd-bcb3-49c3-9e47-a238c99e2d43/
+Location: http://localhost:8080/v1/transport-units/4711/movements/31feead4-0145-4af6-921f-ed16eeaf6ae7/
 Content-Type: application/hal+json;charset=UTF-8
 Content-Length: 341
 
 {
-  "pKey" : "ec73f0cd-bcb3-49c3-9e47-a238c99e2d43",
+  "pKey" : "31feead4-0145-4af6-921f-ed16eeaf6ae7",
   "transportUnitBk" : "4711",
   "type" : "INBOUND",
   "initiator" : "test",
@@ -783,7 +783,7 @@ Content-Length: 341
   "sourceLocation" : "WE_01",
   "sourceLocationGroupName" : "WE",
   "target" : "ERR_/0001/0000/0000/0000",
-  "createdAt" : "2021-11-10T19:41:09Z"
+  "createdAt" : "2021-11-11T22:35:48Z"
 }</code></pre>
 </div>
 </div>
@@ -820,7 +820,7 @@ Content-Length: 963
   "sourceLocation" : "HRL.10.20.2.0",
   "sourceLocationGroupName" : "STOCK",
   "target" : "WA_01",
-  "createdAt" : "2021-11-10T19:41:08Z"
+  "createdAt" : "2021-11-11T22:35:48Z"
 }, {
   "links" : [ ],
   "pKey" : "1001",
@@ -833,7 +833,7 @@ Content-Length: 963
   "sourceLocation" : "HRL.10.21.2.0",
   "sourceLocationGroupName" : "STOCK",
   "target" : "WA_02",
-  "createdAt" : "2021-11-10T19:41:08Z"
+  "createdAt" : "2021-11-11T22:35:48Z"
 }, {
   "links" : [ ],
   "pKey" : "1002",
@@ -846,7 +846,7 @@ Content-Length: 963
   "sourceLocation" : "HRL.10.22.2.0",
   "sourceLocationGroupName" : "STOCK",
   "target" : "WA_02",
-  "createdAt" : "2021-11-10T19:41:08Z"
+  "createdAt" : "2021-11-11T22:35:48Z"
 } ]</code></pre>
 </div>
 </div>
@@ -913,8 +913,8 @@ Content-Length: 331
   "sourceLocation" : "LOC2",
   "sourceLocationGroupName" : "STOCK",
   "target" : "WA_01",
-  "startedAt" : "2021-11-10T19:41:09Z",
-  "createdAt" : "2021-11-10T19:41:09Z"
+  "startedAt" : "2021-11-11T22:35:48Z",
+  "createdAt" : "2021-11-11T22:35:48Z"
 }</code></pre>
 </div>
 </div>
@@ -974,8 +974,8 @@ Content-Length: 344
   "sourceLocation" : "HRL.10.20.2.0",
   "sourceLocationGroupName" : "STOCK",
   "target" : "WA_01",
-  "finishedAt" : "2021-11-10T19:41:09Z",
-  "createdAt" : "2021-11-10T19:41:09Z"
+  "finishedAt" : "2021-11-11T22:35:48Z",
+  "createdAt" : "2021-11-11T22:35:48Z"
 }</code></pre>
 </div>
 </div>
@@ -1001,7 +1001,7 @@ Unresolved directive in 2-movements.adoc - include::/home/runner/work/org.openwm
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-11-10 19:36:58 UTC
+Last updated 2021-11-11 22:29:48 UTC
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css">
