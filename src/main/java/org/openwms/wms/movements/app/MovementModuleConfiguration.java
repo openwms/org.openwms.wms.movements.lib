@@ -82,15 +82,13 @@ public class MovementModuleConfiguration implements WebMvcConfigurer {
         return new DozerMapperImpl("META-INF/dozer/movements-bean-mappings.xml");
     }
 
-    public @Bean
-    LocaleResolver localeResolver() {
+    public @Bean LocaleResolver localeResolver() {
         SessionLocaleResolver slr = new SessionLocaleResolver();
         slr.setDefaultLocale(Locale.US);
         return slr;
     }
 
-    public @Bean
-    LocaleChangeInterceptor localeChangeInterceptor() {
+    public @Bean LocaleChangeInterceptor localeChangeInterceptor() {
         LocaleChangeInterceptor lci = new LocaleChangeInterceptor();
         lci.setParamName("lang");
         return lci;
@@ -111,4 +109,5 @@ public class MovementModuleConfiguration implements WebMvcConfigurer {
         messageSource.setDefaultEncoding("UTF-8");
         messageSource.setCommonMessages(new Properties());
         return messageSource;
-    }}
+    }
+}
