@@ -172,9 +172,9 @@ class MovementServiceIT {
     @Sql(scripts = "classpath:import-TEST.sql")
     @Test
     void test_findForTU() {
-        var result = testee.findForTU("4712");
+        var result = testee.findForTuAndStates("4712", "ACTIVE");
         assertThat(result).hasSize(1);
-        result = testee.findForTU("4713");
+        result = testee.findForTuAndStates("4713", "ACTIVE");
         assertThat(result).isEmpty();
     }
 

@@ -94,10 +94,11 @@ public interface MovementService {
     List<MovementVO> findAll();
 
     /**
-     * Find all {@code Movement}s for a {@code TransportUnit} with the given {@code barcode}.
+     * Find all {@code Movement}s for a {@code TransportUnit} with the given {@code barcode} and {@code states}.
      *
      * @param barcode The business key of the TransportUnit to move
+     * @param states A list of states to consider
      * @return A list of Movements, never {@literal null}
      */
-    List<MovementVO> findForTU(@NotEmpty String barcode);
+    List<MovementVO> findForTuAndStates(@NotEmpty String barcode, @NotEmpty String... states);
 }

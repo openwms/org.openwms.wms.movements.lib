@@ -87,6 +87,10 @@ class MovementAsyncConfiguration {
 
     /*~ --------------- Exchanges --------------- */
     @Bean
+    TopicExchange tuCommandsExchange(@Value("${owms.commands.common.tu.exchange-name}") String exchangeName) {
+        return new TopicExchange(exchangeName, true, false);
+    }
+    @Bean
     TopicExchange movementExchange(@Value("${owms.movements.exchange-name}") String exchangeName) {
         return new TopicExchange(exchangeName, true, false);
     }

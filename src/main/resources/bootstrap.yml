@@ -117,6 +117,9 @@ spring:
 
 owms:
   commands:
+    common:
+      tu:
+        exchange-name: common.tu.commands
     movements:
       exchange-name: movements.commands
       movement:

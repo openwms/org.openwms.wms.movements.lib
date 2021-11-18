@@ -49,7 +49,6 @@ public class ReservationMessageListener {
         movement.setTransportUnitBk(mo.getTransportUnitBK());
         movement.setPriority(mo.getPriority());
         movement.setTarget(mo.getTargetName());
-        // FIXME [openwms]: 08.06.21 This is project specific and depends on source and target of the split
         movement.setType(MovementType.RELOCATION);
         movementService.create(mo.getTransportUnitBK(), movement);
     }

@@ -24,6 +24,7 @@ import org.openwms.wms.movements.spi.common.putaway.PutawayApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
@@ -39,11 +40,13 @@ import org.springframework.transaction.event.TransactionalEventListener;
 class PutawayAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PutawayAdapter.class);
+    private final ApplicationEventPublisher eventPublisher;
     private final MovementProperties properties;
     private final MovementRepository repository;
     private final PutawayApi putawayApi;
 
-    PutawayAdapter(MovementProperties properties, MovementRepository repository, PutawayApi putawayApi) {
+    PutawayAdapter(ApplicationEventPublisher eventPublisher, MovementProperties properties, MovementRepository repository, PutawayApi putawayApi) {
+        this.eventPublisher = eventPublisher;
         this.properties = properties;
         this.repository = repository;
         this.putawayApi = putawayApi;
@@ -54,30 +57,28 @@ class PutawayAdapter {
     @Transactional(propagation = Propagation.REQUIRES_NEW, noRollbackFor = {Exception.class})
     public void onEvent(MovementEvent event) {
         var movement = event.getSource();
-        switch (event.getType()) {
-            case CREATED:
-                if (movement.emptyTargetLocation()) {
-                    try {
-                        MovementTarget movementTarget = properties.findTarget(movement.getTargetLocationGroup());
-                        LOGGER.debug("Call putaway strategy to find target location for movement [{}] in [{}]", movement.getPersistentKey(), movementTarget.getSearchLocationGroupNames());
-                        LocationVO target = putawayApi.findAndAssignNextInLocGroup(
-                                movement.getInitiator(),
-                                movementTarget.getSearchLocationGroupNames(),
-                                movement.getTransportUnitBk().getValue(),
-                                2
-                        );
-                        LOGGER.debug("Putaway strategy returned [{}] as next target for movement [{}]", target.getLocationId(), movement.getPersistentKey());
-                        movement.setTargetLocation(target.getErpCode());
-                    } catch (Exception e) {
-                        LOGGER.error("Error calling the putaway strategy: " + e.getMessage(), e);
-                        movement.addProblem(new ProblemHistory(movement, new Message.Builder().withMessageText(e.getMessage()).build()));
-                    }
-                    repository.save(movement);
-                } else {
-                    LOGGER.debug("Target is already set and not being resolved");
+        if (event.getType() == MovementEvent.Type.CREATED) {
+            if (movement.emptyTargetLocation()) {
+                try {
+                    MovementTarget movementTarget = properties.findTarget(movement.getTargetLocationGroup());
+                    LOGGER.debug("Call putaway strategy to find target location for movement [{}] in [{}]", movement.getPersistentKey(), movementTarget.getSearchLocationGroupNames());
+                    LocationVO target = putawayApi.findAndAssignNextInLocGroup(
+                            movement.getInitiator(),
+                            movementTarget.getSearchLocationGroupNames(),
+                            movement.getTransportUnitBk().getValue(),
+                            2
+                    );
+                    LOGGER.debug("Putaway strategy returned [{}] as next target for movement [{}]", target.getLocationId(), movement.getPersistentKey());
+                    movement.setTargetLocation(target.getErpCode());
+                    eventPublisher.publishEvent(new MovementTargetChangedEvent(movement));
+                } catch (Exception e) {
+                    LOGGER.error("Error calling the putaway strategy: " + e.getMessage(), e);
+                    movement.addProblem(new ProblemHistory(movement, new Message.Builder().withMessageText(e.getMessage()).build()));
                 }
-                break;
-            default:
+                repository.save(movement);
+            } else {
+                LOGGER.debug("Target is already set and not being resolved");
+            }
         }
     }
 }

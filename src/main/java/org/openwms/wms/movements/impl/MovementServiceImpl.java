@@ -323,8 +323,8 @@ class MovementServiceImpl implements MovementService {
      */
     @Measured
     @Override
-    public List<MovementVO> findForTU(@NotEmpty String barcode) {
-        var all = repository.findByTransportUnitBkAndStateIsNot(Barcode.of(barcode), DefaultMovementState.DONE);
+    public List<MovementVO> findForTuAndStates(@NotEmpty String barcode, @NotEmpty String... states) {
+        var all = repository.findByTransportUnitBkAndStateIn(Barcode.of(barcode), Arrays.stream(states).map(DefaultMovementState::valueOf).collect(Collectors.toList()));
         if (all.isEmpty()) {
             LOGGER.debug("No Movements for TU [{}] in active state", barcode);
             return Collections.emptyList();

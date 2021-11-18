@@ -59,4 +59,16 @@ public interface MovementApi {
     List<MovementVO> findForStateAndTypes(
             @RequestParam("state") String state,
             @RequestParam("types") MovementType... types);
+
+    /**
+     * Find and return all {@code Movement}s order for {@code TransportUnit}s.
+     *
+     * @param barcode The business key of the TransportUnit
+     * @param states A list of states the Movements must resist in
+     * @return A list of all instances, never {@literal null}
+     */
+    @GetMapping(value = "v1/movements", params = {"barcode", "states"})
+    List<MovementVO> findForTuAndStates(
+            @RequestParam("barcode") String barcode,
+            @RequestParam("states") String... states);
 }

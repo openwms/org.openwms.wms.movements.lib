@@ -2,13 +2,11 @@
 **TMS Movement Service** allows creating manual `Movement` tasks for `TransportUnits` in warehouses. In general a `Movement` always refer to
 a `TransportUnit` that needs to be moved from a source `Location` to a target `Location`.
 
-[comment]: <> ( end::[]
-
 ## Features
 
 * Different types of Movements exist: Inbound, Outbound, Replenishment, Reconciliation etc.
 * The type of Movement can be given at creation, or it is trying to be resolved from the Movement attributes
-* Movements can be grouped into batches
+* Movements can be grouped into groups
 
 ## Release
 
