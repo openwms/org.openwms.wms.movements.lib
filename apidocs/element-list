@@ -10,5 +10,6 @@ org.openwms.wms.movements.events.api
 org.openwms.wms.movements.impl
 org.openwms.wms.movements.impl.handler
 org.openwms.wms.movements.spi
+org.openwms.wms.movements.spi.common
 org.openwms.wms.movements.spi.common.putaway
 org.openwms.wms.movements.ui
