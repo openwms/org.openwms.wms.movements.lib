@@ -120,6 +120,8 @@ owms:
     common:
       tu:
         exchange-name: common.tu.commands
+      tx:
+        exchange-name: common.tx.commands
     movements:
       exchange-name: movements.commands
       movement:

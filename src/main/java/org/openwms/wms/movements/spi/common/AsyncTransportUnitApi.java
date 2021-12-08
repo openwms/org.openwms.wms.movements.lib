@@ -18,7 +18,7 @@ package org.openwms.wms.movements.spi.common;
 import org.openwms.common.transport.api.commands.Command;
 
 /**
- * A AsyncTransportUnitApi is able to process Commands asynchronously.
+ * A AsyncTransportUnitApi accepts asynchronous TransportUnit commands.
  *
  * @author Heiko Scherrer
  */

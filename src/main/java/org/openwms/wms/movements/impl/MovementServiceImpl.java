@@ -253,10 +253,11 @@ class MovementServiceImpl implements MovementService {
             movement.setTransportUnitBk(Barcode.of(vo.getTransportUnitBk()));
         }
         transportUnitApi.moveTU(movement.getTransportUnitBk().getValue(), sourceLocation.getLocationId());
+        String previousLocation = movement.getSourceLocation();
         movement.setSourceLocation(sourceLocation.getErpCode());
         movement.setSourceLocationGroupName(sourceLocation.getLocationGroupName());
         movement = repository.save(movement);
-        eventPublisher.publishEvent(new MovementEvent(movement, MovementEvent.Type.MOVED));
+        eventPublisher.publishEvent(new MovementEvent(movement, MovementEvent.Type.MOVED, previousLocation));
         return convert(movement);
     }
 
@@ -276,10 +277,11 @@ class MovementServiceImpl implements MovementService {
                     : movement.getTransportUnitBk().getValue(), location.getLocationId());
             movement.setState(movementStateResolver.getCompletedState());
             movement.setEndDate(ZonedDateTime.now());
+            String previousLocation = location.getErpCode();
             movement.setTargetLocation(vo.getTarget());
             movement.setTargetLocationGroup(vo.getTarget());
             movement = repository.save(movement);
-            eventPublisher.publishEvent(new MovementEvent(movement, MovementEvent.Type.COMPLETED));
+            eventPublisher.publishEvent(new MovementEvent(movement, MovementEvent.Type.COMPLETED, previousLocation));
         } else {
             LOGGER.info("Movement [{}] is already in state [{}] and cannot be completed", pKey, movement.getState());
         }

@@ -16,6 +16,7 @@
 package org.openwms.wms.movements.impl;
 
 import org.openwms.core.event.RootApplicationEvent;
+import org.springframework.util.Assert;
 
 /**
  * A MovementEvent signals changes on a {@link Movement}s lifecycle.
@@ -25,6 +26,7 @@ import org.openwms.core.event.RootApplicationEvent;
 public class MovementEvent extends RootApplicationEvent {
 
     private final Type type;
+    private String previousLocation;
 
     public enum Type {
         CREATED, CANCELLED, COMPLETED, MOVED
@@ -32,10 +34,15 @@ public class MovementEvent extends RootApplicationEvent {
 
     public MovementEvent(Movement movement, Type type) {
         super(movement);
-        if (type == null) {
-            throw new IllegalArgumentException("null type");
-        }
+        Assert.notNull(type, "type must not be null");
         this.type = type;
+    }
+
+    public MovementEvent(Movement movement, Type type, String previousLocation) {
+        super(movement);
+        Assert.notNull(type, "type must not be null");
+        this.type = type;
+        this.previousLocation = previousLocation;
     }
 
     @Override
@@ -45,5 +52,9 @@ public class MovementEvent extends RootApplicationEvent {
 
     public Type getType() {
         return type;
+    }
+
+    public String getPreviousLocation() {
+        return previousLocation;
     }
 }

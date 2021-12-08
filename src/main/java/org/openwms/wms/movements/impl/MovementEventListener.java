@@ -16,9 +16,13 @@
 package org.openwms.wms.movements.impl;
 
 import org.ameba.exception.NotFoundException;
+import org.ameba.http.identity.IdentityContextHolder;
 import org.ameba.i18n.Translator;
 import org.openwms.common.location.api.LocationApi;
 import org.openwms.common.location.api.LocationVO;
+import org.openwms.common.transactions.api.TransactionBuilder;
+import org.openwms.common.transactions.api.commands.AsyncTransactionApi;
+import org.openwms.common.transactions.api.commands.TransactionCommand;
 import org.openwms.common.transport.api.commands.TUCommand;
 import org.openwms.common.transport.api.messages.TransportUnitMO;
 import org.openwms.wms.movements.spi.common.AsyncTransportUnitApi;
@@ -27,7 +31,10 @@ import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.util.Optional;
 
+import static org.openwms.common.transactions.api.commands.TransactionCommand.Type.CREATE;
 import static org.openwms.wms.movements.MovementsMessages.LOCATION_NOT_FOUND_BY_ERP_CODE;
+import static org.openwms.wms.movements.MovementsMessages.MSG_MOVEMENT_COMPLETED;
+import static org.openwms.wms.movements.MovementsMessages.MSG_MOVEMENT_MOVED;
 
 /**
  * A MovementEventListener.
@@ -40,11 +47,52 @@ class MovementEventListener {
     private final Translator translator;
     private final LocationApi locationApi;
     private final AsyncTransportUnitApi asyncTransportUnitApi;
+    private final AsyncTransactionApi asyncTransactionApi;
 
-    MovementEventListener(Translator translator, LocationApi locationApi, AsyncTransportUnitApi asyncTransportUnitApi) {
+    MovementEventListener(Translator translator, LocationApi locationApi, AsyncTransportUnitApi asyncTransportUnitApi, AsyncTransactionApi asyncTransactionApi) {
         this.translator = translator;
         this.locationApi = locationApi;
         this.asyncTransportUnitApi = asyncTransportUnitApi;
+        this.asyncTransactionApi = asyncTransactionApi;
+    }
+
+    @TransactionalEventListener
+    public void onEvent(MovementEvent event) {
+        switch (event.getType()) {
+            case MOVED:
+                asyncTransactionApi.process(TransactionCommand.of(CREATE,
+                        TransactionBuilder.aTransactionVO()
+                                .withCreatedByUser(IdentityContextHolder.getCurrentIdentity())
+                                .withSender("movements-service")
+                                .withType(MSG_MOVEMENT_MOVED)
+                                .withDescription(translator.translate(MSG_MOVEMENT_MOVED,
+                                        event.getSource().getTransportUnitBk(),
+                                        event.getPreviousLocation(),
+                                        event.getSource().getSourceLocation()))
+                                .withDetail("transportUnitBK", event.getSource().getTransportUnitBk().getValue())
+                                .withDetail("previousLocation", event.getPreviousLocation())
+                                .withDetail("actualLocation", event.getSource().getSourceLocation())
+                                .build()
+                ));
+                break;
+            case COMPLETED:
+                asyncTransactionApi.process(TransactionCommand.of(CREATE,
+                        TransactionBuilder.aTransactionVO()
+                                .withCreatedByUser(IdentityContextHolder.getCurrentIdentity())
+                                .withSender("movements-service")
+                                .withType(MSG_MOVEMENT_COMPLETED)
+                                .withDescription(translator.translate(MSG_MOVEMENT_COMPLETED,
+                                        event.getSource().getTransportUnitBk(),
+                                        event.getPreviousLocation(),
+                                        event.getSource().getSourceLocation()))
+                                .withDetail("transportUnitBK", event.getSource().getTransportUnitBk().getValue())
+                                .withDetail("previousLocation", event.getPreviousLocation())
+                                .withDetail("actualLocation", event.getSource().getTargetLocation())
+                                .build()
+                ));
+                break;
+            default:
+        }
     }
 
     @TransactionalEventListener

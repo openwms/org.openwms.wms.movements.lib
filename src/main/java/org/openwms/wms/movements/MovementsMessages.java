@@ -31,5 +31,9 @@ public final class MovementsMessages {
     /** The Movement can't be moved because it is already completed. */
     public static final String MOVEMENT_COMPLETED_NOT_MOVED = "owms.wms.mov.mov.completedNotMoved";
 
+    /** Message about a move. */
+    public static final String MSG_MOVEMENT_MOVED = "owms.wms.mov.msg.mov.moved";
+    /** Message about a completed movement. */
+    public static final String MSG_MOVEMENT_COMPLETED = "owms.wms.mov.msg.mov.completed";
     private MovementsMessages() {}
 }
