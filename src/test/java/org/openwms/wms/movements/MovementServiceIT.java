@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openwms.wms;
+package org.openwms.wms.movements;
 
 import org.ameba.exception.BusinessRuntimeException;
 import org.ameba.exception.NotFoundException;
@@ -22,13 +22,14 @@ import org.junit.jupiter.api.Test;
 import org.openwms.common.location.api.LocationApi;
 import org.openwms.common.location.api.LocationGroupApi;
 import org.openwms.common.location.api.LocationVO;
+import org.openwms.transactions.api.commands.AsyncTransactionApi;
 import org.openwms.common.transport.api.TransportUnitApi;
 import org.openwms.common.transport.api.TransportUnitVO;
-import org.openwms.wms.movements.MovementService;
 import org.openwms.wms.movements.api.MovementType;
 import org.openwms.wms.movements.api.MovementVO;
 import org.openwms.wms.movements.api.StartMode;
 import org.openwms.wms.movements.impl.Movement;
+import org.openwms.wms.movements.spi.common.AsyncTransportUnitApi;
 import org.openwms.wms.movements.spi.common.putaway.PutawayApi;
 import org.openwms.wms.movements.spi.DefaultMovementState;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +61,10 @@ class MovementServiceIT {
     protected LocationGroupApi locationGroupApi;
     @MockBean
     protected PutawayApi putawayApi;
+    @MockBean
+    protected AsyncTransactionApi asyncTransactionApi;
+    @MockBean
+    protected AsyncTransportUnitApi asyncTransportUnitApi;
     @Autowired
     private MovementService testee;
 

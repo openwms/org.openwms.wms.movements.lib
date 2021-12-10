@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openwms.wms;
+package org.openwms.wms.movements;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
@@ -23,9 +23,11 @@ import org.mockito.Mockito;
 import org.openwms.common.location.api.LocationApi;
 import org.openwms.common.location.api.LocationGroupApi;
 import org.openwms.common.location.api.LocationVO;
+import org.openwms.transactions.api.commands.AsyncTransactionApi;
 import org.openwms.common.transport.api.TransportUnitApi;
 import org.openwms.common.transport.api.TransportUnitVO;
 import org.openwms.wms.movements.api.MovementVO;
+import org.openwms.wms.movements.spi.common.AsyncTransportUnitApi;
 import org.openwms.wms.movements.spi.common.putaway.PutawayApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -70,6 +72,10 @@ class MovementDocumentation {
     protected LocationGroupApi locationGroupApi;
     @MockBean
     protected PutawayApi putawayApi;
+    @MockBean
+    protected AsyncTransactionApi asyncTransactionApi;
+    @MockBean
+    protected AsyncTransportUnitApi asyncTransportUnitApi;
 
     /**
      * Do something before each test method.

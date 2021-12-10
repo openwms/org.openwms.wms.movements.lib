@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openwms.wms;
+package org.openwms.wms.movements;
 
 import org.ameba.test.categories.SpringTestSupport;
 import org.openwms.wms.movements.MovementsRunner;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.aspectj.EnableSpringConfigured;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -35,7 +34,6 @@ import java.lang.annotation.Target;
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@EnableSpringConfigured
 @Inherited
 @SpringTestSupport
 @SpringBootTest(classes = {MovementsRunner.class}, properties = {
