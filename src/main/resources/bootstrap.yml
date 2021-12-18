@@ -120,13 +120,14 @@ owms:
     common:
       tu:
         exchange-name: common.tu.commands
-      tx:
-        exchange-name: common.tx.commands
     movements:
       exchange-name: movements.commands
       movement:
         queue-name: movements-command-queue
         routing-key: movement.command.create
+    transactions:
+      tx:
+        exchange-name: common.tx.commands
   dead-letter:
     exchange-name: dle.inventory
     queue-name: inventory-dl-queue
