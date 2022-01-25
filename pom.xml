@@ -65,7 +65,6 @@
 
     <properties>
         <commons-configuration.version>1.10</commons-configuration.version>
-        <common.transactions.version>1.0.0-SNAPSHOT</common.transactions.version>
         <common.version>1.7.0-SNAPSHOT</common.version>
         <core.version>1.9.0-SNAPSHOT</core.version>
         <guava.version>30.0-jre</guava.version>
@@ -163,12 +162,6 @@
         <dependencies>
             <dependency>
                 <groupId>org.openwms</groupId>
-                <artifactId>org.openwms.common.transactions</artifactId>
-                <version>${common.transactions.version}</version>
-                <classifier>client</classifier>
-            </dependency>
-            <dependency>
-                <groupId>org.openwms</groupId>
                 <artifactId>org.openwms.core.util</artifactId>
                 <version>${core.version}</version>
             </dependency>
@@ -226,12 +219,6 @@
         <dependency>
             <groupId>org.openwms</groupId>
             <artifactId>org.openwms.common.service</artifactId>
-            <classifier>client</classifier>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.openwms</groupId>
-            <artifactId>org.openwms.common.transactions</artifactId>
             <classifier>client</classifier>
             <optional>true</optional>
         </dependency>
