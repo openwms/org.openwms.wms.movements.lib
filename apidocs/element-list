@@ -1,6 +1,8 @@
 org.openwms.common
 org.openwms.common.location
 org.openwms.common.transport
+org.openwms.transactions.api
+org.openwms.transactions.api.commands
 org.openwms.wms.movements
 org.openwms.wms.movements.api
 org.openwms.wms.movements.app
