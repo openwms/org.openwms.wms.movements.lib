@@ -19,6 +19,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import org.ameba.annotation.EnableAspects;
 import org.ameba.app.SpringProfiles;
 import org.ameba.http.PermitAllCorsConfigurationSource;
+import org.ameba.http.ctx.CallContextClientRequestInterceptor;
 import org.ameba.i18n.AbstractSpringTranslator;
 import org.ameba.i18n.Translator;
 import org.ameba.mapping.BeanMapper;
@@ -29,6 +30,7 @@ import org.openwms.wms.movements.impl.MovementRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,6 +40,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.plugin.core.config.EnablePluginRegistries;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -76,6 +79,14 @@ public class MovementModuleConfiguration implements WebMvcConfigurer {
     @Profile(SpringProfiles.DEVELOPMENT_PROFILE)
     @Bean Filter corsFiler() {
         return new CorsFilter(new PermitAllCorsConfigurationSource());
+    }
+
+    @LoadBalanced
+    @Bean
+    RestTemplate aLoadBalanced() {
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getInterceptors().add(new CallContextClientRequestInterceptor());
+        return restTemplate;
     }
 
     @Bean BeanMapper beanMapper() {
