@@ -29,7 +29,7 @@ digraph "oneDegreeRelationshipsDiagram" {
       <TR><TD PORT="c_created" COLSPAN="2" ALIGN="LEFT">c_created</TD><TD PORT="c_created.type" ALIGN="LEFT">timestamp[29,6]</TD></TR>
       <TR><TD PORT="c_updated" COLSPAN="2" ALIGN="LEFT">c_updated</TD><TD PORT="c_updated.type" ALIGN="LEFT">timestamp[29,6]</TD></TR>
       <TR><TD PORT="c_ol" COLSPAN="2" ALIGN="LEFT">c_ol</TD><TD PORT="c_ol.type" ALIGN="LEFT">int8[19]</TD></TR>
-      <TR><TD PORT="c_pid" COLSPAN="2" ALIGN="LEFT">c_pid</TD><TD PORT="c_pid.type" ALIGN="LEFT">varchar[255]</TD></TR>
+      <TR><TD PORT="c_pid" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">c_pid</TD><TD PORT="c_pid.type" ALIGN="LEFT">varchar[255]</TD></TR>
       <TR><TD PORT="c_end_date" COLSPAN="2" ALIGN="LEFT">c_end_date</TD><TD PORT="c_end_date.type" ALIGN="LEFT">timestamp[22]</TD></TR>
       <TR><TD PORT="c_initiator" COLSPAN="2" ALIGN="LEFT">c_initiator</TD><TD PORT="c_initiator.type" ALIGN="LEFT">varchar[255]</TD></TR>
       <TR><TD PORT="c_latest_due" COLSPAN="2" ALIGN="LEFT">c_latest_due</TD><TD PORT="c_latest_due.type" ALIGN="LEFT">timestamp[22]</TD></TR>
@@ -62,7 +62,7 @@ digraph "oneDegreeRelationshipsDiagram" {
       <TR><TD PORT="c_created" COLSPAN="3" ALIGN="LEFT">c_created</TD></TR>
       <TR><TD PORT="c_updated" COLSPAN="3" ALIGN="LEFT">c_updated</TD></TR>
       <TR><TD PORT="c_ol" COLSPAN="3" ALIGN="LEFT">c_ol</TD></TR>
-      <TR><TD PORT="c_pid" COLSPAN="3" ALIGN="LEFT">c_pid</TD></TR>
+      <TR><TD PORT="c_pid" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">c_pid</TD></TR>
       <TR><TD PORT="c_user" COLSPAN="3" ALIGN="LEFT">c_user</TD></TR>
       <TR><TD PORT="c_name" COLSPAN="3" ALIGN="LEFT">c_name</TD></TR>
       <TR><TD PORT="c_state" COLSPAN="3" ALIGN="LEFT">c_state</TD></TR>
@@ -79,7 +79,7 @@ digraph "oneDegreeRelationshipsDiagram" {
       <TR><TD PORT="c_created" COLSPAN="3" ALIGN="LEFT">c_created</TD></TR>
       <TR><TD PORT="c_updated" COLSPAN="3" ALIGN="LEFT">c_updated</TD></TR>
       <TR><TD PORT="c_ol" COLSPAN="3" ALIGN="LEFT">c_ol</TD></TR>
-      <TR><TD PORT="c_pid" COLSPAN="3" ALIGN="LEFT">c_pid</TD></TR>
+      <TR><TD PORT="c_pid" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">c_pid</TD></TR>
       <TR><TD PORT="c_no" COLSPAN="3" ALIGN="LEFT">c_no</TD></TR>
       <TR><TD PORT="c_message" COLSPAN="3" ALIGN="LEFT">c_message</TD></TR>
       <TR><TD PORT="c_occurred" COLSPAN="3" ALIGN="LEFT">c_occurred</TD></TR>
