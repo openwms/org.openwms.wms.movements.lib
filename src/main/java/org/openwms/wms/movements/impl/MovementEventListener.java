@@ -88,7 +88,7 @@ class MovementEventListener {
                                         event.getSource().getSourceLocation()))
                                 .withDetail("transportUnitBK", event.getSource().getTransportUnitBk().getValue())
                                 .withDetail("previousLocation", event.getPreviousLocation())
-                                .withDetail("actualLocation", event.getSource().getTargetLocation())
+                                .withDetail("actualLocation", event.getSource().getSourceLocation())
                                 .build()
                 ));
                 break;

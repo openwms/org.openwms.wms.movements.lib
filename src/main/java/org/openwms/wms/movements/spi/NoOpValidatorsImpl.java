@@ -19,10 +19,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
 /**
- * A DefaultValidatorsImpl.
+ * A NoOpValidatorsImpl is a Spring managed Component that implements the default interface of {@link Validators} without further operation.
  *
  * @author Heiko Scherrer
  */
 @Validated
 @Component
-class DefaultValidatorsImpl implements Validators { }
+class NoOpValidatorsImpl implements Validators { }

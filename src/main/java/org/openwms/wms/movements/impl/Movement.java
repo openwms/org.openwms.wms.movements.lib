@@ -190,6 +190,15 @@ public class Movement extends ApplicationEntity implements Serializable {
         }
     }
 
+    /**
+     * Checks if this {@code Movement} has a {@code SKU} set.
+     *
+     * @return {@literal true} if so
+     */
+    public boolean hasSKU() {
+        return this.sku != null && !this.sku.isEmpty();
+    }
+
     /*~ --------------- Accessors ---------------- */
     public Barcode getTransportUnitBk() {
         return transportUnitBk;

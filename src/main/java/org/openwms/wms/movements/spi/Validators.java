@@ -26,6 +26,14 @@ import javax.validation.constraints.NotNull;
  */
 public interface Validators {
 
+    /**
+     * An {@code existingMovement} to the new {@code location} must be validated if it is allowed to be moved.
+     *
+     * @param existingMovement The persisted instance of the Movement
+     * @param movement Contains all the data where to move to
+     * @return The updated Movement information
+     * @throws org.ameba.exception.BusinessRuntimeException in case moving it is not allowed
+     */
     default Movement onMove(final @NotNull Movement existingMovement, final @NotNull Movement movement) {
         return existingMovement;
     }
