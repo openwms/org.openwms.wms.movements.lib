@@ -37,7 +37,9 @@ public interface MovementRepository extends JpaRepository<Movement, Long> {
 
     Optional<Movement> findBypKey(String pKey);
 
-    List<Movement> findByTransportUnitBkAndStateIn(Barcode transportUnitBk, List<DefaultMovementState> states);
+    List<Movement> findByTransportUnitBkAndStateIn(
+            Barcode transportUnitBk,
+            List<DefaultMovementState> states);
 
     @Query("select m from Movement m where m.type = :type and m.state = :state and (m.sourceLocationGroupName in :sources or m.sourceLocation in :sources or null = :sources) order by m.createDt")
     List<Movement> findByTypeAndStateAndSource(

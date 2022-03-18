@@ -333,6 +333,7 @@ public class Movement extends ApplicationEntity implements Serializable {
     public String toString() {
         return "Movement{" +
                 "transportUnitBk=" + transportUnitBk +
+                ", pKey=" + getPersistentKey() +
                 ", type=" + type +
                 ", initiator=" + initiator +
                 ", priority=" + priority +

@@ -65,6 +65,21 @@ public class TransactionVO extends AbstractBase<TransactionVO> {
     @Size(max = 255)
     private String sender;
 
+    /** An id to a dataset the Transaction is related to. */
+    @JsonProperty("senderId")
+    @Size(max = 255)
+    private String senderId;
+
+    /** A category name, like Reconciliation or Replenishment the Transaction is part of. */
+    @JsonProperty("category")
+    @Size(max = 255)
+    private String category;
+
+    /** An id to request (business transaction) the Transaction was part of. */
+    @JsonProperty("traceId")
+    @Size(max = 255)
+    private String traceId;
+
     /** Arbitrary detail information with values according to the specific Transaction. */
     @JsonProperty("details")
     private Map<String, String> details;
@@ -110,6 +125,30 @@ public class TransactionVO extends AbstractBase<TransactionVO> {
         this.sender = sender;
     }
 
+    public String getSenderId() {
+        return senderId;
+    }
+
+    public void setSenderId(String senderId) {
+        this.senderId = senderId;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public String getTraceId() {
+        return traceId;
+    }
+
+    public void setTraceId(String traceId) {
+        this.traceId = traceId;
+    }
+
     public Map<String, String> getDetails() {
         return details;
     }
@@ -125,20 +164,35 @@ public class TransactionVO extends AbstractBase<TransactionVO> {
         this.details.put(key, value);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * All fields.
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof TransactionVO)) return false;
         if (!super.equals(o)) return false;
         TransactionVO that = (TransactionVO) o;
-        return Objects.equals(pKey, that.pKey) && Objects.equals(description, that.description) && Objects.equals(type, that.type) && Objects.equals(createdByUser, that.createdByUser) && Objects.equals(sender, that.sender) && Objects.equals(details, that.details);
+        return Objects.equals(pKey, that.pKey) && Objects.equals(description, that.description) && Objects.equals(type, that.type) && Objects.equals(createdByUser, that.createdByUser) && Objects.equals(sender, that.sender) && Objects.equals(senderId, that.senderId) && Objects.equals(category, that.category) && Objects.equals(traceId, that.traceId) && Objects.equals(details, that.details);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * All fields.
+     */
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), pKey, description, type, createdByUser, sender, details);
+        return Objects.hash(super.hashCode(), pKey, description, type, createdByUser, sender, senderId, category, traceId, details);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * All fields.
+     */
     @Override
     public String toString() {
         return new StringJoiner(", ", TransactionVO.class.getSimpleName() + "[", "]")
@@ -147,6 +201,9 @@ public class TransactionVO extends AbstractBase<TransactionVO> {
                 .add("type='" + type + "'")
                 .add("createdByUser='" + createdByUser + "'")
                 .add("sender='" + sender + "'")
+                .add("senderId='" + senderId + "'")
+                .add("category='" + category + "'")
+                .add("traceId='" + traceId + "'")
                 .add("details=" + details)
                 .toString();
     }

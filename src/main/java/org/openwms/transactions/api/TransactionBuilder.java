@@ -54,6 +54,16 @@ public final class TransactionBuilder {
         return this;
     }
 
+    public TransactionBuilder withSenderId(String senderId) {
+        transactionVO.setSenderId(senderId);
+        return this;
+    }
+
+    public TransactionBuilder withCategory(String category) {
+        transactionVO.setCategory(category);
+        return this;
+    }
+
     public TransactionBuilder withDetail(String key, String value) {
         transactionVO.addDetail(key, value);
         return this;

@@ -239,8 +239,8 @@ class MovementServiceImpl implements MovementService {
     @Measured
     @Override
     public MovementVO move(@NotEmpty String pKey, @Valid @NotNull MovementVO vo) {
-        Movement movement = findInternal(pKey);
-        movement = validators.onMove(movement, mapper.map(vo, Movement.class));
+        var movement = findInternal(pKey);
+        movement = validators.onMove(movement, vo.getSourceLocation(), mapper.map(vo, Movement.class));
         if (movement.getState() == movementStateResolver.getCompletedState()) {
             throw new BusinessRuntimeException(translator, MOVEMENT_COMPLETED_NOT_MOVED, new String[]{pKey}, pKey);
         }
@@ -253,9 +253,10 @@ class MovementServiceImpl implements MovementService {
             movement.setTransportUnitBk(Barcode.of(vo.getTransportUnitBk()));
         }
         transportUnitApi.moveTU(movement.getTransportUnitBk().getValue(), sourceLocation.getLocationId());
-        String previousLocation = movement.getSourceLocation();
+        var previousLocation = movement.getSourceLocation();
         movement.setSourceLocation(sourceLocation.getErpCode());
         movement.setSourceLocationGroupName(sourceLocation.getLocationGroupName());
+        LOGGER.debug("Saving Movement [{}]", movement);
         movement = repository.save(movement);
         eventPublisher.publishEvent(new MovementEvent(movement, MovementEvent.Type.MOVED, previousLocation));
         return convert(movement);

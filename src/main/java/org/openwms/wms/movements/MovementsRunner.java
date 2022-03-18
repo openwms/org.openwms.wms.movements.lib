@@ -15,7 +15,6 @@
  */
 package org.openwms.wms.movements;
 
-import org.ameba.app.BaseConfiguration;
 import org.openwms.transactions.api.commands.AsyncTransactionApi;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -26,7 +25,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author Heiko Scherrer
  */
 @SpringBootApplication(scanBasePackageClasses = {
-        BaseConfiguration.class,
         MovementsRunner.class,
         AsyncTransactionApi.class
 })
