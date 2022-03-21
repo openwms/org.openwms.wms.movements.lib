@@ -21,6 +21,7 @@ import org.openwms.wms.movements.api.MovementVO;
 import org.openwms.wms.movements.impl.ValidationGroups;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -39,8 +40,8 @@ public interface MovementService {
      * @param movement Detailed Movement information
      * @return The created Movement instance
      */
-    MovementVO create(
-            @NotEmpty(groups = ValidationGroups.Movement.Create.class) String bk,
+    @NotNull MovementVO create(
+            @NotBlank(groups = ValidationGroups.Movement.Create.class) String bk,
             @NotNull(groups = ValidationGroups.Movement.Create.class) @Valid MovementVO movement);
 
     /**
@@ -51,7 +52,7 @@ public interface MovementService {
      * @param types The type of Movement
      * @return A list of, never {@literal null}
      */
-    List<MovementVO> findFor(@NotNull MovementState state, @NotEmpty String source, @NotNull MovementType... types);
+    List<MovementVO> findFor(@NotNull MovementState state, @NotBlank String source, @NotEmpty MovementType... types);
 
     /**
      * Get all priorities as a list of strings.
@@ -67,7 +68,7 @@ public interface MovementService {
      * @param vo The Movement data must contain the new source
      * @return The moved instance
      */
-    MovementVO move(@NotEmpty String pKey, @Valid @NotNull MovementVO vo);
+    @NotNull MovementVO move(@NotBlank String pKey, @Valid @NotNull MovementVO vo);
 
     /**
      * Complete a {@code Movement}.
@@ -76,7 +77,7 @@ public interface MovementService {
      * @param vo Required data to set at completion
      * @return The completed instance
      */
-    MovementVO complete(@NotEmpty String pKey, @Valid @NotNull MovementVO vo);
+    @NotNull MovementVO complete(@NotBlank String pKey, @Valid @NotNull MovementVO vo);
 
     /**
      * Cancel an existing {@code Movement}.
@@ -84,14 +85,14 @@ public interface MovementService {
      * @param pKey The identifying persistent key of the Movement to complete
      * @return The cancelled instance
      */
-    MovementVO cancel(@NotEmpty String pKey);
+    @NotNull MovementVO cancel(@NotBlank String pKey);
 
     /**
      * Find and return all existing {@code Movement}s.
      *
      * @return All instances, never {@literal null}
      */
-    List<MovementVO> findAll();
+    @NotNull List<MovementVO> findAll();
 
     /**
      * Find all {@code Movement}s for a {@code TransportUnit} with the given {@code barcode} and {@code states}.
@@ -100,5 +101,5 @@ public interface MovementService {
      * @param states A list of states to consider
      * @return A list of Movements, never {@literal null}
      */
-    List<MovementVO> findForTuAndStates(@NotEmpty String barcode, @NotEmpty String... states);
+    @NotNull List<MovementVO> findForTuAndStates(@NotBlank String barcode, @NotEmpty String... states);
 }

@@ -46,6 +46,7 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
 import javax.validation.Validator;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.ZonedDateTime;
@@ -112,8 +113,8 @@ class MovementServiceImpl implements MovementService {
     @Measured
     @Validated(ValidationGroups.Movement.Create.class)
     @Override
-    public MovementVO create(
-            @NotEmpty(groups = ValidationGroups.Movement.Create.class) String bk,
+    public @NotNull MovementVO create(
+            @NotBlank(groups = ValidationGroups.Movement.Create.class) String bk,
             @NotNull(groups = ValidationGroups.Movement.Create.class) @Valid MovementVO vo) {
         LOGGER.debug("Create a Movement for [{}] with data [{}]", bk, vo);
         validateAndResolveType(vo);
@@ -124,8 +125,7 @@ class MovementServiceImpl implements MovementService {
         try {
             resolveLocation(vo.getTarget());
         } catch ( NotFoundException nfe) {
-            LOGGER.debug("The Movement has no valid target [{}] set, trying to resolve it later",
-                    vo.getTarget());
+            LOGGER.debug("The Movement has no valid target [{}] set, trying to resolve it later", vo.getTarget());
         }
         movement.setInitiatorOrDefault(movement.getInitiator(), "n/a");
         movement.setSourceLocation(sourceLocation.getErpCode());
@@ -198,14 +198,13 @@ class MovementServiceImpl implements MovementService {
      */
     @Measured
     @Override
-    public List<MovementVO> findFor(@NotNull MovementState state, @NotEmpty String source, @NotNull MovementType... types) {
+    public List<MovementVO> findFor(@NotNull MovementState state, @NotBlank String source, @NotEmpty MovementType... types) {
         var sources = locationGroupApi.findByName(source)
                 .map(lg -> lg.streamLocationGroups().map(LocationGroupVO::getName).collect(Collectors.toList()))
                 .orElseGet(() -> Collections.singletonList(source));
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Search for Movements of type [{}] in state [{}] and in [{}]", types, state, sources);
+            LOGGER.debug("Search for Movements of types [{}] in state [{}] and in source [{}]", types, state, sources);
         }
-
         return Arrays.stream(types)
                 .parallel()
                 .map(t -> resolveHandler(t).findInStateAndSource(state, sources))
@@ -238,17 +237,15 @@ class MovementServiceImpl implements MovementService {
     @Validated(ValidationGroups.Movement.Move.class)
     @Measured
     @Override
-    public MovementVO move(@NotEmpty String pKey, @Valid @NotNull MovementVO vo) {
+    public @NotNull MovementVO move(@NotBlank String pKey, @Valid @NotNull MovementVO vo) {
         var movement = findInternal(pKey);
         movement = validators.onMove(movement, vo.getSourceLocation(), mapper.map(vo, Movement.class));
         if (movement.getState() == movementStateResolver.getCompletedState()) {
             throw new BusinessRuntimeException(translator, MOVEMENT_COMPLETED_NOT_MOVED, new String[]{pKey}, pKey);
         }
         movement.setState(DefaultMovementState.valueOf(vo.getState()));
-        if (movement.getStartDate() == null) {
-            movement.setStartDate(ZonedDateTime.now());
-        }
-        LocationVO sourceLocation = resolveLocation(vo.getSourceLocation());
+        movement.initStartDate(ZonedDateTime.now());
+        var sourceLocation = resolveLocation(vo.getSourceLocation());
         if (vo.hasTransportUnitBK()) {
             movement.setTransportUnitBk(Barcode.of(vo.getTransportUnitBk()));
         }
@@ -256,7 +253,7 @@ class MovementServiceImpl implements MovementService {
         var previousLocation = movement.getSourceLocation();
         movement.setSourceLocation(sourceLocation.getErpCode());
         movement.setSourceLocationGroupName(sourceLocation.getLocationGroupName());
-        LOGGER.debug("Saving Movement [{}]", movement);
+        LOGGER.debug("Moving Movement [{}]", movement);
         movement = repository.save(movement);
         eventPublisher.publishEvent(new MovementEvent(movement, MovementEvent.Type.MOVED, previousLocation));
         return convert(movement);
@@ -268,8 +265,8 @@ class MovementServiceImpl implements MovementService {
     @Validated(ValidationGroups.Movement.Complete.class)
     @Measured
     @Override
-    public MovementVO complete(@NotEmpty String pKey, @Valid @NotNull MovementVO vo) {
-        LOGGER.debug("Got request to complete Movement [{}]", vo);
+    public @NotNull MovementVO complete(@NotBlank String pKey, @Valid @NotNull MovementVO vo) {
+        LOGGER.debug("Got request to complete Movement with pKey [{}], [{}]", pKey, vo);
         var movement = findInternal(pKey);
         if (movement.getState().ordinal() < DefaultMovementState.DONE.ordinal()) {
             var location = resolveLocation(vo.getTarget());
@@ -278,7 +275,7 @@ class MovementServiceImpl implements MovementService {
                     : movement.getTransportUnitBk().getValue(), location.getLocationId());
             movement.setState(movementStateResolver.getCompletedState());
             movement.setEndDate(ZonedDateTime.now());
-            String previousLocation = location.getErpCode();
+            var previousLocation = location.getErpCode();
             movement.setTargetLocation(vo.getTarget());
             movement.setTargetLocationGroup(vo.getTarget());
             movement = repository.save(movement);
@@ -294,9 +291,9 @@ class MovementServiceImpl implements MovementService {
      */
     @Measured
     @Override
-    public MovementVO cancel(@NotEmpty String pKey) {
+    public @NotNull MovementVO cancel(@NotBlank String pKey) {
         LOGGER.debug("Got request to cancel Movement with pKey [{}]", pKey);
-        Movement movement = findInternal(pKey);
+        var movement = findInternal(pKey);
         if (movement.getState().ordinal() < DefaultMovementState.CANCELLED.ordinal()) {
             movement.setState(DefaultMovementState.CANCELLED);
             movement.setEndDate(ZonedDateTime.now());
@@ -313,7 +310,7 @@ class MovementServiceImpl implements MovementService {
      */
     @Measured
     @Override
-    public List<MovementVO> findAll() {
+    public @NotNull List<MovementVO> findAll() {
         var all = repository.findAll();
         if (all.isEmpty()) {
             return Collections.emptyList();
@@ -326,13 +323,16 @@ class MovementServiceImpl implements MovementService {
      */
     @Measured
     @Override
-    public List<MovementVO> findForTuAndStates(@NotEmpty String barcode, @NotEmpty String... states) {
-        var all = repository.findByTransportUnitBkAndStateIn(Barcode.of(barcode), Arrays.stream(states).map(DefaultMovementState::valueOf).collect(Collectors.toList()));
+    public @NotNull List<MovementVO> findForTuAndStates(@NotBlank String barcode, @NotEmpty String... states) {
+        var all = repository.findByTransportUnitBkAndStateIn(
+                Barcode.of(barcode),
+                Arrays.stream(states).map(DefaultMovementState::valueOf).collect(Collectors.toList())
+        );
         if (all.isEmpty()) {
-            LOGGER.debug("No Movements for TU [{}] in active state", barcode);
+            LOGGER.debug("No Movements for TU [{}] in states [{}]", barcode, states);
             return Collections.emptyList();
         }
-        LOGGER.debug("Movements for TU [{}] in active state exist", barcode);
+        LOGGER.debug("Movements for TU [{}] in states [{}] exist", barcode, states);
         return all.stream().map(this::convert).collect(Collectors.toList());
     }
 

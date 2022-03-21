@@ -199,6 +199,17 @@ public class Movement extends ApplicationEntity implements Serializable {
         return this.sku != null && !this.sku.isEmpty();
     }
 
+    /**
+     * Set a {@code startDate} for this {@code Movement} if not already set.
+     *
+     * @param startDate The start date to set
+     */
+    public void initStartDate(ZonedDateTime startDate) {
+        if (this.startDate == null) {
+            this.startDate = startDate;
+        }
+    }
+
     /*~ --------------- Accessors ---------------- */
     public Barcode getTransportUnitBk() {
         return transportUnitBk;
