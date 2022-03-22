@@ -110,12 +110,13 @@ public class MovementController extends AbstractWebController {
         return ResponseEntity.ok(service.findAll());
     }
 
-    @GetMapping(value = API_MOVEMENTS, params = {"barcode", "states"})
-    public ResponseEntity<List<MovementVO>> findForTuAndStates(
+    @GetMapping(value = API_MOVEMENTS, params = {"barcode", "types", "states"})
+    public ResponseEntity<List<MovementVO>> findForTuAndTypesAndStates(
             @RequestParam("barcode") String barcode,
-            @RequestParam("states") String... states) {
+            @RequestParam("types") List<String> types,
+            @RequestParam("states") List<String> states) {
 
-        return ResponseEntity.ok(service.findForTuAndStates(barcode, states));
+        return ResponseEntity.ok(service.findForTuAndTypesAndStates(barcode, types, states));
     }
 
     @GetMapping(value = API_MOVEMENTS, params = {"state", "types"})

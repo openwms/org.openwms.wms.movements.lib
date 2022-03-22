@@ -39,6 +39,7 @@ import org.springframework.test.context.jdbc.Sql;
 import javax.persistence.EntityManager;
 import java.util.Optional;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
@@ -176,10 +177,12 @@ class MovementServiceIT {
 
     @Sql(scripts = "classpath:import-TEST.sql")
     @Test
-    void test_findForTU() {
-        var result = testee.findForTuAndStates("4712", "ACTIVE");
+    void test_findForTuAndTypesAndStates() {
+        var result = testee.findForTuAndTypesAndStates("4712", asList("OUTBOUND"), asList("ACTIVE"));
         assertThat(result).hasSize(1);
-        result = testee.findForTuAndStates("4713", "ACTIVE");
+        result = testee.findForTuAndTypesAndStates("4713", asList("OUTBOUND"), asList("ACTIVE"));
+        assertThat(result).isEmpty();
+        result = testee.findForTuAndTypesAndStates("4713", asList("INBOUND"), asList("DONE"));
         assertThat(result).isEmpty();
     }
 

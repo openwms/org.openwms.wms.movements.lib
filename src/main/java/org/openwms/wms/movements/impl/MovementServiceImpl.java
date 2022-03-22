@@ -268,6 +268,7 @@ class MovementServiceImpl implements MovementService {
     public @NotNull MovementVO complete(@NotBlank String pKey, @Valid @NotNull MovementVO vo) {
         LOGGER.debug("Got request to complete Movement with pKey [{}], [{}]", pKey, vo);
         var movement = findInternal(pKey);
+        movement = validators.onMove(movement, vo.getTarget(), mapper.map(vo, Movement.class));
         if (movement.getState().ordinal() < DefaultMovementState.DONE.ordinal()) {
             var location = resolveLocation(vo.getTarget());
             transportUnitApi.moveTU(vo.hasTransportUnitBK()
@@ -323,10 +324,11 @@ class MovementServiceImpl implements MovementService {
      */
     @Measured
     @Override
-    public @NotNull List<MovementVO> findForTuAndStates(@NotBlank String barcode, @NotEmpty String... states) {
-        var all = repository.findByTransportUnitBkAndStateIn(
+    public List<MovementVO> findForTuAndTypesAndStates(@NotBlank String barcode, @NotEmpty List<String> types, @NotEmpty List<String> states) {
+        var all = repository.findByTransportUnitBkAndTypeInAndStateIn(
                 Barcode.of(barcode),
-                Arrays.stream(states).map(DefaultMovementState::valueOf).collect(Collectors.toList())
+                types.stream().map(MovementType::valueOf).collect(Collectors.toList()),
+                states.stream().map(DefaultMovementState::valueOf).collect(Collectors.toList())
         );
         if (all.isEmpty()) {
             LOGGER.debug("No Movements for TU [{}] in states [{}]", barcode, states);
