@@ -87,12 +87,12 @@ class MovementServiceIT {
 
     @Test void test_create_with_empty_Barcode() {
         MovementVO inboundMove = createInvalidMovement();
-        assertThatThrownBy(() -> testee.create("", inboundMove))
+        assertThatThrownBy(() -> testee.create(" ", inboundMove))
                 .isInstanceOf(ServiceLayerException.class)
-                .hasMessageMatching("create.[a-zA-Z0-9]*: must not be empty.*");
+                .hasMessageMatching("create.[a-zA-Z0-9]*: must not be blank.*");
         assertThatThrownBy(() -> testee.create(null, inboundMove))
                 .isInstanceOf(ServiceLayerException.class)
-                .hasMessageMatching("create.[a-zA-Z0-9]*: must not be empty.*");
+                .hasMessageMatching("create.[a-zA-Z0-9]*: must not be blank.*");
     }
 
     @Test
