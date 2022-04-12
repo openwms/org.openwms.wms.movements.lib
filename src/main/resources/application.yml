@@ -2,14 +2,3 @@ eureka:
   client:
     healthcheck:
       enabled: true
-
-owms:
-  movement:
-    putaway-resolution-enabled: true
-    targets:
-      - name: WAREHOUSE1
-        search-location-group-names: RACK1,RACK2
-        type: INBOUND
-      - name: WAREHOUSE1
-        search-location-group-names: RACK1,RACK2
-        type: REPLENISHMENT

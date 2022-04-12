@@ -201,7 +201,14 @@ spring:
 
 owms:
   movement:
+    putaway-resolution-enabled: true
     targets:
+      - name: WAREHOUSE1
+        search-location-group-names: RACK1,RACK2
+        type: INBOUND
+      - name: WAREHOUSE1
+        search-location-group-names: RACK1,RACK2
+        type: REPLENISHMENT
       - name: ERR_/0001/0000/0000/0000
         search-location-group-names: CLEARING
         type: INBOUND
@@ -213,8 +220,6 @@ spring:
       on-profile: TESTPG
   cloud:
     bootstrap:
-      enabled: false
-    bus:
       enabled: false
     config:
       discovery:
@@ -251,3 +256,17 @@ spring:
     discovery-client-enabled: false
     sender:
       type: rabbit
+
+owms:
+  movement:
+    putaway-resolution-enabled: true
+    targets:
+      - name: WAREHOUSE1
+        search-location-group-names: RACK1,RACK2
+        type: INBOUND
+      - name: WAREHOUSE1
+        search-location-group-names: RACK1,RACK2
+        type: REPLENISHMENT
+      - name: ERR_/0001/0000/0000/0000
+        search-location-group-names: CLEARING
+        type: INBOUND
