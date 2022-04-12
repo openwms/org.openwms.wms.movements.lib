@@ -157,7 +157,7 @@ class MovementServiceImpl implements MovementService {
         Optional<LocationVO> optLocation;
         if (LocationPK.isValid(locationIdentifier)) {
             try {
-                optLocation = locationApi.findLocationByCoordinate(locationIdentifier);
+                optLocation = locationApi.findById(locationIdentifier);
             } catch (Exception ex) {
                 // Any technical reasons
                 throw new ServiceLayerException(ex.getMessage(), ex);
@@ -167,7 +167,7 @@ class MovementServiceImpl implements MovementService {
             }
         } else {
             try {
-                optLocation = locationApi.findLocationByErpCode(locationIdentifier);
+                optLocation = locationApi.findByErpCode(locationIdentifier);
             } catch (Exception ex) {
                 // Any technical reasons
                 throw new ServiceLayerException(ex.getMessage(), ex);

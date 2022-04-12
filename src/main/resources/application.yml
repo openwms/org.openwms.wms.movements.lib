@@ -13,14 +13,3 @@ owms:
       - name: WAREHOUSE1
         search-location-group-names: RACK1,RACK2
         type: REPLENISHMENT
-
----
-spring:
-  profiles: TEST
-
-owms:
-  movement:
-    targets:
-      - name: ERR_/0001/0000/0000/0000
-        search-location-group-names: RACK1,RACK2
-        type: INBOUND

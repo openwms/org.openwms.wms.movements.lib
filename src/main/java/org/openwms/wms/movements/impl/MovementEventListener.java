@@ -19,6 +19,7 @@ import org.ameba.exception.NotFoundException;
 import org.ameba.i18n.Translator;
 import org.openwms.common.location.api.LocationApi;
 import org.openwms.common.location.api.LocationVO;
+import org.openwms.common.location.api.messages.LocationMO;
 import org.openwms.common.transport.api.commands.TUCommand;
 import org.openwms.common.transport.api.messages.TransportUnitMO;
 import org.openwms.wms.movements.spi.common.AsyncTransportUnitApi;
@@ -49,13 +50,13 @@ class MovementEventListener {
 
     @TransactionalEventListener
     public void onEvent(MovementTargetChangedEvent event) {
-        Optional<LocationVO> locationByErpCode = locationApi.findLocationByErpCode(event.getSource().getTargetLocation());
+        Optional<LocationVO> locationByErpCode = locationApi.findByErpCode(event.getSource().getTargetLocation());
         if (locationByErpCode.isPresent()) {
             asyncTransportUnitApi.process(
                     TUCommand.newBuilder(TUCommand.Type.CHANGE_TARGET)
                             .withTransportUnit(TransportUnitMO.newBuilder()
                                     .withBarcode(event.getSource().getTransportUnitBk().getValue())
-                                    .withTargetLocation(locationByErpCode.get().getLocationId())
+                                    .withTargetLocation(LocationMO.ofId(locationByErpCode.get().getLocationId()))
                                     .build()
                             )
                             .build()

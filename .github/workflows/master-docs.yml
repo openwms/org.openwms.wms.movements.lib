@@ -1,7 +1,7 @@
 name: 'Build Documentation & QA'
 on:
   workflow_run:
-    workflows: ["build_master"]
+    workflows: ["master_build"]
     branches: [ master ]
     types:
       - completed
@@ -39,13 +39,26 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-      - name: Set up JDK 11
+      - name: Set up JDK 17
         uses: actions/setup-java@v1
         with:
-          java-version: 11
+          java-version: 17
+      - name: Cache SonarQube packages
+        uses: actions/cache@v1
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+      - name: Cache Maven packages
+        uses: actions/cache@v1
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
       - name: Install tools
         run: |
-          sudo apt-get install graphviz
+          sudo apt-get update
+          sudo apt-get install graphviz gsfonts graphviz-doc
           git config --global user.email "ci@example.com"
           git config --global user.name "CI Server"
       - name: Site
@@ -63,17 +76,15 @@ jobs:
           -Dscmpublish.pubScmUrl=scm:git:https://openwms:$PUSHKEY@github.com/openwms/org.openwms.tms.movements.git
           -DdeveloperConnectionUrl=scm:git:https://openwms:$PUSHKEY@github.com/openwms/org.openwms.tms.movements.git
           -Dci.buildNumber=$GITHUB_RUN_NUMBER
-          -Pschemagen -B $MAVEN_OPTS
+          -Pschemagen,release -B $MAVEN_OPTS
         env:
           PUSHKEY: ${{ secrets.PUSHKEY }}
       - name: Sonar
         run: >
           ./mvnw clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:3.7.0.1746:sonar
-          -DsurefireArgs="-Dspring.profiles.active=ASYNCHRONOUS,TEST,TESTPG -Dmaven.compiler.debug=true"
-          -Dargs="-Dspring.profiles.active=ASYNCHRONOUS,TEST,TESTPG -Dmaven.compiler.debug=true"
+          -DsurefireArgs="-Dspring.profiles.active=ASYNCHRONOUS,TEST"
           -Dspring.rabbitmq.host=localhost
           -Dsonar.login=$SONAR_TOKEN
-          -Dmaven.compiler.debug=true
           -DSONAR_TOKEN=$SONAR_TOKEN
           -Dci.buildNumber=$GITHUB_RUN_NUMBER
           -Pcoverage -B $MAVEN_OPTS

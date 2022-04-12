@@ -115,7 +115,7 @@ class MovementServiceIT {
     @Test
     void test_create_with_unknown_SourceLocationId() {
         given(transportUnitApi.findTransportUnit("4711")).willReturn(new TransportUnitVO("4711"));
-        given(locationApi.findLocationByCoordinate("UNKN/UNKN/UNKN/UNKN/UNKN")).willReturn(Optional.empty());
+        given(locationApi.findById("UNKN/UNKN/UNKN/UNKN/UNKN")).willReturn(Optional.empty());
         var vo = new MovementVO();
         vo.setType(MovementType.INBOUND);
         vo.setSourceLocation("UNKN/UNKN/UNKN/UNKN/UNKN");
@@ -128,7 +128,7 @@ class MovementServiceIT {
     @Test
     void test_create_with_unknown_SourceErpCode() {
         given(transportUnitApi.findTransportUnit("4711")).willReturn(new TransportUnitVO("4711"));
-        given(locationApi.findLocationByErpCode("UNKNOWN")).willReturn(Optional.empty());
+        given(locationApi.findByErpCode("UNKNOWN")).willReturn(Optional.empty());
         var vo = new MovementVO();
         vo.setType(MovementType.INBOUND);
         vo.setSourceLocation("UNKNOWN");
@@ -144,7 +144,7 @@ class MovementServiceIT {
         LocationVO sourceLocation = new LocationVO("PASS/PASS/PASS/PASS/PASS");
         sourceLocation.setErpCode("PASS");
         given(transportUnitApi.findTransportUnit("4711")).willReturn(new TransportUnitVO("4711"));
-        given(locationApi.findLocationByCoordinate("PASS/PASS/PASS/PASS/PASS")).willReturn(Optional.of(sourceLocation));
+        given(locationApi.findById("PASS/PASS/PASS/PASS/PASS")).willReturn(Optional.of(sourceLocation));
         var vo = new MovementVO();
         vo.setInitiator("test");
         vo.setType(MovementType.INBOUND);
@@ -225,7 +225,7 @@ class MovementServiceIT {
         LocationVO sourceLocation = new LocationVO("PASS/PASS/PASS/PASS/PASS");
         sourceLocation.setErpCode("PASS");
         sourceLocation.setLocationGroupName("LG");
-        given(locationApi.findLocationByCoordinate("PASS/PASS/PASS/PASS/PASS")).willReturn(Optional.of(sourceLocation));
+        given(locationApi.findById("PASS/PASS/PASS/PASS/PASS")).willReturn(Optional.of(sourceLocation));
         // act & assert
         assertThatThrownBy(() -> testee.move("1002", vo3))
                 .isInstanceOf(BusinessRuntimeException.class)
@@ -239,7 +239,7 @@ class MovementServiceIT {
         LocationVO sourceLocation = new LocationVO("PASS/PASS/PASS/PASS/PASS");
         sourceLocation.setErpCode("PASS");
         sourceLocation.setLocationGroupName("LG");
-        given(locationApi.findLocationByCoordinate("PASS/PASS/PASS/PASS/PASS")).willReturn(Optional.of(sourceLocation));
+        given(locationApi.findById("PASS/PASS/PASS/PASS/PASS")).willReturn(Optional.of(sourceLocation));
         var vo = MovementVO.builder()
                 .sourceLocation("PASS/PASS/PASS/PASS/PASS")
                 .state("INACTIVE")
@@ -283,7 +283,7 @@ class MovementServiceIT {
         LocationVO sourceLocation = new LocationVO("PASS/PASS/PASS/PASS/PASS");
         sourceLocation.setErpCode("ERPCODE");
         sourceLocation.setLocationGroupName("LG");
-        given(locationApi.findLocationByErpCode("ERPCODE")).willReturn(Optional.of(sourceLocation));
+        given(locationApi.findByErpCode("ERPCODE")).willReturn(Optional.of(sourceLocation));
         var vo = MovementVO.builder()
                 .target("ERPCODE")
                 .build();

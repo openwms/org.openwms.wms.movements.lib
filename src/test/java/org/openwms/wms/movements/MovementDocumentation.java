@@ -99,7 +99,7 @@ class MovementDocumentation {
         LocationVO sourceLocation = new LocationVO("WE__/0001/0000/0000/0000");
         sourceLocation.setErpCode("WE_01");
         sourceLocation.setLocationGroupName("WE");
-        given(locationApi.findLocationByErpCode("WE_01")).willReturn(Optional.of(sourceLocation));
+        given(locationApi.findByErpCode("WE_01")).willReturn(Optional.of(sourceLocation));
 
         MovementVO m = new MovementVO();
         m.setInitiator("test");
@@ -110,9 +110,9 @@ class MovementDocumentation {
                 post("/v1/transport-units/4711/movements")
                         .content(objectMapper.writeValueAsString(m)).contentType(MediaType.APPLICATION_JSON)
         )
+                .andDo(document("move-create"))
                 .andExpect(status().isCreated())
                 .andExpect(header().exists(HttpHeaders.LOCATION))
-                .andDo(document("move-create"))
         ;
     }
 
@@ -144,7 +144,7 @@ class MovementDocumentation {
         LocationVO sourceLocation = new LocationVO("LOC_/0002/0000/0000/0000");
         sourceLocation.setErpCode("LOC2");
         sourceLocation.setLocationGroupName("STOCK");
-        given(locationApi.findLocationByErpCode("LOC2")).willReturn(Optional.of(sourceLocation));
+        given(locationApi.findByErpCode("LOC2")).willReturn(Optional.of(sourceLocation));
 
         MovementVO m = new MovementVO();
         m.setTransportUnitBk("4711");
@@ -166,7 +166,7 @@ class MovementDocumentation {
         LocationVO sourceLocation = new LocationVO("LOC_/0002/0000/0000/0000");
         sourceLocation.setErpCode("LOC2");
         sourceLocation.setLocationGroupName("STOCK");
-        given(locationApi.findLocationByErpCode("LOC2")).willReturn(Optional.of(sourceLocation));
+        given(locationApi.findByErpCode("LOC2")).willReturn(Optional.of(sourceLocation));
 
         MovementVO m = new MovementVO();
         m.setTransportUnitBk("4711");
