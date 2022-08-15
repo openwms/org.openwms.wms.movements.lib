@@ -28,7 +28,7 @@ import java.util.List;
  *
  * @author Heiko Scherrer
  */
-@FeignClient(name = "wms-inventory", qualifier = "putawayApi", decode404 = true)
+@FeignClient(name = "wms-inventory", qualifiers = "putawayApi", decode404 = true)
 public interface PutawayApi {
 
     /**

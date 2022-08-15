@@ -29,7 +29,7 @@ import java.util.List;
  *
  * @author Heiko Scherrer
  */
-@FeignClient(name = "movement-service", qualifier = "movementApi", decode404 = true)
+@FeignClient(name = "movement-service", qualifiers = "movementApi", decode404 = true)
 public interface MovementApi {
 
     /** API version. */
