@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.openwms</groupId>
         <artifactId>org.openwms.parent</artifactId>
-        <version>21</version>
+        <version>23</version>
         <relativePath />
     </parent>
     <artifactId>org.openwms.wms.movements</artifactId>
@@ -71,8 +71,7 @@
         <objenesis.version>3.2</objenesis.version>
         <putaway.version>1.0.0-SNAPSHOT</putaway.version>
         <servo-core.version>0.12.21</servo-core.version>
-        <spring-cloud-dependencies.version>2021.0.3</spring-cloud-dependencies.version>
-        <spring-plugin-core.version>2.0.0.RELEASE</spring-plugin-core.version>
+        <spring-cloud-dependencies.version>2021.0.6</spring-cloud-dependencies.version>
     </properties>
 
     <reporting>
@@ -167,7 +166,7 @@
                 <version>${guava.version}</version>
             </dependency>
             <dependency>
-                <!-- Clash in org.springframework.cloud:spring-cloud-starter-stream-rabbit -->
+                <!-- Clash in org.springframework.cloud:spring-cloud-starter-netflix-eureka-client -->
                 <groupId>com.netflix.servo</groupId>
                 <artifactId>servo-core</artifactId>
                 <version>${servo-core.version}</version>
@@ -207,16 +206,6 @@
                 <version>${spring-cloud-dependencies.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.plugin</groupId>
-                <artifactId>spring-plugin-core</artifactId>
-                <version>${spring-plugin-core.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.plugin</groupId>
-                <artifactId>spring-plugin-metadata</artifactId>
-                <version>${spring-plugin-core.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -478,6 +467,9 @@
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
         </repository>
         <repository>
             <id>spring-milestones</id>
@@ -486,6 +478,9 @@
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
         </repository>
     </repositories>
     <pluginRepositories>
@@ -496,11 +491,17 @@
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
         </pluginRepository>
         <pluginRepository>
             <id>sonatype-nexus-snapshots</id>
             <name>Snapshot Repository</name>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
             <releases>
                 <enabled>false</enabled>
             </releases>
