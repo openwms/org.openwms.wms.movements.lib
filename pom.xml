@@ -72,6 +72,7 @@
         <putaway.version>1.0.0-SNAPSHOT</putaway.version>
         <servo-core.version>0.12.21</servo-core.version>
         <spring-cloud-dependencies.version>2021.0.6</spring-cloud-dependencies.version>
+        <hibernate-jpamodelgen.version>5.6.14.Final</hibernate-jpamodelgen.version>
     </properties>
 
     <reporting>
@@ -97,6 +98,29 @@
     <build>
         <finalName>openwms-wms-movements-lib</finalName>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <compilerArguments>
+                        <processor>
+                            lombok.launch.AnnotationProcessorHider$AnnotationProcessor,org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor
+                        </processor>
+                    </compilerArguments>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.hibernate</groupId>
+                        <artifactId>hibernate-jpamodelgen</artifactId>
+                        <version>5.6.14.Final</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.projectlombok</groupId>
+                        <artifactId>lombok</artifactId>
+                        <version>1.18.24</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
@@ -154,6 +178,11 @@
                 <groupId>commons-configuration</groupId>
                 <artifactId>commons-configuration</artifactId>
                 <version>${commons-configuration.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-jpamodelgen</artifactId>
+                <version>${hibernate-jpamodelgen.version}</version>
             </dependency>
             <dependency>
                 <!-- Clash between spring-boot-starter-test and dozer -->
@@ -335,6 +364,11 @@
             <optional>true</optional>
         </dependency>
         <dependency>
+            <groupId>com.github.dozermapper</groupId>
+            <artifactId>dozer-core</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
             <!-- Need to upgrade Guava from version 11 because of CVE -->
             <!-- Required by eureka-client -->
             <groupId>com.google.guava</groupId>
@@ -370,9 +404,8 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-			<groupId>com.github.dozermapper</groupId>
-			<artifactId>dozer-core</artifactId>
-            <optional>true</optional>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-jpamodelgen</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jolokia</groupId>
