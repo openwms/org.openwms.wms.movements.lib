@@ -26,7 +26,6 @@ import org.ameba.mapping.BeanMapper;
 import org.ameba.mapping.DozerMapperImpl;
 import org.ameba.system.NestedReloadableResourceBundleMessageSource;
 import org.openwms.wms.movements.impl.MovementHandler;
-import org.openwms.wms.movements.impl.MovementRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -59,8 +58,8 @@ import java.util.Properties;
 @EnableTransactionManagement
 @EnableIdentityAwareness
 @EnablePluginRegistries({MovementHandler.class})
-@EnableJpaRepositories(basePackageClasses = MovementRepository.class)
-@EntityScan(basePackageClasses = MovementRepository.class)
+@EnableJpaRepositories({"org.openwms.wms.movements"})
+@EntityScan({"org.openwms.wms.movements"})
 @EnableJpaAuditing
 @EnableAspects(propagateRootCause = true)
 @EnableScheduling
