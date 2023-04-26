@@ -76,7 +76,7 @@ public class MovementController extends AbstractWebController {
                                        HttpServletRequest req) {
 
         movement.setTransportUnitBk(bk);
-        MovementVO created = service.create(bk, movement);
+        var created = service.create(bk, movement);
         return ResponseEntity
                 .created(getLocationURIForCreatedResource(req, created.getPersistentKey()))
                 .body(created);
