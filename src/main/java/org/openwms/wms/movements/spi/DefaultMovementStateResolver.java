@@ -15,6 +15,7 @@
  */
 package org.openwms.wms.movements.spi;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -27,12 +28,22 @@ import org.springframework.stereotype.Component;
 @Component
 class DefaultMovementStateResolver implements MovementStateResolver {
 
+    private final DefaultMovementState newState;
+    private final DefaultMovementState completedState;
+
+    DefaultMovementStateResolver(
+            @Value("${owms.movements.states.new}") String newState,
+            @Value("${owms.movements.states.complete}") String completedState) {
+        this.newState = DefaultMovementState.valueOf(newState);
+        this.completedState = DefaultMovementState.valueOf(completedState);
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
     public DefaultMovementState getNewState() {
-        return DefaultMovementState.ACTIVE;
+        return newState;
     }
 
     /**
@@ -40,6 +51,6 @@ class DefaultMovementStateResolver implements MovementStateResolver {
      */
     @Override
     public DefaultMovementState getCompletedState() {
-        return DefaultMovementState.DONE;
+        return completedState;
     }
 }
