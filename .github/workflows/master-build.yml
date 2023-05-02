@@ -43,6 +43,11 @@ jobs:
               "id": "interface21-releases",
               "username": "${{ secrets.REPO_USERNAME }}",
               "password": "${{ secrets.REPO_PASSWORD }}"
+            },
+            {
+              "id": "sonatype-nexus-snapshots",
+              "username": "${{ secrets.OSS_USERNAME }}",
+              "password": "${{ secrets.OSS_PASSWORD }}"
             }]
       - name: Build
         run: >
