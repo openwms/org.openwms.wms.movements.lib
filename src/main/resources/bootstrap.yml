@@ -42,6 +42,10 @@ owms:
   srv:
     protocol: http
     hostname: localhost
+  movements:
+    states:
+      new: INACTIVE
+      complete: DONE
 
 server:
   port: ${PORT:8134}
