@@ -56,7 +56,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static org.ameba.system.ValidationUtil.validate;
@@ -200,7 +199,7 @@ class MovementServiceImpl implements MovementService {
     @Override
     public List<MovementVO> findFor(@NotNull MovementState state, @NotBlank String source, @NotEmpty MovementType... types) {
         var sources = locationGroupApi.findByName(source)
-                .map(lg -> lg.streamLocationGroups().map(LocationGroupVO::getName).collect(Collectors.toList()))
+                .map(lg -> lg.streamLocationGroups().map(LocationGroupVO::getName).toList())
                 .orElseGet(() -> Collections.singletonList(source));
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Search for Movements of types [{}] in state [{}] and in source [{}]", types, state, sources);
@@ -211,7 +210,7 @@ class MovementServiceImpl implements MovementService {
                 .reduce(new ArrayList<>(), (a, b) -> {
                     a.addAll(b);
                     return a;
-                }).stream().map(this::convert).collect(Collectors.toList());
+                }).stream().map(this::convert).toList();
     }
 
     /**
@@ -223,7 +222,7 @@ class MovementServiceImpl implements MovementService {
         return Arrays.stream(PriorityLevel.values())
                 .filter(Objects::nonNull)
                 .map(Enum::name)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private Movement findInternal(String pKey) {
@@ -316,7 +315,7 @@ class MovementServiceImpl implements MovementService {
         if (all.isEmpty()) {
             return Collections.emptyList();
         }
-        return all.stream().map(this::convert).collect(Collectors.toList());
+        return all.stream().map(this::convert).toList();
     }
 
     /**
@@ -327,15 +326,15 @@ class MovementServiceImpl implements MovementService {
     public List<MovementVO> findForTuAndTypesAndStates(@NotBlank String barcode, @NotEmpty List<String> types, @NotEmpty List<String> states) {
         var all = repository.findByTransportUnitBkAndTypeInAndStateIn(
                 Barcode.of(barcode),
-                types.stream().map(MovementType::valueOf).collect(Collectors.toList()),
-                states.stream().map(DefaultMovementState::valueOf).collect(Collectors.toList())
+                types.stream().map(MovementType::valueOf).toList(),
+                states.stream().map(DefaultMovementState::valueOf).toList()
         );
         if (all.isEmpty()) {
             LOGGER.debug("No Movements for TU [{}] in states [{}]", barcode, states);
             return Collections.emptyList();
         }
         LOGGER.debug("Movements for TU [{}] in states [{}] exist", barcode, states);
-        return all.stream().map(this::convert).collect(Collectors.toList());
+        return all.stream().map(this::convert).toList();
     }
 
     private MovementVO convert(Movement eo) {

@@ -11,7 +11,7 @@
     </parent>
     <artifactId>org.openwms.wms.movements.lib</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <name>OpenWMS.org WMS: Movements Services Library</name>
+    <name>OpenWMS.org WMS: Movements Service Library</name>
     <url>https://openwms.github.io/${project.artifactId}/index.html</url>
 
     <issueManagement>
