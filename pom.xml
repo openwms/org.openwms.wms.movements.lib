@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.openwms</groupId>
         <artifactId>org.openwms.parent</artifactId>
-        <version>23</version>
+        <version>24</version>
         <relativePath />
     </parent>
     <artifactId>org.openwms.wms.movements.lib</artifactId>
@@ -64,12 +64,11 @@
     </ciManagement>
 
     <properties>
-        <commons-configuration.version>1.10</commons-configuration.version>
-        <common.version>2.0.0-SNAPSHOT</common.version>
-        <core.version>2.0.0-SNAPSHOT</core.version>
+        <common.version>2.0.0</common.version>
+        <core.version>2.0.0</core.version>
         <guava.version>30.0-jre</guava.version>
+        <lombok.version>1.18.26</lombok.version> <!-- Keep in sync with boot -->
         <objenesis.version>3.2</objenesis.version>
-        <putaway.version>1.0.0-SNAPSHOT</putaway.version>
         <servo-core.version>0.12.21</servo-core.version>
         <spring-cloud-dependencies.version>2021.0.7</spring-cloud-dependencies.version>
         <hibernate-jpamodelgen.version>5.6.14.Final</hibernate-jpamodelgen.version>
@@ -117,7 +116,7 @@
                     <dependency>
                         <groupId>org.projectlombok</groupId>
                         <artifactId>lombok</artifactId>
-                        <version>1.18.24</version>
+                        <version>${lombok.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -173,12 +172,6 @@
                 <artifactId>servo-core</artifactId>
                 <version>${servo-core.version}</version>
             </dependency>
-			<dependency>
-                <!-- com.netflix.eureka:eureka has an internal clash -->
-                <groupId>commons-configuration</groupId>
-                <artifactId>commons-configuration</artifactId>
-                <version>${commons-configuration.version}</version>
-            </dependency>
             <dependency>
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-jpamodelgen</artifactId>
@@ -202,12 +195,6 @@
                 <classifier>client</classifier>
             </dependency>
             <dependency>
-                <groupId>org.openwms</groupId>
-                <artifactId>org.openwms.wms.putaway</artifactId>
-                <version>${putaway.version}</version>
-                <classifier>client</classifier>
-            </dependency>
-            <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
                 <version>${spring-cloud-dependencies.version}</version>
@@ -228,12 +215,6 @@
         <dependency>
             <groupId>org.openwms</groupId>
             <artifactId>org.openwms.core.util</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.openwms</groupId>
-            <artifactId>org.openwms.wms.putaway</artifactId>
-            <classifier>client</classifier>
             <optional>true</optional>
         </dependency>
 

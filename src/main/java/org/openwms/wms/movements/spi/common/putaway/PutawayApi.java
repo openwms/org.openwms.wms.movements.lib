@@ -16,7 +16,6 @@
 package org.openwms.wms.movements.spi.common.putaway;
 
 import org.openwms.common.location.api.LocationVO;
-import org.openwms.common.putaway.api.PutawayConstants;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,7 +41,7 @@ public interface PutawayApi {
      * @return Assigned Location for Putaway
      * @throws org.ameba.exception.NotFoundException May throw in case no TransportUnit exists
      */
-    @PostMapping(value = PutawayConstants.API_LOCATION_GROUPS,
+    @PostMapping(value = "/v1/location-groups",
             params = {"locationGroupNames", "transportUnitBK", "numberOfExpectedTransportUnits"},
             produces = "application/vnd.openwms.location.single-v1+json")
     LocationVO findAndAssignNextInLocGroup(
