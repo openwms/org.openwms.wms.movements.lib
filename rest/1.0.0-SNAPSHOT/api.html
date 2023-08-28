@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.17">
-<meta name="author" content="(1.0.0-SNAPSHOT-77)">
+<meta name="author" content="(1.0.0-SNAPSHOT-78)">
 <title>OpenWMS.org TMS: RESTful API (Movements Service)</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -443,7 +443,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="header">
 <h1>OpenWMS.org TMS: RESTful API (Movements Service)</h1>
 <div class="details">
-<span id="author" class="author">(1.0.0-SNAPSHOT-77)</span><br>
+<span id="author" class="author">(1.0.0-SNAPSHOT-78)</span><br>
 <span id="revdate">Heiko Scherrer;</span>
 </div>
 <div id="toc" class="toc">
@@ -768,13 +768,13 @@ Host: localhost:8080
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 201 Created
-Location: http://localhost:8080/v1/transport-units/4711/movements/e071ec00-f1c0-49a4-9a27-707723466a13/
+Location: http://localhost:8080/v1/transport-units/4711/movements/4bf1aab5-07e4-468b-9b5d-6695cfd67a6f/
 Content-Type: application/hal+json;charset=UTF-8
 Content-Length: 355
 
 {
   "ol" : 0,
-  "pKey" : "e071ec00-f1c0-49a4-9a27-707723466a13",
+  "pKey" : "4bf1aab5-07e4-468b-9b5d-6695cfd67a6f",
   "transportUnitBk" : "4711",
   "type" : "INBOUND",
   "initiator" : "test",
@@ -784,7 +784,7 @@ Content-Length: 355
   "sourceLocation" : "WE_01",
   "sourceLocationGroupName" : "WE",
   "target" : "ERR_/0001/0000/0000/0000",
-  "createdAt" : "2023-08-28T07:40:54Z"
+  "createdAt" : "2023-08-28T08:00:24Z"
 }</code></pre>
 </div>
 </div>
@@ -821,7 +821,7 @@ Content-Length: 948
   "sourceLocation" : "HRL.10.20.2.0",
   "sourceLocationGroupName" : "STOCK",
   "target" : "WA_01",
-  "createdAt" : "2023-08-28T07:40:53Z"
+  "createdAt" : "2023-08-28T08:00:23Z"
 }, {
   "ol" : 0,
   "pKey" : "1001",
@@ -834,7 +834,7 @@ Content-Length: 948
   "sourceLocation" : "HRL.10.21.2.0",
   "sourceLocationGroupName" : "STOCK",
   "target" : "WA_02",
-  "createdAt" : "2023-08-28T07:40:53Z"
+  "createdAt" : "2023-08-28T08:00:23Z"
 }, {
   "ol" : 0,
   "pKey" : "1002",
@@ -847,7 +847,7 @@ Content-Length: 948
   "sourceLocation" : "HRL.10.22.2.0",
   "sourceLocationGroupName" : "STOCK",
   "target" : "WA_02",
-  "createdAt" : "2023-08-28T07:40:53Z"
+  "createdAt" : "2023-08-28T08:00:23Z"
 } ]</code></pre>
 </div>
 </div>
@@ -914,8 +914,8 @@ Content-Length: 343
   "sourceLocation" : "LOC2",
   "sourceLocationGroupName" : "STOCK",
   "target" : "WA_01",
-  "startedAt" : "2023-08-28T07:40:54Z",
-  "createdAt" : "2023-08-28T07:40:54Z"
+  "startedAt" : "2023-08-28T08:00:24Z",
+  "createdAt" : "2023-08-28T08:00:24Z"
 }</code></pre>
 </div>
 </div>
@@ -976,8 +976,8 @@ Content-Length: 356
   "sourceLocation" : "HRL.10.20.2.0",
   "sourceLocationGroupName" : "STOCK",
   "target" : "WA_01",
-  "finishedAt" : "2023-08-28T07:40:54Z",
-  "createdAt" : "2023-08-28T07:40:54Z"
+  "finishedAt" : "2023-08-28T08:00:24Z",
+  "createdAt" : "2023-08-28T08:00:24Z"
 }</code></pre>
 </div>
 </div>
@@ -1003,7 +1003,7 @@ Unresolved directive in 2-movements.adoc - include::/home/runner/work/org.openwm
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-08-28 07:38:37 UTC
+Last updated 2023-08-28 07:55:31 UTC
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
