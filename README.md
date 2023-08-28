@@ -3,7 +3,7 @@ This service provides essential functionality of the Transport Order Management 
 ability to create _manual_ `Movement` orders or to finish already existing `Movements`.
 
 # Resources
-[![Build status](https://github.com/openwms/org.openwms.wms.movements.lib/action/workflows/master-build/badge.svg)](https://github.com/openwms/org.openwms.wms.movements.lib/action/workflows/master-build)
+[![Build status](https://github.com/openwms/org.openwms.wms.movements.lib/actions/workflows/master_build/badge.svg)](https://github.com/openwms/org.openwms.wms.movements.lib/actions/workflows/master_build)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Quality](https://sonarcloud.io/api/project_badges/measure?project=org.openwms:org.openwms.wms.movements.lib&metric=alert_status)](https://sonarcloud.io/dashboard?id=org.openwms:org.openwms.wms.movements.lib)
 [![Join the chat at https://gitter.im/openwms/org.openwms](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/openwms/org.openwms?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
