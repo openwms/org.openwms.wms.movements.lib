@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 /**
- * This package contains types to connect to other services (Service Provider Interfaces).
+ * This package contains types to connect to services in the common doman.
  */
-package org.openwms.wms.movements.spi;
+package org.openwms.wms.movements.spi.common;
