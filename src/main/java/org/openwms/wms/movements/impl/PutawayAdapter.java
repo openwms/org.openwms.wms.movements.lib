@@ -19,7 +19,6 @@ import org.ameba.annotation.TxService;
 import org.openwms.common.location.api.LocationVO;
 import org.openwms.wms.movements.Message;
 import org.openwms.wms.movements.MovementProperties;
-import org.openwms.wms.movements.MovementTarget;
 import org.openwms.wms.movements.spi.common.putaway.PutawayApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +59,7 @@ class PutawayAdapter {
         if (event.getType() == MovementEvent.Type.CREATED) {
             if (movement.emptyTargetLocation()) {
                 try {
-                    MovementTarget movementTarget = properties.findTarget(movement.getTargetLocationGroup());
+                    var movementTarget = properties.findTarget(movement.getTargetLocationGroup());
                     LOGGER.debug("Call putaway strategy to find target location for movement [{}] in [{}]", movement.getPersistentKey(), movementTarget.getSearchLocationGroupNames());
                     LocationVO target = putawayApi.findAndAssignNextInLocGroup(
                             movement.getInitiator(),

@@ -5,6 +5,10 @@ spring:
     user:
       name: user
       password: sa
+  jackson:
+    date-format: "yyyy-MM-dd'T'HH:mm:ssXXX" # Only matches Dates no Instants!
+    deserialization:
+      read-date-timestamps-as-nanoseconds: false
   jpa:
     mapping-resources:
       - META-INF/movements-orm.xml
@@ -14,8 +18,6 @@ spring:
         jdbc:
           time_zone: UTC
     show-sql: false
-  jackson:
-    date-format: "yyyy-MM-dd'T'HH:mm:ssXXX" # Only matches Dates no Instants!
   main:
     allow-bean-definition-overriding: true
   mvc:
