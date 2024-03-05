@@ -11,46 +11,52 @@ up or dropped off but has no assignment to the human user. The operator/user may
 [[movement-index]]
 === Movement Index
 The index with all possible operations on `Movements` can be retrieved with a GET request:
-
 include::{generated}/move-index/http-request.adoc[]
 
 The response lists all the operations possible on `Movements` with a name and the corresponding href link:
-
 include::{generated}/move-index/http-response.adoc[]
 
 [[movement-create]]
 === Create a Movement
 To create a new `Movement` a client needs to send a `POST` request to `Movements` sub resource of the primary
-`TransportUnits` resource with the required data in the request body. The required data must contain the source where to
-pick up the `TransportUnit` and the target where to drop it. The `TransportUnit` that shall be moved is directly
+`TransportUnits` resource with the data in the request body. The required data must contain the source where to
+pick up the `TransportUnit` and the target where to drop it off. The `TransportUnit` that shall be moved is directly
 referenced as the primary resource in the URI.
-
 include::{generated}/move-create/http-request.adoc[]
+include::{generated}/move-create/request-fields.adoc[]
 
 If the `Movement` has been created successfully, the server returns the URI to the created resource:
-
 include::{generated}/move-create/http-response.adoc[]
+include::{generated}/move-create/response-fields.adoc[]
 
-[[movement-findForStateAndTypesAndSource]]
+[[movement-findAll]]
 === Find all Movements
-A HTTP `GET` request to the primary resource without any query parameters returns an array of all existing `Movements`.
-
+An HTTP `GET` request to the primary resource without any query parameters returns an array of all existing `Movements`.
 include::{generated}/move-find-all/http-request.adoc[]
 
 Returns in this example an array of three `Movements` or an empty array if none exist:
-
 include::{generated}/move-find-all/http-response.adoc[]
 
 [[movement-findForStateAndTypesAndSource]]
-=== Find Movements
-A HTTP `GET` request to the primary resource with additional query parameters is required to find `Movements` in a
-particular `state`, `type` and `source`.
-
-include::{generated}/order-find-all/http-request.adoc[]
+=== Find Movements for a TransportUnit in States and of Types
+An HTTP `GET` request to the primary resource with additional query parameters is required to find `Movements` in particular `states` of
+particular `types` for a `TransportUnit` identified by its `barcode`.
+include::{generated}/move-find-tuTypesStates/http-request.adoc[]
+include::{generated}/move-find-tuTypesStates/request-parameters.adoc[]
 
 Returns an array of `Movements` or an empty array:
+include::{generated}/move-find-tuTypesStates/http-response.adoc[]
+include::{generated}/move-find-tuTypesStates/response-fields.adoc[]
 
-include::{generated}/order-find-all/http-response.adoc[]
+[[movement-findForStateAndTypesAndSource]]
+=== Find Movements in State of Types and at Source
+An HTTP `GET` request to the primary resource with additional query parameters is required to find `Movements` in a particular `state`, of
+particular `types` and at a given `source`.
+include::{generated}/move-find-stateTypesSource/http-request.adoc[]
+include::{generated}/move-find-stateTypesSource/request-parameters.adoc[]
+
+Returns an array of `Movements` or an empty array:
+include::{generated}/move-find-stateTypesSource/http-response.adoc[]
 
 [[movement-move]]
 === Move a Movement
@@ -84,7 +90,7 @@ include::{generated}/move-cancel/http-response.adoc[]
 === Complete a Movement
 To complete a `Movement` a client needs to explicitly send the `COMPLETE` action along a `POST` request to the
 `Movement` resource. This completes the `Movement` and sets the target to the required `target` that is passed from the
-caller in the response body.
+caller in the response body. If the `Movement` has already been completed no changes are done.
 
 A valid request looks like:
 include::{generated}/move-complete/http-request.adoc[]
