@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static org.openwms.wms.movements.api.MovementApi.API_MOVEMENTS;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -61,6 +62,7 @@ public class MovementController extends AbstractWebController {
                 new Index(
                         linkTo(methodOn(MovementController.class).create("transportUnitBK", new MovementVO(), null)).withRel("movement-create"),
                         linkTo(methodOn(MovementController.class).findAll()).withRel("movement-findAll"),
+                        linkTo(methodOn(MovementController.class).findForTuAndTypesAndStates("transportUnitBK", asList(MovementType.INBOUND), asList("state"))).withRel("movement-findForTuAndTypesAndStates"),
                         linkTo(methodOn(MovementController.class).findForStateAndTypesAndSource("state", "source", MovementType.INBOUND)).withRel("movement-findForStateAndTypesAndSource"),
                         linkTo(methodOn(MovementController.class).move("pKey", new MovementVO())).withRel("movement-move"),
                         linkTo(methodOn(MovementController.class).cancel("pKey")).withRel("movement-cancel"),
@@ -113,7 +115,7 @@ public class MovementController extends AbstractWebController {
     @GetMapping(value = API_MOVEMENTS, params = {"barcode", "types", "states"})
     public ResponseEntity<List<MovementVO>> findForTuAndTypesAndStates(
             @RequestParam("barcode") String barcode,
-            @RequestParam("types") List<String> types,
+            @RequestParam("types") List<MovementType> types,
             @RequestParam("states") List<String> states) {
 
         return ResponseEntity.ok(service.findForTuAndTypesAndStates(barcode, types, states));

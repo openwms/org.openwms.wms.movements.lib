@@ -22,16 +22,16 @@ import org.junit.jupiter.api.Test;
 import org.openwms.common.location.api.LocationApi;
 import org.openwms.common.location.api.LocationGroupApi;
 import org.openwms.common.location.api.LocationVO;
-import org.openwms.transactions.api.commands.AsyncTransactionApi;
 import org.openwms.common.transport.api.TransportUnitApi;
 import org.openwms.common.transport.api.TransportUnitVO;
+import org.openwms.transactions.api.commands.AsyncTransactionApi;
 import org.openwms.wms.movements.api.MovementType;
 import org.openwms.wms.movements.api.MovementVO;
 import org.openwms.wms.movements.api.StartMode;
 import org.openwms.wms.movements.impl.Movement;
+import org.openwms.wms.movements.spi.DefaultMovementState;
 import org.openwms.wms.movements.spi.common.AsyncTransportUnitApi;
 import org.openwms.wms.movements.spi.common.putaway.PutawayApi;
-import org.openwms.wms.movements.spi.DefaultMovementState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.jdbc.Sql;
@@ -87,7 +87,7 @@ class MovementServiceIT {
     }
 
     @Test void test_create_with_empty_Barcode() {
-        MovementVO inboundMove = createInvalidMovement();
+        var inboundMove = createInvalidMovement();
         assertThatThrownBy(() -> testee.create(" ", inboundMove))
                 .isInstanceOf(ServiceLayerException.class)
                 .hasMessageMatching("create.[a-zA-Z0-9]*: must not be blank.*");
@@ -141,7 +141,7 @@ class MovementServiceIT {
     @Test
     void test_create_with_success() {
         //arrange
-        LocationVO sourceLocation = new LocationVO("PASS/PASS/PASS/PASS/PASS");
+        var sourceLocation = new LocationVO("PASS/PASS/PASS/PASS/PASS");
         sourceLocation.setErpCode("PASS");
         given(transportUnitApi.findTransportUnit("4711")).willReturn(new TransportUnitVO("4711"));
         given(locationApi.findById("PASS/PASS/PASS/PASS/PASS")).willReturn(Optional.of(sourceLocation));
@@ -152,7 +152,7 @@ class MovementServiceIT {
         vo.setTarget("KNOWN");
 
         // act
-        MovementVO result = testee.create("4711", vo);
+        var result = testee.create("4711", vo);
 
         // assert
         assertThat(result.getPersistentKey()).isNotEmpty();
@@ -178,11 +178,11 @@ class MovementServiceIT {
     @Sql(scripts = "classpath:import-TEST.sql")
     @Test
     void test_findForTuAndTypesAndStates() {
-        var result = testee.findForTuAndTypesAndStates("4712", asList("OUTBOUND"), asList("ACTIVE"));
+        var result = testee.findForTuAndTypesAndStates("4712", asList(MovementType.OUTBOUND), asList("ACTIVE"));
         assertThat(result).hasSize(1);
-        result = testee.findForTuAndTypesAndStates("4713", asList("OUTBOUND"), asList("ACTIVE"));
+        result = testee.findForTuAndTypesAndStates("4713", asList(MovementType.OUTBOUND), asList("ACTIVE"));
         assertThat(result).isEmpty();
-        result = testee.findForTuAndTypesAndStates("4713", asList("INBOUND"), asList("DONE"));
+        result = testee.findForTuAndTypesAndStates("4713", asList(MovementType.INBOUND), asList("DONE"));
         assertThat(result).isEmpty();
     }
 
@@ -201,7 +201,7 @@ class MovementServiceIT {
         // act & assert
         assertThatThrownBy(() -> testee.move("1000", vo))
                 .isInstanceOf(ServiceLayerException.class)
-                .hasMessageContaining("state: must not be empty");
+                .hasMessageContaining("state: must not be blank");
 
         var vo2 = MovementVO.builder()
                 .state("INACTIVE")
@@ -210,7 +210,7 @@ class MovementServiceIT {
         // act & assert
         assertThatThrownBy(() -> testee.move("1000", vo2))
                 .isInstanceOf(ServiceLayerException.class)
-                .hasMessageContaining("sourceLocation: must not be empty");
+                .hasMessageContaining("sourceLocation: must not be blank");
 
         var vo3 = MovementVO.builder()
                 .sourceLocation("PASS/PASS/PASS/PASS/PASS")
@@ -222,7 +222,7 @@ class MovementServiceIT {
                 .isInstanceOf(NotFoundException.class)
                 .hasMessageContaining("Location with locationId [PASS/PASS/PASS/PASS/PASS] does not exist");
 
-        LocationVO sourceLocation = new LocationVO("PASS/PASS/PASS/PASS/PASS");
+        var sourceLocation = new LocationVO("PASS/PASS/PASS/PASS/PASS");
         sourceLocation.setErpCode("PASS");
         sourceLocation.setLocationGroupName("LG");
         given(locationApi.findById("PASS/PASS/PASS/PASS/PASS")).willReturn(Optional.of(sourceLocation));
@@ -236,7 +236,7 @@ class MovementServiceIT {
     @Test
     void test_move() {
         // arrange
-        LocationVO sourceLocation = new LocationVO("PASS/PASS/PASS/PASS/PASS");
+        var sourceLocation = new LocationVO("PASS/PASS/PASS/PASS/PASS");
         sourceLocation.setErpCode("PASS");
         sourceLocation.setLocationGroupName("LG");
         given(locationApi.findById("PASS/PASS/PASS/PASS/PASS")).willReturn(Optional.of(sourceLocation));
@@ -273,14 +273,14 @@ class MovementServiceIT {
         // act & assert
         assertThatThrownBy(() -> testee.complete("1002", vo))
                 .isInstanceOf(ServiceLayerException.class)
-                .hasMessageContaining("target: must not be empty");
+                .hasMessageContaining("target: must not be blank");
     }
 
     @Sql(scripts = "classpath:import-TEST.sql")
     @Test
     void test_complete() {
         // arrange
-        LocationVO sourceLocation = new LocationVO("PASS/PASS/PASS/PASS/PASS");
+        var sourceLocation = new LocationVO("PASS/PASS/PASS/PASS/PASS");
         sourceLocation.setErpCode("ERPCODE");
         sourceLocation.setLocationGroupName("LG");
         given(locationApi.findByErpCode("ERPCODE")).willReturn(Optional.of(sourceLocation));

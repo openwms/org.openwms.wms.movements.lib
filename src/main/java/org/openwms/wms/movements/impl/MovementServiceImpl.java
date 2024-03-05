@@ -323,10 +323,10 @@ class MovementServiceImpl implements MovementService {
      */
     @Measured
     @Override
-    public List<MovementVO> findForTuAndTypesAndStates(@NotBlank String barcode, @NotEmpty List<String> types, @NotEmpty List<String> states) {
+    public List<MovementVO> findForTuAndTypesAndStates(@NotBlank String barcode, @NotEmpty List<MovementType> types, @NotEmpty List<String> states) {
         var all = repository.findByTransportUnitBkAndTypeInAndStateIn(
                 Barcode.of(barcode),
-                types.stream().map(MovementType::valueOf).toList(),
+                types,
                 states.stream().map(DefaultMovementState::valueOf).toList()
         );
         if (all.isEmpty()) {

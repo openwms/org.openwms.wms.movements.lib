@@ -78,6 +78,7 @@ public class Movement extends ApplicationEntity implements Serializable {
     @JoinColumn(name = "C_GROUP_PK", nullable = true, foreignKey = @ForeignKey(name = "FK_MVM_GRP"))
     private MovementGroup group;
 
+    /** Refers to the demanded {@code Product} for that the {@code Movement} has been created. */
     @Column(name = "C_SKU")
     private String sku;
 
