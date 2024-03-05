@@ -21,7 +21,7 @@ import javax.validation.constraints.Max;
 import java.io.Serializable;
 
 /**
- * A LocationPK, is a value type and is used as an unique natural key for {@link Location} entities.
+ * A LocationPK, is a value type and is used as an unique natural key for {@code Location} entities.
  *
  * @author Heiko Scherrer
  * @see Location
@@ -31,28 +31,28 @@ public class LocationPK implements Serializable {
     public static final short KEY_LENGTH = 4;
     public static final short NUMBER_OF_KEYS = 5;
     /**
-     * Returns the complete length of all keys. Currently all keys have the same length, therefore it is the 5 times the length of a single
+     * Returns the complete length of all keys. Currently, all keys have the same length, therefore it is the 5 times the length of a single
      * key (KEY_LENGTH). But since this can change the actual length is encapsulated within this method.
      */
     public static final short PK_LENGTH = NUMBER_OF_KEYS * KEY_LENGTH;
 
-    /** Expresses the area the {@link Location} belongs to. */
+    /** Expresses the area the {@code Location} belongs to. */
     @Max(value = KEY_LENGTH)
     private String area;
 
-    /** Expresses the aisle the {@link Location} belongs to. */
+    /** Expresses the aisle the {@code Location} belongs to. */
     @Max(value = KEY_LENGTH)
     private String aisle;
 
-    /** Expresses the x-dimension the {@link Location} belongs to. */
+    /** Expresses the x-dimension the {@code Location} belongs to. */
     @Max(value = KEY_LENGTH)
     private String x;
 
-    /** Expresses the y-dimension the {@link Location} belongs to. */
+    /** Expresses the y-dimension the {@code Location} belongs to. */
     @Max(value = KEY_LENGTH)
     private String y;
 
-    /** Expresses the z-dimension the {@link Location} belongs to. */
+    /** Expresses the z-dimension the {@code Location} belongs to. */
     @Max(value = KEY_LENGTH)
     private String z;
 
@@ -66,11 +66,11 @@ public class LocationPK implements Serializable {
     /**
      * Create a new LocationPK with all required fields.
      *
-     * @param area Area where the {@link Location} belongs to
-     * @param aisle Aisle where the {@link Location} belongs to
-     * @param x Dimension x where the {@link Location} belongs to
-     * @param y Dimension y where the {@link Location} belongs to
-     * @param z Dimension z where the {@link Location} belongs to
+     * @param area Area where the {@code Location} belongs to
+     * @param aisle Aisle where the {@code Location} belongs to
+     * @param x Dimension x where the {@code Location} belongs to
+     * @param y Dimension y where the {@code Location} belongs to
+     * @param z Dimension z where the {@code Location} belongs to
      */
     public LocationPK(String area, String aisle, String x, String y, String z) {
         this.area = area;
