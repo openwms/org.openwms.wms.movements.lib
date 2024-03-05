@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2023 the original author or authors.
+ * Copyright 2005-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,5 +102,5 @@ public interface MovementService {
      * @param states A list of states to consider
      * @return A list of Movements, never {@literal null}
      */
-    @NotNull List<MovementVO> findForTuAndTypesAndStates(@NotBlank String barcode, @NotEmpty List<String> types, @NotEmpty List<String> states);
+    @NotNull List<MovementVO> findForTuAndTypesAndStates(@NotBlank String barcode, @NotEmpty List<MovementType> types, @NotEmpty List<String> states);
 }

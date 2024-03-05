@@ -66,9 +66,8 @@
     <properties>
         <common.version>2.1.0-SNAPSHOT</common.version>
         <core.version>2.1.0-SNAPSHOT</core.version>
-        <guava.version>30.0-jre</guava.version>
+        <guava.version>32.0.0-jre</guava.version>
         <lombok.version>1.18.30</lombok.version>
-        <objenesis.version>3.2</objenesis.version>
         <servo-core.version>0.12.21</servo-core.version>
         <spring-cloud-dependencies.version>2021.0.8</spring-cloud-dependencies.version>
         <hibernate-jpamodelgen.version>5.6.14.Final</hibernate-jpamodelgen.version>
@@ -178,12 +177,6 @@
                 <version>${hibernate-jpamodelgen.version}</version>
             </dependency>
             <dependency>
-                <!-- Clash between spring-boot-starter-test and dozer -->
-                <groupId>org.objenesis</groupId>
-                <artifactId>objenesis</artifactId>
-                <version>${objenesis.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.openwms</groupId>
                 <artifactId>org.openwms.core.util</artifactId>
                 <version>${core.version}</version>
@@ -271,6 +264,11 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-bus-amqp</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-config</artifactId>
             <optional>true</optional>
         </dependency>
@@ -283,12 +281,6 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
             <optional>true</optional>
-			<exclusions>
-				<exclusion>
-					<groupId>commons-io</groupId>
-					<artifactId>commons-io</artifactId>
-				</exclusion>
-			</exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -350,13 +342,6 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <!-- Need to upgrade Guava from version 11 because of CVE -->
-            <!-- Required by eureka-client -->
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>runtime</scope>
@@ -376,12 +361,6 @@
         <dependency>
             <groupId>io.interface21</groupId>
             <artifactId>ameba-lib</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>net.logstash.logback</groupId>
-            <artifactId>logstash-logback-encoder</artifactId>
-            <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
         <dependency>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2023 the original author or authors.
+ * Copyright 2005-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -323,10 +323,10 @@ class MovementServiceImpl implements MovementService {
      */
     @Measured
     @Override
-    public List<MovementVO> findForTuAndTypesAndStates(@NotBlank String barcode, @NotEmpty List<String> types, @NotEmpty List<String> states) {
+    public List<MovementVO> findForTuAndTypesAndStates(@NotBlank String barcode, @NotEmpty List<MovementType> types, @NotEmpty List<String> states) {
         var all = repository.findByTransportUnitBkAndTypeInAndStateIn(
                 Barcode.of(barcode),
-                types.stream().map(MovementType::valueOf).toList(),
+                types,
                 states.stream().map(DefaultMovementState::valueOf).toList()
         );
         if (all.isEmpty()) {

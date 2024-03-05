@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2023 the original author or authors.
+ * Copyright 2005-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,6 +78,7 @@ public class Movement extends ApplicationEntity implements Serializable {
     @JoinColumn(name = "C_GROUP_PK", nullable = true, foreignKey = @ForeignKey(name = "FK_MVM_GRP"))
     private MovementGroup group;
 
+    /** Refers to the demanded {@code Product} for that the {@code Movement} has been created. */
     @Column(name = "C_SKU")
     private String sku;
 
