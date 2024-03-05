@@ -1,4 +1,4 @@
-// dot 2.43.0 on Linux 6.2.0-1019-azure
+// dot 2.43.0 on Linux 6.5.0-1015-azure
 // SchemaSpy rev Unknown
 digraph "oneDegreeRelationshipsDiagram" {
   graph [
@@ -70,7 +70,7 @@ digraph "oneDegreeRelationshipsDiagram" {
       <TR><TD PORT="c_message" COLSPAN="2" ALIGN="LEFT">c_message</TD><TD PORT="c_message.type" ALIGN="LEFT">varchar[1024]</TD></TR>
       <TR><TD PORT="c_occurred" COLSPAN="2" ALIGN="LEFT">c_occurred</TD><TD PORT="c_occurred.type" ALIGN="LEFT">timestamp[29,6]</TD></TR>
       <TR><TD PORT="c_fk_movement" COLSPAN="2" ALIGN="LEFT">c_fk_movement</TD><TD PORT="c_fk_movement.type" ALIGN="LEFT">int8[19]</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">0 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">0 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 row</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">0 &gt;</TD></TR>
     </TABLE>>
     URL="mvm_problem_history.html"
     tooltip="mvm_problem_history"
