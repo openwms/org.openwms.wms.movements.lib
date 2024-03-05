@@ -16,6 +16,7 @@
 package org.openwms.wms.movements;
 
 import org.openwms.core.http.Index;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,6 +30,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * @author Heiko Scherrer
  */
 @RestController("movementsIndexController")
+@RefreshScope
 class IndexController {
 
     @GetMapping("/index")

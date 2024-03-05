@@ -17,8 +17,8 @@ package org.openwms.wms.movements.spi;
 
 import org.ameba.annotation.Measured;
 import org.openwms.wms.movements.MovementProperties;
-import org.openwms.wms.movements.MovementTarget;
 import org.openwms.wms.movements.api.MovementType;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
@@ -34,6 +34,7 @@ import java.util.Optional;
 @Validated
 @Profile("!CUSTOM")
 @Component
+@RefreshScope
 class DefaultMovementTypeResolver implements MovementTypeResolver {
 
     private final MovementProperties properties;
@@ -48,7 +49,6 @@ class DefaultMovementTypeResolver implements MovementTypeResolver {
     @Override
     @Measured
     public Optional<MovementType> resolve(@NotEmpty String transportUnitBK, @NotEmpty String target) {
-        MovementTarget movementTarget = properties.findTarget(target);
-        return Optional.of(movementTarget.getType());
+        return Optional.of(properties.findTarget(target).getType());
     }
 }

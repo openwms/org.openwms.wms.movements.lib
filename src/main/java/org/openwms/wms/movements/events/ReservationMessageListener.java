@@ -45,7 +45,7 @@ public class ReservationMessageListener {
     @Measured
     @RabbitListener(queues = "${owms.events.shipping.split.queue-name}")
     public void handle(@Payload SplitMO mo, @Header("amqp_receivedRoutingKey") String routingKey) {
-        MovementVO movement = new MovementVO();
+        var movement = new MovementVO();
         movement.setTransportUnitBk(mo.getTransportUnitBK());
         movement.setPriority(mo.getPriority());
         movement.setTarget(mo.getTargetName());

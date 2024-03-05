@@ -30,6 +30,7 @@ import org.openwms.wms.movements.impl.MovementHandler;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -65,6 +66,7 @@ import java.util.Properties;
 @EnableJpaAuditing
 @EnableAspects(propagateRootCause = true)
 @EnableScheduling
+@RefreshScope
 @Import(JSONConfiguration.class)
 public class MovementModuleConfiguration implements WebMvcConfigurer {
 
@@ -87,13 +89,13 @@ public class MovementModuleConfiguration implements WebMvcConfigurer {
     }
 
     public @Bean LocaleResolver localeResolver() {
-        SessionLocaleResolver slr = new SessionLocaleResolver();
+        var slr = new SessionLocaleResolver();
         slr.setDefaultLocale(Locale.US);
         return slr;
     }
 
     public @Bean LocaleChangeInterceptor localeChangeInterceptor() {
-        LocaleChangeInterceptor lci = new LocaleChangeInterceptor();
+        var lci = new LocaleChangeInterceptor();
         lci.setParamName("lang");
         return lci;
     }
@@ -108,7 +110,7 @@ public class MovementModuleConfiguration implements WebMvcConfigurer {
     }
 
     @Bean MessageSource messageSource() {
-        NestedReloadableResourceBundleMessageSource messageSource = new NestedReloadableResourceBundleMessageSource();
+        var messageSource = new NestedReloadableResourceBundleMessageSource();
         messageSource.setBasenames("classpath:/META-INF/i18n/mvm");
         messageSource.setDefaultEncoding("UTF-8");
         messageSource.setCommonMessages(new Properties());

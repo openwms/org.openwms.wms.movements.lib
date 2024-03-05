@@ -54,7 +54,7 @@ class MovementCommandListener {
     @RabbitListener(queues = "${owms.commands.movements.movement.queue-name}")
     public void onCommand(@Valid @NotNull @Payload MovementCommand command) {
         if (command.getType() == MovementCommand.Type.CREATE) {
-            MovementMO movement = command.getMovement();
+            var movement = command.getMovement();
             LOGGER.debug("Got command to create a Movement [{}]", movement);
             movementService.create(movement.getTransportUnitBK(), mapper.map(movement, MovementVO.class));
         }

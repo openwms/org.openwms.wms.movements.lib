@@ -30,6 +30,7 @@ import org.openwms.transactions.api.commands.AsyncTransactionApi;
 import org.openwms.transactions.api.commands.TransactionCommand;
 import org.openwms.wms.movements.spi.common.AsyncTransportUnitApi;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -47,6 +48,7 @@ import static org.openwms.wms.movements.MovementsMessages.MSG_MOVEMENT_MOVED;
  */
 @Profile(SpringProfiles.ASYNCHRONOUS_PROFILE)
 @Component
+@RefreshScope
 class TransactionWriter {
 
     private final String applicationName;

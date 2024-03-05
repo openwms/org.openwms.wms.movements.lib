@@ -40,6 +40,7 @@ import org.openwms.wms.movements.spi.Validators;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.plugin.core.PluginRegistry;
 import org.springframework.validation.annotation.Validated;
@@ -71,6 +72,7 @@ import static org.openwms.wms.movements.MovementsMessages.MOVEMENT_NOT_FOUND;
  */
 @Validated
 @TxService
+@RefreshScope
 class MovementServiceImpl implements MovementService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MovementServiceImpl.class);

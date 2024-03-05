@@ -16,6 +16,7 @@
 package org.openwms.wms.movements.spi;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Component;
  */
 @Profile("!CUSTOM")
 @Component
+@RefreshScope
 class DefaultMovementStateResolver implements MovementStateResolver {
 
     private final DefaultMovementState newState;

@@ -16,13 +16,13 @@
 package org.openwms.wms.movements.impl;
 
 import org.ameba.annotation.TxService;
-import org.openwms.common.location.api.LocationVO;
 import org.openwms.wms.movements.Message;
 import org.openwms.wms.movements.MovementProperties;
 import org.openwms.wms.movements.spi.common.putaway.PutawayApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +36,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
  * @author Heiko Scherrer
  */
 @TxService
+@RefreshScope
 class PutawayAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PutawayAdapter.class);
@@ -61,7 +62,7 @@ class PutawayAdapter {
                 try {
                     var movementTarget = properties.findTarget(movement.getTargetLocationGroup());
                     LOGGER.debug("Call putaway strategy to find target location for movement [{}] in [{}]", movement.getPersistentKey(), movementTarget.getSearchLocationGroupNames());
-                    LocationVO target = putawayApi.findAndAssignNextInLocGroup(
+                    var target = putawayApi.findAndAssignNextInLocGroup(
                             movement.getInitiator(),
                             movementTarget.getSearchLocationGroupNames(),
                             movement.getTransportUnitBk().getValue(),

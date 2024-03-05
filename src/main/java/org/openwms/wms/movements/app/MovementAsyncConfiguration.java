@@ -36,12 +36,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.retry.backoff.ExponentialBackOffPolicy;
 import org.springframework.retry.support.RetryTemplate;
+
+import java.util.Objects;
 
 import static org.ameba.LoggingCategories.BOOT;
 
@@ -52,6 +55,7 @@ import static org.ameba.LoggingCategories.BOOT;
  */
 @Profile(SpringProfiles.ASYNCHRONOUS_PROFILE)
 @EnableRabbit
+@RefreshScope
 @Configuration
 class MovementAsyncConfiguration {
 
@@ -61,7 +65,7 @@ class MovementAsyncConfiguration {
     @ConditionalOnExpression("'${owms.movements.serialization}'=='json'")
     @Bean
     MessageConverter messageConverter() {
-        Jackson2JsonMessageConverter messageConverter = new Jackson2JsonMessageConverter();
+        var messageConverter = new Jackson2JsonMessageConverter();
         BOOT_LOGGER.info("Using JSON serialization over AMQP");
         return messageConverter;
     }
@@ -69,7 +73,7 @@ class MovementAsyncConfiguration {
     @ConditionalOnExpression("'${owms.movements.serialization}'=='barray'")
     @Bean
     MessageConverter serializerMessageConverter() {
-        SerializerMessageConverter messageConverter = new SerializerMessageConverter();
+        var messageConverter = new SerializerMessageConverter();
         BOOT_LOGGER.info("Using byte array serialization over AMQP");
         return messageConverter;
     }
@@ -79,15 +83,15 @@ class MovementAsyncConfiguration {
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory,
             ObjectProvider<MessageConverter> messageConverter,
             @Autowired(required = false) RabbitTemplateConfigurable rabbitTemplateConfigurable) {
-        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-        ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
+        var rabbitTemplate = new RabbitTemplate(connectionFactory);
+        var backOffPolicy = new ExponentialBackOffPolicy();
         backOffPolicy.setMultiplier(2);
         backOffPolicy.setMaxInterval(15000);
         backOffPolicy.setInitialInterval(500);
-        RetryTemplate retryTemplate = new RetryTemplate();
+        var retryTemplate = new RetryTemplate();
         retryTemplate.setBackOffPolicy(backOffPolicy);
         rabbitTemplate.setRetryTemplate(retryTemplate);
-        rabbitTemplate.setMessageConverter(messageConverter.getIfUnique());
+        rabbitTemplate.setMessageConverter(Objects.requireNonNull(messageConverter.getIfUnique()));
         if (rabbitTemplateConfigurable != null) {
             rabbitTemplateConfigurable.configure(rabbitTemplate);
         }

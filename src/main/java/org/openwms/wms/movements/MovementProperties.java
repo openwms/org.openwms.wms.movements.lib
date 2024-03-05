@@ -16,6 +16,7 @@
 package org.openwms.wms.movements;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ import static java.lang.String.format;
  */
 @Configuration
 @ConfigurationProperties("owms.movement")
+@RefreshScope
 public class MovementProperties {
 
     /** Shall the Putaway API be called to resolve a final target for Movements. */

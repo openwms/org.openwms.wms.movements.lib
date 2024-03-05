@@ -18,15 +18,12 @@ package org.openwms.wms.movements.impl;
 import org.ameba.exception.NotFoundException;
 import org.ameba.i18n.Translator;
 import org.openwms.common.location.api.LocationApi;
-import org.openwms.common.location.api.LocationVO;
 import org.openwms.common.location.api.messages.LocationMO;
 import org.openwms.common.transport.api.commands.TUCommand;
 import org.openwms.common.transport.api.messages.TransportUnitMO;
 import org.openwms.wms.movements.spi.common.AsyncTransportUnitApi;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
-
-import java.util.Optional;
 
 import static org.openwms.wms.movements.MovementsMessages.LOCATION_NOT_FOUND_BY_ERP_CODE;
 
@@ -50,7 +47,7 @@ class MovementEventListener {
 
     @TransactionalEventListener
     public void onEvent(MovementTargetChangedEvent event) {
-        Optional<LocationVO> locationByErpCode = locationApi.findByErpCode(event.getSource().getTargetLocation());
+        var locationByErpCode = locationApi.findByErpCode(event.getSource().getTargetLocation());
         if (locationByErpCode.isPresent()) {
             asyncTransportUnitApi.process(
                     TUCommand.newBuilder(TUCommand.Type.CHANGE_TARGET)

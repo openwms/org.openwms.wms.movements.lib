@@ -22,6 +22,7 @@ import org.openwms.wms.movements.api.MovementType;
 import org.openwms.wms.movements.api.MovementVO;
 import org.openwms.wms.movements.impl.ValidationGroups;
 import org.openwms.wms.movements.spi.DefaultMovementState;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -48,6 +49,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  */
 @Validated
 @MeasuredRestController
+@RefreshScope
 public class MovementController extends AbstractWebController {
 
     private final MovementService service;
