@@ -26,7 +26,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.ameba.http.AbstractBase;
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 
@@ -51,49 +51,69 @@ public class MovementVO extends AbstractBase<MovementVO> implements Serializable
     /** The persistent key is returned from the service as soon as the {@code Movement} has been created. */
     @JsonProperty("pKey")
     private String persistentKey;
-    /** The business key of the {@code TransportUnit} to move. */
+
+    /** The business key of the {@code TransportUnit}. */
     @JsonProperty("transportUnitBk")
     private String transportUnitBk;
-    /** The type of {@code Movement} must be passed by the caller. */
+
+    /** The type of {@code Movement}. */
     @JsonProperty("type") // Not required at creation because it can be resolved from the TU and the target
     private MovementType type;
+
     /** Initiator of the {@code Movement}, who ordered or triggered it. */
     @JsonProperty("initiator")
     private String initiator;
+
     /** Whether the {@code Movement} should be directly processed (AUTOMATIC) or delayed (MANUAL). */
     @JsonProperty("mode")
     private StartMode startMode = StartMode.AUTOMATIC;
+
+    /** Refers to the demanded {@code Product} for that the {@code Movement} has been created. */
     @JsonProperty("sku")
     private String sku;
-    /** A priority how fast and prio the {@code Movement} needs to be processed; A higher value means less prio than lower values. */
+
+    /** A priority how fast the {@code Movement} needs to be processed; A higher value means less prior than lower values. */
     @JsonProperty("priority")
     private Integer priority;
-    /** The state of the {@code Movement}. */
+
+    /** The current state of the {@code Movement}. */
     @JsonProperty("state")
-    @NotEmpty(groups = Move.class)
+    @NotBlank(groups = Move.class)
     private String state;
-    /** The source {@code Location} where the {@code TransportUnit} shall be picked up (must be passed by the caller). */
+
+    /** The source {@code Location} where the {@code TransportUnit} shall be picked up. */
     @JsonProperty("sourceLocation")
-    @NotEmpty(groups = {Create.class, Move.class})
+    @NotBlank(groups = {Create.class, Move.class})
     private String sourceLocation;
-    /** The {@code LocationGroup} the {@code sourceLocation} belongs to. */
+
+    /** The name of the {@code LocationGroup} the {@code sourceLocation} belongs to. */
     @JsonProperty("sourceLocationGroupName")
     private String sourceLocationGroupName;
-    /** The target where to move the {@code TransportUnit} to (must be passed by the caller). */
+
+    /** The target where to move the {@code TransportUnit}. */
     @JsonProperty("target")
-    @NotEmpty(groups = {Create.class, Complete.class})
+    @NotBlank(groups = {Create.class, Complete.class})
     private String target;
+
     /** The target {@code LocationGroup} used to define in what area */
     @JsonProperty("targetLocationGroup")
     private String targetLocationGroup;
+
     /** When the {@code Movement} has been started. */
     @JsonProperty("startedAt")
     @JsonFormat(pattern = DATE_TIME_WITH_TIMEZONE)
     private ZonedDateTime startedAt;
+
+    /** Latest possible finish date of the {@code Movement}. */
+    @JsonProperty("latestDueAt")
+    @JsonFormat(pattern = DATE_TIME_WITH_TIMEZONE)
+    private ZonedDateTime latestDueDate;
+
     /** When the {@code Movement} has been finished. */
     @JsonProperty("finishedAt")
     @JsonFormat(pattern = DATE_TIME_WITH_TIMEZONE)
     private ZonedDateTime finishedAt;
+
     /** When the {@code Movement} has been created. */
     @JsonProperty("createdAt")
     @JsonFormat(pattern = DATE_TIME_WITH_TIMEZONE)
