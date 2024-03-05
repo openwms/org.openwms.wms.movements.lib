@@ -21,7 +21,6 @@ import org.ameba.http.ctx.CallContextHolder;
 import org.ameba.http.identity.IdentityContextHolder;
 import org.ameba.i18n.Translator;
 import org.openwms.common.location.api.LocationApi;
-import org.openwms.common.location.api.LocationVO;
 import org.openwms.common.location.api.messages.LocationMO;
 import org.openwms.common.transport.api.commands.TUCommand;
 import org.openwms.common.transport.api.messages.TransportUnitMO;
@@ -30,11 +29,10 @@ import org.openwms.transactions.api.TransactionBuilder;
 import org.openwms.transactions.api.commands.AsyncTransactionApi;
 import org.openwms.transactions.api.commands.TransactionCommand;
 import org.openwms.wms.movements.spi.common.AsyncTransportUnitApi;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
-
-import java.util.Optional;
 
 import static org.openwms.transactions.api.commands.TransactionCommand.Type.CREATE;
 import static org.openwms.wms.movements.MovementsMessages.LOCATION_NOT_FOUND_BY_ERP_CODE;
@@ -42,7 +40,8 @@ import static org.openwms.wms.movements.MovementsMessages.MSG_MOVEMENT_COMPLETED
 import static org.openwms.wms.movements.MovementsMessages.MSG_MOVEMENT_MOVED;
 
 /**
- * A TransactionWriter.
+ * A TransactionWriter is a Spring managed bean, activated with {@value SpringProfiles#ASYNCHRONOUS_PROFILE} profile that takes care of
+ * writing business transactions via the COMMON Transaction service.
  *
  * @author Heiko Scherrer
  */
@@ -50,13 +49,15 @@ import static org.openwms.wms.movements.MovementsMessages.MSG_MOVEMENT_MOVED;
 @Component
 class TransactionWriter {
 
+    private final String applicationName;
     private final Translator translator;
     private final LocationApi locationApi;
     private final AsyncTransportUnitApi asyncTransportUnitApi;
     private final AsyncTransactionApi asyncTransactionApi;
 
-    TransactionWriter(Translator translator, LocationApi locationApi, AsyncTransportUnitApi asyncTransportUnitApi,
+    TransactionWriter(@Value("${spring.application.name}") String applicationName, Translator translator, LocationApi locationApi, AsyncTransportUnitApi asyncTransportUnitApi,
             AsyncTransactionApi asyncTransactionApi) {
+        this.applicationName = applicationName;
         this.translator = translator;
         this.locationApi = locationApi;
         this.asyncTransportUnitApi = asyncTransportUnitApi;
@@ -71,7 +72,7 @@ class TransactionWriter {
                         TransactionBuilder.aTransactionVO()
                                 .withCreatedByUser(IdentityContextHolder.getCurrentIdentity())
                                 .withCategory(CallContextHolder.getOptionalCallContext().map(CallContext::getCaller).orElse(""))
-                                .withSender("movements-service")
+                                .withSender(applicationName)
                                 .withType(MSG_MOVEMENT_MOVED)
                                 .withDescription(translator.translate(MSG_MOVEMENT_MOVED,
                                         event.getSource().getTransportUnitBk(),
@@ -88,7 +89,7 @@ class TransactionWriter {
                         TransactionBuilder.aTransactionVO()
                                 .withCreatedByUser(IdentityContextHolder.getCurrentIdentity())
                                 .withCategory(CallContextHolder.getOptionalCallContext().map(CallContext::getCaller).orElse(""))
-                                .withSender("movements-service")
+                                .withSender(applicationName)
                                 .withType(MSG_MOVEMENT_COMPLETED)
                                 .withDescription(translator.translate(MSG_MOVEMENT_COMPLETED,
                                         event.getSource().getTransportUnitBk(),
@@ -107,7 +108,7 @@ class TransactionWriter {
 
     @TransactionalEventListener
     public void onEvent(MovementTargetChangedEvent event) {
-        Optional<LocationVO> locationByErpCode = locationApi.findByErpCode(event.getSource().getTargetLocation());
+        var locationByErpCode = locationApi.findByErpCode(event.getSource().getTargetLocation());
         if (locationByErpCode.isPresent()) {
             asyncTransportUnitApi.process(
                     TUCommand.newBuilder(TUCommand.Type.CHANGE_TARGET)
