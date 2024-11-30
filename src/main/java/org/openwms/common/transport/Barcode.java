@@ -17,14 +17,14 @@ package org.openwms.common.transport;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.Objects;
 
 
 /**
- * A Barcode is a printable item with an unique identifier to label {@code TransportUnit}s. The identifier has a defined number of
- * characters whereas these characters are aligned either left or right. Non filled positions of a Barcode are padded with a so called
+ * A Barcode is a printable item with a unique identifier to label {@code TransportUnit}s. The identifier has a defined number of
+ * characters whereas these characters are aligned either left or right. Non filled positions of a Barcode are padded with a so-called
  * padding character.
  *
  * @author Heiko Scherrer
@@ -35,7 +35,7 @@ public class Barcode implements Serializable {
 
     /** 'Identifier' of the {@code Barcode}. <p> <i>Note:</i>It is not guaranteed that this field must be unique. </p> */
     @Column(name = "C_BARCODE")
-    @NotEmpty
+    @NotBlank
     private String value;
 
     /*~ ----------------------------- constructors ------------------- */
@@ -95,7 +95,7 @@ public class Barcode implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Barcode barcode = (Barcode) o;
+        var barcode = (Barcode) o;
         return value.equals(barcode.value);
     }
 
