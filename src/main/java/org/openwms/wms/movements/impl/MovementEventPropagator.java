@@ -15,6 +15,7 @@
  */
 package org.openwms.wms.movements.impl;
 
+import org.ameba.annotation.Measured;
 import org.openwms.core.SpringProfiles;
 import org.openwms.wms.movements.commands.MovementMO;
 import org.slf4j.Logger;
@@ -23,7 +24,8 @@ import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import static org.openwms.wms.movements.events.api.MovementEvent.Type.CANCELLED;
@@ -52,7 +54,9 @@ class MovementEventPropagator {
         this.amqpTemplate = amqpTemplate;
     }
 
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @Measured
+    @TransactionalEventListener
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void onEvent(MovementEvent event) {
         var movement = event.getSource();
         var vo = MovementMO.newBuilder()

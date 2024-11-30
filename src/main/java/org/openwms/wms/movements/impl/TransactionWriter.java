@@ -15,6 +15,7 @@
  */
 package org.openwms.wms.movements.impl;
 
+import org.ameba.annotation.Measured;
 import org.ameba.exception.NotFoundException;
 import org.ameba.http.ctx.CallContext;
 import org.ameba.http.ctx.CallContextHolder;
@@ -33,6 +34,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import static org.openwms.transactions.api.commands.TransactionCommand.Type.CREATE;
@@ -66,7 +69,9 @@ class TransactionWriter {
         this.asyncTransactionApi = asyncTransactionApi;
     }
 
+    @Measured
     @TransactionalEventListener
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void onEvent(MovementEvent event) {
         switch (event.getType()) {
             case MOVED:
@@ -108,7 +113,9 @@ class TransactionWriter {
         }
     }
 
+    @Measured
     @TransactionalEventListener
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void onEvent(MovementTargetChangedEvent event) {
         var locationByErpCode = locationApi.findByErpCode(event.getSource().getTargetLocation());
         if (locationByErpCode.isPresent()) {

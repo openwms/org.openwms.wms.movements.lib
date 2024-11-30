@@ -15,6 +15,7 @@
  */
 package org.openwms.wms.movements.impl;
 
+import org.ameba.annotation.Measured;
 import org.ameba.annotation.TxService;
 import org.openwms.wms.movements.Message;
 import org.openwms.wms.movements.MovementProperties;
@@ -26,7 +27,6 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 /**
@@ -53,7 +53,8 @@ class PutawayAdapter {
     }
 
     @ConditionalOnExpression("${owms.movement.putaway-resolution-enabled}")
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @Measured
+    @TransactionalEventListener
     @Transactional(propagation = Propagation.REQUIRES_NEW, noRollbackFor = {Exception.class})
     public void onEvent(MovementEvent event) {
         var movement = event.getSource();
