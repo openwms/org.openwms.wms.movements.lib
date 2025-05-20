@@ -36,11 +36,11 @@
         <core.test.arch.version>1.0.2</core.test.arch.version>
         <common.service.lib.version>3.0.1-SNAPSHOT</common.service.lib.version>
         <core.version>3.0.0</core.version>
+        <hibernate-jpamodelgen.version>6.4.4.Final</hibernate-jpamodelgen.version>
         <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
         <lombok.version>1.18.36</lombok.version> <!-- Keep in sync with boot -->
         <schemaspy-maven-plugin.version>5.3.1</schemaspy-maven-plugin.version>
         <spring-cloud-dependencies.version>2024.0.1</spring-cloud-dependencies.version>
-        <hibernate-jpamodelgen.version>6.4.4.Final</hibernate-jpamodelgen.version>
     </properties>
 
     <reporting>
@@ -72,6 +72,11 @@
                 <configuration>
                     <annotationProcessorPaths>
                         <path>
+                            <groupId>org.hibernate</groupId>
+                            <artifactId>hibernate-jpamodelgen</artifactId>
+                            <version>${hibernate-jpamodelgen.version}</version>
+                        </path>
+                        <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
                             <version>${lombok.version}</version>
@@ -87,11 +92,6 @@
                             <version>${lombok-mapstruct-binding.version}</version>
                         </path>
                     </annotationProcessorPaths>
-                    <!--compilerArguments>
-                        <processor>
-                            lombok.launch.AnnotationProcessorHider$AnnotationProcessor,org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor
-                        </processor>
-                    </compilerArguments-->
                     <compilerArgs>
                         <arg>
                             -Amapstruct.defaultComponentModel=spring
@@ -113,11 +113,6 @@
                     <showWarnings>true</showWarnings>
                 </configuration>
                 <dependencies>
-                    <dependency>
-                        <groupId>org.hibernate</groupId>
-                        <artifactId>hibernate-jpamodelgen</artifactId>
-                        <version>6.4.4.Final</version>
-                    </dependency>
                     <dependency>
                         <groupId>org.projectlombok</groupId>
                         <artifactId>lombok</artifactId>
@@ -167,11 +162,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>org.hibernate</groupId>
-                <artifactId>hibernate-jpamodelgen</artifactId>
-                <version>${hibernate-jpamodelgen.version}</version>
-            </dependency>
             <dependency>
                 <groupId>org.openwms</groupId>
                 <artifactId>org.openwms.core.test.arch</artifactId>
@@ -363,11 +353,6 @@
         <dependency>
             <groupId>io.interface21</groupId>
             <artifactId>ameba-lib</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-jpamodelgen</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>
