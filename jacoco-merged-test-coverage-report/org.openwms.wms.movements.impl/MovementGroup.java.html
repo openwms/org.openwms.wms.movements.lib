@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MovementGroup.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OpenWMS.org WMS: Movements Service Library</a> &gt; <a href="index.source.html" class="el_package">org.openwms.wms.movements.impl</a> &gt; <span class="el_source">MovementGroup.java</span></div><h1>MovementGroup.java</h1><pre class="source lang-java linenums">/*
+ * Copyright 2005-2025 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.openwms.wms.movements.impl;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotEmpty;
+import org.ameba.integration.jpa.ApplicationEntity;
+
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+
+import static jakarta.persistence.CascadeType.MERGE;
+import static jakarta.persistence.CascadeType.PERSIST;
+import static org.openwms.wms.movements.spi.DefaultMovementState.ACTIVE;
+
+/**
+ * A MovementGroup is used to group {@link Movement}s.
+ *
+ * @author Heiko Scherrer
+ */
+@Entity
+@Table(name = &quot;MVM_MOVEMENT_GROUP&quot;)
+public class MovementGroup extends ApplicationEntity implements Serializable {
+
+    @Column(name = &quot;C_NAME&quot;, nullable = false)
+    @NotEmpty
+    private String name;
+
+    /** The current state the {@link MovementGroup} resides in. */
+    @Column(name = &quot;C_STATE&quot;)
+    private String state;
+
+    /** A human user might be assigned to this {@code MovementGroup}. */
+    @Column(name = &quot;C_USER&quot;)
+    private String assignedUser;
+
+    /** The {@link Movement}s that belong to the {@code MovementGroup}. */
+<span class="pc" id="L57">    @OneToMany(mappedBy = &quot;group&quot;, cascade = {PERSIST, MERGE})</span>
+    private Set&lt;Movement&gt; movements = new HashSet&lt;&gt;();
+
+    /*~ -------------- Constructors -------------- */
+    /** Dear JPA... */
+<span class="fc" id="L62">    protected MovementGroup() {}</span>
+
+<span class="nc" id="L64">    public MovementGroup(String name) {</span>
+<span class="nc" id="L65">        this.name = name;</span>
+<span class="nc" id="L66">    }</span>
+
+    /*~ --------------- Lifecycle ---------------- */
+    @PrePersist
+    protected void prePersist() {
+<span class="nc" id="L71">        this.state = ACTIVE.getName();</span>
+<span class="nc" id="L72">    }</span>
+
+    /*~ --------------- Accessors ---------------- */
+    public String getName() {
+<span class="nc" id="L76">        return name;</span>
+    }
+
+    public void setName(String name) {
+<span class="nc" id="L80">        this.name = name;</span>
+<span class="nc" id="L81">    }</span>
+
+    public String getState() {
+<span class="nc" id="L84">        return state;</span>
+    }
+
+    public void setState(String state) {
+<span class="nc" id="L88">        this.state = state;</span>
+<span class="nc" id="L89">    }</span>
+
+    public String getAssignedUser() {
+<span class="nc" id="L92">        return assignedUser;</span>
+    }
+
+    public void setAssignedUser(String assignedUser) {
+<span class="nc" id="L96">        this.assignedUser = assignedUser;</span>
+<span class="nc" id="L97">    }</span>
+
+    public Set&lt;Movement&gt; getMovements() {
+<span class="nc" id="L100">        return movements;</span>
+    }
+
+    public void setMovements(Set&lt;Movement&gt; movements) {
+<span class="nc" id="L104">        this.movements = movements;</span>
+<span class="nc" id="L105">    }</span>
+
+    /**
+     * {@inheritDoc}
+     *
+     * All fields
+     */
+    @Override
+    public String toString() {
+<span class="nc" id="L114">        return &quot;MovementGroup{&quot; +</span>
+                &quot;name='&quot; + name + '\'' +
+                &quot;, state=&quot; + state +
+                &quot;, assignedUser='&quot; + assignedUser + '\'' +
+                &quot;, movements=&quot; + movements +
+                '}';
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * All fields
+     */
+    @Override
+    public boolean equals(Object o) {
+<span class="nc bnc" id="L129" title="All 2 branches missed.">        if (this == o) return true;</span>
+<span class="nc bnc" id="L130" title="All 2 branches missed.">        if (!(o instanceof MovementGroup)) return false;</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">        if (!super.equals(o)) return false;</span>
+<span class="nc" id="L132">        MovementGroup that = (MovementGroup) o;</span>
+<span class="nc bnc" id="L133" title="All 8 branches missed.">        return Objects.equals(name, that.name) &amp;&amp; Objects.equals(state, that.state) &amp;&amp; Objects.equals(assignedUser, that.assignedUser) &amp;&amp; Objects.equals(movements, that.movements);</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * All fields
+     */
+    @Override
+    public int hashCode() {
+<span class="nc" id="L143">        return Objects.hash(super.hashCode(), name, state, assignedUser, movements);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

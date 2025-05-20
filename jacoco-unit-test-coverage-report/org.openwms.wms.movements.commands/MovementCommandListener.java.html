@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MovementCommandListener.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OpenWMS.org WMS: Movements Service Library</a> &gt; <a href="index.source.html" class="el_package">org.openwms.wms.movements.commands</a> &gt; <span class="el_source">MovementCommandListener.java</span></div><h1>MovementCommandListener.java</h1><pre class="source lang-java linenums">/*
+ * Copyright 2005-2025 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.openwms.wms.movements.commands;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import org.ameba.annotation.Measured;
+import org.ameba.annotation.TxService;
+import org.openwms.core.SpringProfiles;
+import org.openwms.wms.movements.MovementService;
+import org.openwms.wms.movements.impl.MovementMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.context.annotation.Profile;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.validation.annotation.Validated;
+
+/**
+ * A MovementCommandListener.
+ *
+ * @author Heiko Scherrer
+ */
+@Profile(SpringProfiles.ASYNCHRONOUS_PROFILE)
+@Validated
+@TxService
+class MovementCommandListener {
+
+<span class="nc" id="L42">    private static final Logger LOGGER = LoggerFactory.getLogger(MovementCommandListener.class);</span>
+    private final MovementMapper movementMapper;
+    private final MovementService movementService;
+
+<span class="nc" id="L46">    MovementCommandListener(MovementMapper movementMapper, MovementService movementService) {</span>
+<span class="nc" id="L47">        this.movementMapper = movementMapper;</span>
+<span class="nc" id="L48">        this.movementService = movementService;</span>
+<span class="nc" id="L49">    }</span>
+
+    @Measured
+    @RabbitListener(queues = &quot;${owms.commands.movements.movement.queue-name}&quot;)
+    public void onCommand(@Valid @NotNull @Payload MovementCommand command) {
+<span class="nc bnc" id="L54" title="All 2 branches missed.">        if (command.getType() == MovementCommand.Type.CREATE) {</span>
+<span class="nc" id="L55">            var movement = command.getMovement();</span>
+<span class="nc" id="L56">            LOGGER.debug(&quot;Got command to create a Movement [{}]&quot;, movement);</span>
+<span class="nc" id="L57">            movementService.create(movement.getTransportUnitBK(), movementMapper.convertToVO(movement));</span>
+        }
+<span class="nc" id="L59">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

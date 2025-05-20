@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Movement_.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OpenWMS.org WMS: Movements Service Library</a> &gt; <a href="index.source.html" class="el_package">org.openwms.wms.movements.impl</a> &gt; <span class="el_source">Movement_.java</span></div><h1>Movement_.java</h1><pre class="source lang-java linenums">package org.openwms.wms.movements.impl;
+
+import jakarta.annotation.Generated;
+import jakarta.persistence.metamodel.EntityType;
+import jakarta.persistence.metamodel.ListAttribute;
+import jakarta.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.metamodel.StaticMetamodel;
+import java.time.ZonedDateTime;
+import org.openwms.common.transport.Barcode;
+import org.openwms.wms.movements.Message;
+import org.openwms.wms.movements.api.MovementType;
+import org.openwms.wms.movements.api.StartMode;
+import org.openwms.wms.movements.spi.DefaultMovementState;
+
+@StaticMetamodel(Movement.class)
+@Generated(&quot;org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor&quot;)
+<span class="nc" id="L17">public abstract class Movement_ extends org.ameba.integration.jpa.ApplicationEntity_ {</span>
+
+	
+	/**
+	 * @see org.openwms.wms.movements.impl.Movement#sourceLocationGroupName
+	 **/
+	public static volatile SingularAttribute&lt;Movement, String&gt; sourceLocationGroupName;
+	
+	/**
+	 * @see org.openwms.wms.movements.impl.Movement#endDate
+	 **/
+	public static volatile SingularAttribute&lt;Movement, ZonedDateTime&gt; endDate;
+	
+	/**
+	 * @see org.openwms.wms.movements.impl.Movement#initiator
+	 **/
+	public static volatile SingularAttribute&lt;Movement, String&gt; initiator;
+	
+	/**
+	 * @see org.openwms.wms.movements.impl.Movement#type
+	 **/
+	public static volatile SingularAttribute&lt;Movement, MovementType&gt; type;
+	
+	/**
+	 * @see org.openwms.wms.movements.impl.Movement#priority
+	 **/
+	public static volatile SingularAttribute&lt;Movement, PriorityLevel&gt; priority;
+	
+	/**
+	 * @see org.openwms.wms.movements.impl.Movement#message
+	 **/
+	public static volatile SingularAttribute&lt;Movement, Message&gt; message;
+	
+	/**
+	 * @see org.openwms.wms.movements.impl.Movement#targetLocation
+	 **/
+	public static volatile SingularAttribute&lt;Movement, String&gt; targetLocation;
+	
+	/**
+	 * @see org.openwms.wms.movements.impl.Movement#transportUnitBk
+	 **/
+	public static volatile SingularAttribute&lt;Movement, Barcode&gt; transportUnitBk;
+	
+	/**
+	 * @see org.openwms.wms.movements.impl.Movement#latestDueDate
+	 **/
+	public static volatile SingularAttribute&lt;Movement, ZonedDateTime&gt; latestDueDate;
+	
+	/**
+	 * @see org.openwms.wms.movements.impl.Movement#targetLocationGroup
+	 **/
+	public static volatile SingularAttribute&lt;Movement, String&gt; targetLocationGroup;
+	
+	/**
+	 * @see org.openwms.wms.movements.impl.Movement#mode
+	 **/
+	public static volatile SingularAttribute&lt;Movement, StartMode&gt; mode;
+	
+	/**
+	 * @see org.openwms.wms.movements.impl.Movement#startEarliestDate
+	 **/
+	public static volatile SingularAttribute&lt;Movement, ZonedDateTime&gt; startEarliestDate;
+	
+	/**
+	 * @see org.openwms.wms.movements.impl.Movement#sourceLocation
+	 **/
+	public static volatile SingularAttribute&lt;Movement, String&gt; sourceLocation;
+	
+	/**
+	 * @see org.openwms.wms.movements.impl.Movement#state
+	 **/
+	public static volatile SingularAttribute&lt;Movement, DefaultMovementState&gt; state;
+	
+	/**
+	 * @see org.openwms.wms.movements.impl.Movement#sku
+	 **/
+	public static volatile SingularAttribute&lt;Movement, String&gt; sku;
+	
+	/**
+	 * @see org.openwms.wms.movements.impl.Movement
+	 **/
+	public static volatile EntityType&lt;Movement&gt; class_;
+	
+	/**
+	 * @see org.openwms.wms.movements.impl.Movement#startDate
+	 **/
+	public static volatile SingularAttribute&lt;Movement, ZonedDateTime&gt; startDate;
+	
+	/**
+	 * @see org.openwms.wms.movements.impl.Movement#group
+	 **/
+	public static volatile SingularAttribute&lt;Movement, MovementGroup&gt; group;
+	
+	/**
+	 * @see org.openwms.wms.movements.impl.Movement#problems
+	 **/
+	public static volatile ListAttribute&lt;Movement, ProblemHistory&gt; problems;
+
+	public static final String SOURCE_LOCATION_GROUP_NAME = &quot;sourceLocationGroupName&quot;;
+	public static final String END_DATE = &quot;endDate&quot;;
+	public static final String INITIATOR = &quot;initiator&quot;;
+	public static final String TYPE = &quot;type&quot;;
+	public static final String PRIORITY = &quot;priority&quot;;
+	public static final String MESSAGE = &quot;message&quot;;
+	public static final String TARGET_LOCATION = &quot;targetLocation&quot;;
+	public static final String TRANSPORT_UNIT_BK = &quot;transportUnitBk&quot;;
+	public static final String LATEST_DUE_DATE = &quot;latestDueDate&quot;;
+	public static final String TARGET_LOCATION_GROUP = &quot;targetLocationGroup&quot;;
+	public static final String MODE = &quot;mode&quot;;
+	public static final String START_EARLIEST_DATE = &quot;startEarliestDate&quot;;
+	public static final String SOURCE_LOCATION = &quot;sourceLocation&quot;;
+	public static final String STATE = &quot;state&quot;;
+	public static final String SKU = &quot;sku&quot;;
+	public static final String START_DATE = &quot;startDate&quot;;
+	public static final String GROUP = &quot;group&quot;;
+	public static final String PROBLEMS = &quot;problems&quot;;
+
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

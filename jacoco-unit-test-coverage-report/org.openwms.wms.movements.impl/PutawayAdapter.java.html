@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PutawayAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OpenWMS.org WMS: Movements Service Library</a> &gt; <a href="index.source.html" class="el_package">org.openwms.wms.movements.impl</a> &gt; <span class="el_source">PutawayAdapter.java</span></div><h1>PutawayAdapter.java</h1><pre class="source lang-java linenums">/*
+ * Copyright 2005-2025 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.openwms.wms.movements.impl;
+
+import org.ameba.annotation.Measured;
+import org.ameba.annotation.TxService;
+import org.openwms.wms.movements.Message;
+import org.openwms.wms.movements.MovementProperties;
+import org.openwms.wms.movements.spi.common.putaway.PutawayApi;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionalEventListener;
+
+/**
+ * A PutawayAdapter is a Spring managed transactional event listener that acts as an adapter to the {@link PutawayApi} that is called after
+ * a {@link Movement} has been created successfully.
+ *
+ * @author Heiko Scherrer
+ */
+@TxService
+@RefreshScope
+class PutawayAdapter {
+
+<span class="nc" id="L42">    private static final Logger LOGGER = LoggerFactory.getLogger(PutawayAdapter.class);</span>
+    private final ApplicationEventPublisher eventPublisher;
+    private final MovementProperties properties;
+    private final MovementRepository repository;
+    private final PutawayApi putawayApi;
+
+<span class="nc" id="L48">    PutawayAdapter(ApplicationEventPublisher eventPublisher, MovementProperties properties, MovementRepository repository, PutawayApi putawayApi) {</span>
+<span class="nc" id="L49">        this.eventPublisher = eventPublisher;</span>
+<span class="nc" id="L50">        this.properties = properties;</span>
+<span class="nc" id="L51">        this.repository = repository;</span>
+<span class="nc" id="L52">        this.putawayApi = putawayApi;</span>
+<span class="nc" id="L53">    }</span>
+
+    @ConditionalOnExpression(&quot;${owms.movement.putaway-resolution-enabled}&quot;)
+    @Measured
+    @TransactionalEventListener
+    @Transactional(propagation = Propagation.REQUIRES_NEW, noRollbackFor = {Exception.class})
+    public void onEvent(MovementEvent event) {
+<span class="nc" id="L60">        var movement = event.getSource();</span>
+<span class="nc bnc" id="L61" title="All 2 branches missed.">        if (event.getType() == MovementEvent.Type.CREATED) {</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">            if (movement.emptyTargetLocation()) {</span>
+                try {
+<span class="nc" id="L64">                    var movementTarget = properties.findTarget(movement.getTargetLocationGroup());</span>
+<span class="nc" id="L65">                    LOGGER.debug(&quot;Call putaway strategy to find target location for movement [{}] in [{}]&quot;, movement.getPersistentKey(), movementTarget.getSearchLocationGroupNames());</span>
+<span class="nc" id="L66">                    var target = putawayApi.findAndAssignNextInLocGroup(</span>
+<span class="nc" id="L67">                            movement.getInitiator(),</span>
+<span class="nc" id="L68">                            movementTarget.getSearchLocationGroupNames(),</span>
+<span class="nc" id="L69">                            movement.getTransportUnitBk().getValue(),</span>
+                            2
+                    );
+<span class="nc" id="L72">                    LOGGER.debug(&quot;Putaway strategy returned [{}] as next target for movement [{}]&quot;, target.getLocationId(), movement.getPersistentKey());</span>
+<span class="nc" id="L73">                    movement.setTargetLocation(target.getErpCode());</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">                    if (target.getErpCode() != null) {</span>
+<span class="nc" id="L75">                        eventPublisher.publishEvent(new MovementTargetChangedEvent(movement));</span>
+                    }
+<span class="nc" id="L77">                } catch (Exception e) {</span>
+<span class="nc" id="L78">                    LOGGER.error(&quot;Error calling the putaway strategy: &quot; + e.getMessage(), e);</span>
+<span class="nc" id="L79">                    movement.addProblem(new ProblemHistory(movement, new Message.Builder().withMessageText(e.getMessage()).build()));</span>
+<span class="nc" id="L80">                }</span>
+<span class="nc" id="L81">                repository.save(movement);</span>
+            } else {
+<span class="nc" id="L83">                LOGGER.debug(&quot;Target is already set and not being resolved&quot;);</span>
+            }
+        }
+<span class="nc" id="L86">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

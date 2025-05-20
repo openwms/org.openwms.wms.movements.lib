@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MovementController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OpenWMS.org WMS: Movements Service Library</a> &gt; <a href="index.source.html" class="el_package">org.openwms.wms.movements</a> &gt; <span class="el_source">MovementController.java</span></div><h1>MovementController.java</h1><pre class="source lang-java linenums">/*
+ * Copyright 2005-2025 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.openwms.wms.movements;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import org.ameba.http.MeasuredRestController;
+import org.openwms.core.http.AbstractWebController;
+import org.openwms.core.http.Index;
+import org.openwms.wms.movements.api.MovementType;
+import org.openwms.wms.movements.api.MovementVO;
+import org.openwms.wms.movements.api.ValidationGroups;
+import org.openwms.wms.movements.spi.DefaultMovementState;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
+
+import static java.util.Arrays.asList;
+import static org.openwms.wms.movements.api.MovementApi.API_MOVEMENTS;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
+/**
+ * A MovementController.
+ *
+ * @author Heiko Scherrer
+ */
+@Validated
+@MeasuredRestController
+@RefreshScope
+public class MovementController extends AbstractWebController {
+
+    private final MovementService service;
+
+<span class="fc" id="L57">    public MovementController(MovementService service) {</span>
+<span class="fc" id="L58">        this.service = service;</span>
+<span class="fc" id="L59">    }</span>
+
+    @GetMapping(API_MOVEMENTS + &quot;/index&quot;)
+    public ResponseEntity&lt;Index&gt; index() {
+<span class="fc" id="L63">        return ResponseEntity.ok(</span>
+                new Index(
+<span class="fc" id="L65">                        linkTo(methodOn(MovementController.class).create(&quot;transportUnitBK&quot;, new MovementVO(), null)).withRel(&quot;movement-create&quot;),</span>
+<span class="fc" id="L66">                        linkTo(methodOn(MovementController.class).findAll()).withRel(&quot;movement-findAll&quot;),</span>
+<span class="fc" id="L67">                        linkTo(methodOn(MovementController.class).findForTuAndTypesAndStates(&quot;transportUnitBK&quot;, asList(MovementType.INBOUND), asList(&quot;state&quot;))).withRel(&quot;movement-findForTuAndTypesAndStates&quot;),</span>
+<span class="fc" id="L68">                        linkTo(methodOn(MovementController.class).findForStateAndTypesAndSource(&quot;state&quot;, &quot;source&quot;, MovementType.INBOUND)).withRel(&quot;movement-findForStateAndTypesAndSource&quot;),</span>
+<span class="fc" id="L69">                        linkTo(methodOn(MovementController.class).move(&quot;pKey&quot;, new MovementVO())).withRel(&quot;movement-move&quot;),</span>
+<span class="fc" id="L70">                        linkTo(methodOn(MovementController.class).cancel(&quot;pKey&quot;)).withRel(&quot;movement-cancel&quot;),</span>
+<span class="fc" id="L71">                        linkTo(methodOn(MovementController.class).complete(&quot;pKey&quot;, new MovementVO())).withRel(&quot;movement-complete&quot;)</span>
+                )
+        );
+    }
+
+    @PostMapping(&quot;/v1/transport-units/{bk}/movements&quot;)
+    @Validated(ValidationGroups.Movement.Create.class)
+    public ResponseEntity&lt;MovementVO&gt; create(@PathVariable(&quot;bk&quot;) String bk,
+                                             @Valid @RequestBody MovementVO movement,
+                                       HttpServletRequest req) {
+
+<span class="fc" id="L82">        movement.setTransportUnitBk(bk);</span>
+<span class="fc" id="L83">        var created = service.create(bk, movement);</span>
+<span class="fc" id="L84">        return ResponseEntity</span>
+<span class="fc" id="L85">                .created(getLocationURIForCreatedResource(req, created.getPersistentKey()))</span>
+<span class="fc" id="L86">                .body(created);</span>
+    }
+
+    @PatchMapping(API_MOVEMENTS + &quot;/{pKey}&quot;)
+    @Validated(ValidationGroups.Movement.Move.class)
+    public ResponseEntity&lt;MovementVO&gt; move(@PathVariable(&quot;pKey&quot;) String pKey,
+            @Valid @RequestBody MovementVO movement) {
+
+<span class="fc" id="L94">        return ResponseEntity.ok(service.move(pKey, movement));</span>
+    }
+
+    @PatchMapping(API_MOVEMENTS + &quot;/{pKey}/complete&quot;)
+    @Validated(ValidationGroups.Movement.Complete.class)
+    public ResponseEntity&lt;MovementVO&gt; complete(@PathVariable(&quot;pKey&quot;) String pKey,
+                                               @Valid @RequestBody MovementVO movement) {
+
+<span class="fc" id="L102">        return ResponseEntity.ok(service.complete(pKey, movement));</span>
+    }
+
+    @DeleteMapping(API_MOVEMENTS + &quot;/{pKey}&quot;)
+    public ResponseEntity&lt;MovementVO&gt; cancel(@PathVariable(&quot;pKey&quot;) String pKey) {
+
+<span class="fc" id="L108">        return ResponseEntity.ok(service.cancel(pKey));</span>
+    }
+
+    @GetMapping(value = API_MOVEMENTS)
+    public ResponseEntity&lt;List&lt;MovementVO&gt;&gt; findAll(){
+
+<span class="fc" id="L114">        return ResponseEntity.ok(service.findAll());</span>
+    }
+
+    @GetMapping(value = API_MOVEMENTS, params = {&quot;barcode&quot;, &quot;types&quot;, &quot;states&quot;})
+    public ResponseEntity&lt;List&lt;MovementVO&gt;&gt; findForTuAndTypesAndStates(
+            @RequestParam(&quot;barcode&quot;) String barcode,
+            @RequestParam(&quot;types&quot;) List&lt;MovementType&gt; types,
+            @RequestParam(&quot;states&quot;) List&lt;String&gt; states) {
+
+<span class="fc" id="L123">        return ResponseEntity.ok(service.findForTuAndTypesAndStates(barcode, types, states));</span>
+    }
+
+    @GetMapping(value = API_MOVEMENTS, params = {&quot;state&quot;, &quot;types&quot;})
+    public ResponseEntity&lt;List&lt;MovementVO&gt;&gt; findForStateAndTypesAndSource(@RequestParam(&quot;state&quot;) String state,
+            @RequestParam(value = &quot;source&quot;, required = false) String source,
+            @RequestParam(&quot;types&quot;) MovementType... types) {
+
+<span class="fc" id="L131">        return ResponseEntity.ok(service.findFor(DefaultMovementState.valueOf(state), source, types));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

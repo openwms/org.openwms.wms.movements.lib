@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TransactionWriter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OpenWMS.org WMS: Movements Service Library</a> &gt; <a href="index.source.html" class="el_package">org.openwms.wms.movements.impl</a> &gt; <span class="el_source">TransactionWriter.java</span></div><h1>TransactionWriter.java</h1><pre class="source lang-java linenums">/*
+ * Copyright 2005-2025 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.openwms.wms.movements.impl;
+
+import org.ameba.annotation.Measured;
+import org.ameba.exception.NotFoundException;
+import org.ameba.http.ctx.CallContext;
+import org.ameba.http.ctx.CallContextHolder;
+import org.ameba.http.identity.IdentityContextHolder;
+import org.ameba.i18n.Translator;
+import org.openwms.common.location.api.LocationApi;
+import org.openwms.common.location.api.messages.LocationMO;
+import org.openwms.common.transport.api.commands.TUCommand;
+import org.openwms.common.transport.api.messages.TransportUnitMO;
+import org.openwms.core.SpringProfiles;
+import org.openwms.transactions.api.TransactionBuilder;
+import org.openwms.transactions.api.commands.AsyncTransactionApi;
+import org.openwms.transactions.api.commands.TransactionCommand;
+import org.openwms.wms.movements.spi.common.AsyncTransportUnitApi;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionalEventListener;
+
+import static org.openwms.transactions.api.commands.TransactionCommand.Type.CREATE;
+import static org.openwms.wms.movements.MovementsMessages.LOCATION_NOT_FOUND_BY_ERP_CODE;
+import static org.openwms.wms.movements.MovementsMessages.MSG_MOVEMENT_COMPLETED;
+import static org.openwms.wms.movements.MovementsMessages.MSG_MOVEMENT_MOVED;
+
+/**
+ * A TransactionWriter is a Spring managed bean, activated with {@value SpringProfiles#ASYNCHRONOUS_PROFILE} profile that takes care of
+ * writing business transactions via the COMMON Transaction service.
+ *
+ * @author Heiko Scherrer
+ */
+@Profile(SpringProfiles.ASYNCHRONOUS_PROFILE)
+@Component
+@RefreshScope
+class TransactionWriter {
+
+    private final String applicationName;
+    private final Translator translator;
+    private final LocationApi locationApi;
+    private final AsyncTransportUnitApi asyncTransportUnitApi;
+    private final AsyncTransactionApi asyncTransactionApi;
+
+    TransactionWriter(@Value(&quot;${spring.application.name}&quot;) String applicationName, Translator translator, LocationApi locationApi, AsyncTransportUnitApi asyncTransportUnitApi,
+<span class="nc" id="L64">            AsyncTransactionApi asyncTransactionApi) {</span>
+<span class="nc" id="L65">        this.applicationName = applicationName;</span>
+<span class="nc" id="L66">        this.translator = translator;</span>
+<span class="nc" id="L67">        this.locationApi = locationApi;</span>
+<span class="nc" id="L68">        this.asyncTransportUnitApi = asyncTransportUnitApi;</span>
+<span class="nc" id="L69">        this.asyncTransactionApi = asyncTransactionApi;</span>
+<span class="nc" id="L70">    }</span>
+
+    @Measured
+    @TransactionalEventListener
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void onEvent(MovementEvent event) {
+<span class="nc bnc" id="L76" title="All 3 branches missed.">        switch (event.getType()) {</span>
+            case MOVED:
+<span class="nc" id="L78">                asyncTransactionApi.process(TransactionCommand.of(CREATE,</span>
+<span class="nc" id="L79">                        TransactionBuilder.aTransactionVO()</span>
+<span class="nc" id="L80">                                .withCreatedByUser(IdentityContextHolder.getCurrentIdentity())</span>
+<span class="nc" id="L81">                                .withCategory(CallContextHolder.getOptionalCallContext().map(CallContext::getCaller).orElse(&quot;&quot;))</span>
+<span class="nc" id="L82">                                .withSender(applicationName)</span>
+<span class="nc" id="L83">                                .withType(MSG_MOVEMENT_MOVED)</span>
+<span class="nc" id="L84">                                .withDescription(translator.translate(MSG_MOVEMENT_MOVED,</span>
+<span class="nc" id="L85">                                        event.getSource().getTransportUnitBk(),</span>
+<span class="nc" id="L86">                                        event.getPreviousLocation(),</span>
+<span class="nc" id="L87">                                        event.getSource().getSourceLocation()))</span>
+<span class="nc" id="L88">                                .withDetail(&quot;transportUnitBK&quot;, event.getSource().getTransportUnitBk().getValue())</span>
+<span class="nc" id="L89">                                .withDetail(&quot;previousLocation&quot;, event.getPreviousLocation())</span>
+<span class="nc" id="L90">                                .withDetail(&quot;actualLocation&quot;, event.getSource().getSourceLocation())</span>
+<span class="nc" id="L91">                                .build()</span>
+                ));
+<span class="nc" id="L93">                break;</span>
+            case COMPLETED:
+<span class="nc" id="L95">                asyncTransactionApi.process(TransactionCommand.of(CREATE,</span>
+<span class="nc" id="L96">                        TransactionBuilder.aTransactionVO()</span>
+<span class="nc" id="L97">                                .withCreatedByUser(IdentityContextHolder.getCurrentIdentity())</span>
+<span class="nc" id="L98">                                .withCategory(CallContextHolder.getOptionalCallContext().map(CallContext::getCaller).orElse(&quot;&quot;))</span>
+<span class="nc" id="L99">                                .withSender(applicationName)</span>
+<span class="nc" id="L100">                                .withType(MSG_MOVEMENT_COMPLETED)</span>
+<span class="nc" id="L101">                                .withDescription(translator.translate(MSG_MOVEMENT_COMPLETED,</span>
+<span class="nc" id="L102">                                        event.getSource().getTransportUnitBk(),</span>
+<span class="nc" id="L103">                                        event.getSource().getSourceLocation(),</span>
+<span class="nc" id="L104">                                        event.getPreviousLocation())</span>
+                                )
+<span class="nc" id="L106">                                .withDetail(&quot;transportUnitBK&quot;, event.getSource().getTransportUnitBk().getValue())</span>
+<span class="nc" id="L107">                                .withDetail(&quot;previousLocation&quot;, event.getSource().getSourceLocation())</span>
+<span class="nc" id="L108">                                .withDetail(&quot;actualLocation&quot;, event.getPreviousLocation())</span>
+<span class="nc" id="L109">                                .build()</span>
+                ));
+<span class="nc" id="L111">                break;</span>
+            default:
+        }
+<span class="nc" id="L114">    }</span>
+
+    @Measured
+    @TransactionalEventListener
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void onEvent(MovementTargetChangedEvent event) {
+<span class="nc" id="L120">        var locationByErpCode = locationApi.findByErpCode(event.getSource().getTargetLocation());</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">        if (locationByErpCode.isPresent()) {</span>
+<span class="nc" id="L122">            asyncTransportUnitApi.process(</span>
+<span class="nc" id="L123">                    TUCommand.newBuilder(TUCommand.Type.CHANGE_TARGET)</span>
+<span class="nc" id="L124">                            .withTransportUnit(TransportUnitMO.newBuilder()</span>
+<span class="nc" id="L125">                                    .withBarcode(event.getSource().getTransportUnitBk().getValue())</span>
+<span class="nc" id="L126">                                    .withTargetLocation(LocationMO.ofId(locationByErpCode.get().getLocationId()))</span>
+<span class="nc" id="L127">                                    .build()</span>
+                            )
+<span class="nc" id="L129">                            .build()</span>
+            );
+        } else {
+<span class="nc" id="L132">            throw new NotFoundException(translator, LOCATION_NOT_FOUND_BY_ERP_CODE, new String[]{event.getSource().getTargetLocation()},</span>
+<span class="nc" id="L133">                    event.getSource().getTargetLocation());</span>
+        }
+<span class="nc" id="L135">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

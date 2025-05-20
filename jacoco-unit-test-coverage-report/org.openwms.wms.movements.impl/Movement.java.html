@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Movement.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OpenWMS.org WMS: Movements Service Library</a> &gt; <a href="index.source.html" class="el_package">org.openwms.wms.movements.impl</a> &gt; <span class="el_source">Movement.java</span></div><h1>Movement.java</h1><pre class="source lang-java linenums">/*
+ * Copyright 2005-2025 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.openwms.wms.movements.impl;
+
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
+import org.ameba.integration.jpa.ApplicationEntity;
+import org.openwms.common.transport.Barcode;
+import org.openwms.wms.movements.Message;
+import org.openwms.wms.movements.api.MovementType;
+import org.openwms.wms.movements.api.StartMode;
+import org.openwms.wms.movements.api.ValidationGroups;
+import org.openwms.wms.movements.spi.DefaultMovementState;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.util.Assert;
+
+import java.io.Serializable;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import static org.openwms.wms.movements.MovementConstants.DATE_TIME_WITH_TIMEZONE;
+
+/**
+ * A Movement is a simple task to move a {@code TransportUnit} from one source {@code Location} to a target {@code Location}. This is
+ * often used for manual warehouses or manual activities.
+ *
+ * @author Heiko Scherrer
+ */
+@Entity
+@Table(name = &quot;MVM_MOVEMENT&quot;)
+public class Movement extends ApplicationEntity implements Serializable {
+
+    /** The business key of the {@code TransportUnit} to move. */
+    @NotNull
+    @Embedded
+    @AttributeOverride(name = &quot;value&quot;, column = @Column(name = &quot;C_TRANSPORT_UNIT_BK&quot;, nullable = false))
+    private Barcode transportUnitBk;
+
+    /** Type of the {@code Movement}. */
+    @Column(name = &quot;C_TYPE&quot;, nullable = false)
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    private MovementType type;
+
+    /** Initiator of the {@code Movement}, who ordered or triggered it. */
+    @Column(name = &quot;C_INITIATOR&quot;, nullable = false)
+    @NotNull
+    private String initiator;
+
+    /** The {@link MovementGroup}, the {@code Movement} belongs to. */
+    @ManyToOne
+    @JoinColumn(name = &quot;C_GROUP_PK&quot;, nullable = true, foreignKey = @ForeignKey(name = &quot;FK_MVM_GRP&quot;))
+    private MovementGroup group;
+
+    /** Refers to the demanded {@code Product} for that the {@code Movement} has been created. */
+    @Column(name = &quot;C_SKU&quot;)
+    private String sku;
+
+    /**
+     * A priority level of the {@code Movement}. The lower the value the lower the priority. The priority level affects the execution of the
+     * {@code Movement}. An order with high priority will be processed faster than those with lower priority.
+     */
+    @Column(name = &quot;C_PRIORITY&quot;, nullable = false)
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    private PriorityLevel priority;
+
+    /** Defines how the resulting {@code TransportOrder} is started. */
+<span class="nc" id="L96">    @Column(name = &quot;C_MODE&quot;, nullable = false)</span>
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    private StartMode mode = StartMode.MANUAL;
+
+    /** The current state the {@link Movement} resides in. */
+    @Column(name = &quot;C_STATE&quot;)
+    @Enumerated(EnumType.STRING)
+    private DefaultMovementState state;
+
+    /** A message with the reason for this {@code Movement}. */
+    @Embedded
+    private Message message;
+
+    /** Reported problems on the {@code Movement}. */
+    @OneToMany(mappedBy = &quot;movement&quot;, cascade = CascadeType.ALL)
+    private List&lt;ProblemHistory&gt; problems;
+
+    /** Where the {@code Movement} is picked up. */
+    @Column(name = &quot;C_SOURCE_LOCATION&quot;)
+    private String sourceLocation;
+
+    /** The name of the {@code LocationGroup} where the {@code sourceLocation} belongs to. */
+    @Column(name = &quot;C_SOURCE_LOCATION_GROUP_NAME&quot;)
+    private String sourceLocationGroupName;
+
+    /** The target {@code Location} of the {@code Movement}. This property is set before the {@code Movement} is started. */
+    @Column(name = &quot;C_TARGET_LOCATION&quot;)
+    @Null(groups = ValidationGroups.Movement.Create.class)
+    private String targetLocation;
+
+    /** A {@code LocationGroup} can also be set as target. At least one target must be set when the {@code Movement} is being started. */
+    @Column(name = &quot;C_TARGET_LOCATION_GROUP_NAME&quot;)
+    @NotNull
+    private String targetLocationGroup;
+
+    /** Date when the {@code Movement} can be started earliest. */
+    @Column(name = &quot;C_START_EARLIEST_DATE&quot;, columnDefinition = &quot;timestamp(0)&quot;)
+    @DateTimeFormat(pattern = DATE_TIME_WITH_TIMEZONE)
+    private ZonedDateTime startEarliestDate;
+
+    /** Date when the {@code Movement} was started. */
+    @Column(name = &quot;C_START_DATE&quot;, columnDefinition = &quot;timestamp(0)&quot;)
+    @DateTimeFormat(pattern = DATE_TIME_WITH_TIMEZONE)
+    private ZonedDateTime startDate;
+
+    /** Latest possible finish date of this {@code Movement}. */
+    @Column(name = &quot;C_LATEST_DUE&quot;, columnDefinition = &quot;timestamp(0)&quot;)
+    @DateTimeFormat(pattern = DATE_TIME_WITH_TIMEZONE)
+    private ZonedDateTime latestDueDate;
+
+    /** Date when the {@code Movement} ended. */
+    @Column(name = &quot;C_END_DATE&quot;, columnDefinition = &quot;timestamp(0)&quot;)
+    @DateTimeFormat(pattern = DATE_TIME_WITH_TIMEZONE)
+    private ZonedDateTime endDate;
+
+    /*~ -------------- Constructors -------------- */
+    /** Dear JPA... */
+<span class="nc" id="L154">    protected Movement() {}</span>
+
+    /*~ ---------------- Methods ----------------- */
+
+    @Override
+    public void setPersistentKey(String pKey) {
+<span class="nc" id="L160">        super.setPersistentKey(pKey);</span>
+<span class="nc" id="L161">    }</span>
+
+    /**
+     * Add a new problem to the {@code Movement}s {@code problemHistory}.
+     *
+     * @param problem The problem to store
+     * @return {@literal true} if added successfully
+     */
+    public boolean addProblem(ProblemHistory problem) {
+<span class="nc bnc" id="L170" title="All 2 branches missed.">        if (this.problems == null) {</span>
+<span class="nc" id="L171">            this.problems = new ArrayList&lt;&gt;(1);</span>
+        }
+<span class="nc" id="L173">        return this.problems.add(problem);</span>
+    }
+
+    /**
+     * Check whether the {@code targetLocation} is empty.
+     *
+     * @return {@literal true} if so
+     */
+    public boolean emptyTargetLocation() {
+<span class="nc bnc" id="L182" title="All 4 branches missed.">        return targetLocation == null || targetLocation.isEmpty();</span>
+    }
+
+    /**
+     * Set the initiator, or the given default value.
+     *
+     * @param initiator The initiator
+     * @param defaultVal The default value
+     */
+    public void setInitiatorOrDefault(String initiator, String defaultVal) {
+<span class="nc bnc" id="L192" title="All 4 branches missed.">        if (initiator == null || initiator.isEmpty()) {</span>
+<span class="nc" id="L193">            Assert.hasText(defaultVal, &quot;The default value for initiator must be given&quot;);</span>
+<span class="nc" id="L194">            this.initiator = defaultVal;</span>
+        } else {
+<span class="nc" id="L196">            this.initiator = initiator;</span>
+        }
+<span class="nc" id="L198">    }</span>
+
+    /**
+     * Checks if this {@code Movement} has a {@code SKU} set.
+     *
+     * @return {@literal true} if so
+     */
+    public boolean hasSKU() {
+<span class="nc bnc" id="L206" title="All 4 branches missed.">        return this.sku != null &amp;&amp; !this.sku.isEmpty();</span>
+    }
+
+    /**
+     * Set a {@code startDate} for this {@code Movement} if not already set.
+     *
+     * @param startDate The start date to set
+     */
+    public void initStartDate(ZonedDateTime startDate) {
+<span class="nc bnc" id="L215" title="All 2 branches missed.">        if (this.startDate == null) {</span>
+<span class="nc" id="L216">            this.startDate = startDate;</span>
+        }
+<span class="nc" id="L218">    }</span>
+
+    /*~ --------------- Accessors ---------------- */
+    public Barcode getTransportUnitBk() {
+<span class="nc" id="L222">        return transportUnitBk;</span>
+    }
+
+    public void setTransportUnitBk(Barcode transportUnitBk) {
+<span class="nc" id="L226">        this.transportUnitBk = transportUnitBk;</span>
+<span class="nc" id="L227">    }</span>
+
+    public MovementType getType() {
+<span class="nc" id="L230">        return type;</span>
+    }
+
+    public void setType(MovementType type) {
+<span class="nc" id="L234">        this.type = type;</span>
+<span class="nc" id="L235">    }</span>
+
+    public String getInitiator() {
+<span class="nc" id="L238">        return initiator;</span>
+    }
+
+    public void setInitiator(String initiator) {
+<span class="nc" id="L242">        this.initiator = initiator;</span>
+<span class="nc" id="L243">    }</span>
+
+    public MovementGroup getGroup() {
+<span class="nc" id="L246">        return group;</span>
+    }
+
+    public String getSku() {
+<span class="nc" id="L250">        return sku;</span>
+    }
+
+    public void setSku(String sku) {
+<span class="nc" id="L254">        this.sku = sku;</span>
+<span class="nc" id="L255">    }</span>
+
+    public PriorityLevel getPriority() {
+<span class="nc" id="L258">        return priority;</span>
+    }
+
+    public void setPriority(PriorityLevel priority) {
+<span class="nc" id="L262">        this.priority = priority;</span>
+<span class="nc" id="L263">    }</span>
+
+    public StartMode getMode() {
+<span class="nc" id="L266">        return mode;</span>
+    }
+
+    public void setMode(StartMode mode) {
+<span class="nc" id="L270">        this.mode = mode;</span>
+<span class="nc" id="L271">    }</span>
+
+    public Message getMessage() {
+<span class="nc" id="L274">        return message;</span>
+    }
+
+    public void setMessage(Message message) {
+<span class="nc" id="L278">        this.message = message;</span>
+<span class="nc" id="L279">    }</span>
+
+    public DefaultMovementState getState() {
+<span class="nc" id="L282">        return state;</span>
+    }
+
+    public void setState(DefaultMovementState state) {
+<span class="nc" id="L286">        this.state = state;</span>
+<span class="nc" id="L287">    }</span>
+
+    public List&lt;ProblemHistory&gt; getProblems() {
+<span class="nc" id="L290">        return problems;</span>
+    }
+
+    public String getSourceLocation() {
+<span class="nc" id="L294">        return sourceLocation;</span>
+    }
+
+    public void setSourceLocation(String sourceLocation) {
+<span class="nc" id="L298">        this.sourceLocation = sourceLocation;</span>
+<span class="nc" id="L299">    }</span>
+
+    public String getSourceLocationGroupName() {
+<span class="nc" id="L302">        return sourceLocationGroupName;</span>
+    }
+
+    public void setSourceLocationGroupName(String sourceLocationGroupName) {
+<span class="nc" id="L306">        this.sourceLocationGroupName = sourceLocationGroupName;</span>
+<span class="nc" id="L307">    }</span>
+
+    public String getTargetLocation() {
+<span class="nc" id="L310">        return targetLocation;</span>
+    }
+
+    public void setTargetLocation(String targetLocation) {
+<span class="nc" id="L314">        this.targetLocation = targetLocation;</span>
+<span class="nc" id="L315">    }</span>
+
+    public String getTargetLocationGroup() {
+<span class="nc" id="L318">        return targetLocationGroup;</span>
+    }
+
+    public boolean emptyTargetLocationGroup() {
+<span class="nc bnc" id="L322" title="All 2 branches missed.">        return targetLocationGroup == null;</span>
+    }
+
+    public void setTargetLocationGroup(String targetLocationGroup) {
+<span class="nc" id="L326">        this.targetLocationGroup = targetLocationGroup;</span>
+<span class="nc" id="L327">    }</span>
+
+    public ZonedDateTime getStartEarliestDate() {
+<span class="nc" id="L330">        return startEarliestDate;</span>
+    }
+
+    public ZonedDateTime getStartDate() {
+<span class="nc" id="L334">        return startDate;</span>
+    }
+
+    public void setStartDate(ZonedDateTime startDate) {
+<span class="nc" id="L338">        this.startDate = startDate;</span>
+<span class="nc" id="L339">    }</span>
+
+    public ZonedDateTime getLatestDueDate() {
+<span class="nc" id="L342">        return latestDueDate;</span>
+    }
+
+    public ZonedDateTime getEndDate() {
+<span class="nc" id="L346">        return endDate;</span>
+    }
+
+    public void setEndDate(ZonedDateTime endDate) {
+<span class="nc" id="L350">        this.endDate = endDate;</span>
+<span class="nc" id="L351">    }</span>
+
+    /**
+     * {@inheritDoc}
+     *
+     * Not the group and not the history.
+     */
+    @Override
+    public String toString() {
+<span class="nc" id="L360">        return &quot;Movement{&quot; +</span>
+                &quot;transportUnitBk=&quot; + transportUnitBk +
+<span class="nc" id="L362">                &quot;, pKey=&quot; + getPersistentKey() +</span>
+                &quot;, type=&quot; + type +
+                &quot;, initiator=&quot; + initiator +
+                &quot;, priority=&quot; + priority +
+                &quot;, mode=&quot; + mode +
+                &quot;, state=&quot; + state +
+                &quot;, message=&quot; + message +
+                &quot;, sourceLocation='&quot; + sourceLocation + '\'' +
+                &quot;, sourceLocationGroupName='&quot; + sourceLocationGroupName + '\'' +
+                &quot;, targetLocation='&quot; + targetLocation + '\'' +
+                &quot;, targetLocationGroup='&quot; + targetLocationGroup + '\'' +
+                &quot;, startEarliestDate=&quot; + startEarliestDate +
+                &quot;, startDate=&quot; + startDate +
+                &quot;, latestDueDate=&quot; + latestDueDate +
+                &quot;, endDate=&quot; + endDate +
+                '}';
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * Not the group and not the history.
+     */
+    @Override
+    public boolean equals(Object o) {
+<span class="nc bnc" id="L387" title="All 2 branches missed.">        if (this == o) return true;</span>
+<span class="nc bnc" id="L388" title="All 2 branches missed.">        if (!(o instanceof Movement)) return false;</span>
+<span class="nc bnc" id="L389" title="All 2 branches missed.">        if (!super.equals(o)) return false;</span>
+<span class="nc" id="L390">        Movement movement = (Movement) o;</span>
+<span class="nc bnc" id="L391" title="All 32 branches missed.">        return Objects.equals(transportUnitBk, movement.transportUnitBk) &amp;&amp; type == movement.type &amp;&amp; Objects.equals(initiator, movement.initiator) &amp;&amp; Objects.equals(sku, movement.sku) &amp;&amp; priority == movement.priority &amp;&amp; mode == movement.mode &amp;&amp; state == movement.state &amp;&amp; Objects.equals(message, movement.message) &amp;&amp; Objects.equals(sourceLocation, movement.sourceLocation) &amp;&amp; Objects.equals(sourceLocationGroupName, movement.sourceLocationGroupName) &amp;&amp; Objects.equals(targetLocation, movement.targetLocation) &amp;&amp; Objects.equals(targetLocationGroup, movement.targetLocationGroup) &amp;&amp; Objects.equals(startEarliestDate, movement.startEarliestDate) &amp;&amp; Objects.equals(startDate, movement.startDate) &amp;&amp; Objects.equals(latestDueDate, movement.latestDueDate) &amp;&amp; Objects.equals(endDate, movement.endDate);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L396">        return Objects.hash(super.hashCode(), transportUnitBk, type, initiator, sku, priority, mode, state, message, sourceLocation, sourceLocationGroupName, targetLocation, targetLocationGroup, startEarliestDate, startDate, latestDueDate, endDate);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

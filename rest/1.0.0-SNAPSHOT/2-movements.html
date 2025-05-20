@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 2.0.17">
+<meta name="generator" content="Asciidoctor 2.0.23">
 <title>Movements</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -84,10 +84,10 @@ code{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;
 ul,ol,dl{line-height:1.6;margin-bottom:1.25em;list-style-position:outside;font-family:inherit}
 ul,ol{margin-left:1.5em}
 ul li ul,ul li ol{margin-left:1.25em;margin-bottom:0}
-ul.square li ul,ul.circle li ul,ul.disc li ul{list-style:inherit}
-ul.square{list-style-type:square}
 ul.circle{list-style-type:circle}
 ul.disc{list-style-type:disc}
+ul.square{list-style-type:square}
+ul.circle ul:not([class]),ul.disc ul:not([class]),ul.square ul:not([class]){list-style:inherit}
 ol li ul,ol li ol{margin-left:1.25em;margin-bottom:0}
 dl dt{margin-bottom:.3125em;font-weight:bold}
 dl dd{margin-bottom:1.25em}
@@ -140,7 +140,7 @@ p a>code:hover{color:rgba(0,0,0,.9)}
 #content::before{content:none}
 #header>h1:first-child{color:rgba(0,0,0,.85);margin-top:2.25rem;margin-bottom:0}
 #header>h1:first-child+#toc{margin-top:8px;border-top:1px solid #dddddf}
-#header>h1:only-child,body.toc2 #header>h1:nth-last-child(2){border-bottom:1px solid #dddddf;padding-bottom:8px}
+#header>h1:only-child{border-bottom:1px solid #dddddf;padding-bottom:8px}
 #header .details{border-bottom:1px solid #dddddf;line-height:1.45;padding-top:.25em;padding-bottom:.25em;padding-left:.25em;color:rgba(0,0,0,.6);display:flex;flex-flow:row wrap}
 #header .details span:first-child{margin-left:-.125em}
 #header .details span.email a{color:rgba(0,0,0,.85)}
@@ -162,6 +162,7 @@ p a>code:hover{color:rgba(0,0,0,.9)}
 #toctitle{color:#7a2518;font-size:1.2em}
 @media screen and (min-width:768px){#toctitle{font-size:1.375em}
 body.toc2{padding-left:15em;padding-right:0}
+body.toc2 #header>h1:nth-last-child(2){border-bottom:1px solid #dddddf;padding-bottom:8px}
 #toc.toc2{margin-top:0!important;background:#f8f8f7;position:fixed;width:15em;left:0;top:0;border-right:1px solid #e7e7e9;border-top-width:0!important;border-bottom-width:0!important;z-index:1000;padding:1.25em 1em;height:100%;overflow:auto}
 #toc.toc2 #toctitle{margin-top:0;margin-bottom:.8rem;font-size:1.2em}
 #toc.toc2>ul{font-size:.9em;margin-bottom:0}
@@ -208,13 +209,10 @@ table.tableblock.fit-content>caption.title{white-space:nowrap;width:0}
 .admonitionblock>table td.content{padding-left:1.125em;padding-right:1.25em;border-left:1px solid #dddddf;color:rgba(0,0,0,.6);word-wrap:anywhere}
 .admonitionblock>table td.content>:last-child>:last-child{margin-bottom:0}
 .exampleblock>.content{border:1px solid #e6e6e6;margin-bottom:1.25em;padding:1.25em;background:#fff;border-radius:4px}
-.exampleblock>.content>:first-child{margin-top:0}
-.exampleblock>.content>:last-child{margin-bottom:0}
 .sidebarblock{border:1px solid #dbdbd6;margin-bottom:1.25em;padding:1.25em;background:#f3f3f2;border-radius:4px}
-.sidebarblock>:first-child{margin-top:0}
-.sidebarblock>:last-child{margin-bottom:0}
 .sidebarblock>.content>.title{color:#7a2518;margin-top:0;text-align:center}
-.exampleblock>.content>:last-child>:last-child,.exampleblock>.content .olist>ol>li:last-child>:last-child,.exampleblock>.content .ulist>ul>li:last-child>:last-child,.exampleblock>.content .qlist>ol>li:last-child>:last-child,.sidebarblock>.content>:last-child>:last-child,.sidebarblock>.content .olist>ol>li:last-child>:last-child,.sidebarblock>.content .ulist>ul>li:last-child>:last-child,.sidebarblock>.content .qlist>ol>li:last-child>:last-child{margin-bottom:0}
+.exampleblock>.content>:first-child,.sidebarblock>.content>:first-child{margin-top:0}
+.exampleblock>.content>:last-child,.exampleblock>.content>:last-child>:last-child,.exampleblock>.content .olist>ol>li:last-child>:last-child,.exampleblock>.content .ulist>ul>li:last-child>:last-child,.exampleblock>.content .qlist>ol>li:last-child>:last-child,.sidebarblock>.content>:last-child,.sidebarblock>.content>:last-child>:last-child,.sidebarblock>.content .olist>ol>li:last-child>:last-child,.sidebarblock>.content .ulist>ul>li:last-child>:last-child,.sidebarblock>.content .qlist>ol>li:last-child>:last-child{margin-bottom:0}
 .literalblock pre,.listingblock>.content>pre{border-radius:4px;overflow-x:auto;padding:1em;font-size:.8125em}
 @media screen and (min-width:768px){.literalblock pre,.listingblock>.content>pre{font-size:.90625em}}
 @media screen and (min-width:1280px){.literalblock pre,.listingblock>.content>pre{font-size:1em}}
@@ -330,7 +328,7 @@ a.image{text-decoration:none;display:inline-block}
 a.image object{pointer-events:none}
 sup.footnote,sup.footnoteref{font-size:.875em;position:static;vertical-align:super}
 sup.footnote a,sup.footnoteref a{text-decoration:none}
-sup.footnote a:active,sup.footnoteref a:active{text-decoration:underline}
+sup.footnote a:active,sup.footnoteref a:active,#footnotes .footnote a:first-of-type:active{text-decoration:underline}
 #footnotes{padding-top:.75em;padding-bottom:.75em;margin-bottom:.625em}
 #footnotes hr{width:20%;min-width:6.25em;margin:-.25em 0 .75em;border-width:1px 0 0}
 #footnotes .footnote{padding:0 .375em 0 .225em;line-height:1.3334;font-size:.875em;margin-left:1.2em;margin-bottom:.2em}
@@ -393,7 +391,7 @@ b.conum *{color:inherit!important}
 dt,th.tableblock,td.content,div.footnote{text-rendering:optimizeLegibility}
 h1,h2,p,td.content,span.alt,summary{letter-spacing:-.01em}
 p strong,td.content strong,div.footnote strong{letter-spacing:-.005em}
-p,blockquote,dt,td.content,span.alt,summary{font-size:1.0625rem}
+p,blockquote,dt,td.content,td.hdlist1,span.alt,summary{font-size:1.0625rem}
 p{margin-bottom:1.25rem}
 .sidebarblock p,.sidebarblock dt,.sidebarblock td.content,p.tableblock{font-size:1em}
 .exampleblock>.content{background:#fffef7;border-color:#e0e0dc;box-shadow:0 1px 4px #e0e0dc}
@@ -565,23 +563,23 @@ Host: localhost:8080
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 201 Created
-Location: http://localhost:8080/v1/transport-units/4711/movements/02f54d19-64e6-4535-9ee1-2d06a2eb45dc/
+Location: http://localhost:8080/v1/transport-units/4711/movements/d89c4bfd-8609-47ab-bede-b0982149d333
 Content-Type: application/hal+json;charset=UTF-8
-Content-Length: 354
+Content-Length: 396
 
 {
-  "ol" : 0,
-  "pKey" : "02f54d19-64e6-4535-9ee1-2d06a2eb45dc",
+  "pKey" : "d89c4bfd-8609-47ab-bede-b0982149d333",
   "transportUnitBk" : "4711",
   "type" : "INBOUND",
   "initiator" : "ERP",
   "mode" : "AUTOMATIC",
-  "priority" : 30,
+  "priority" : 50,
   "state" : "INACTIVE",
   "sourceLocation" : "WE_01",
   "sourceLocationGroupName" : "WE",
   "target" : "ERR_/0001/0000/0000/0000",
-  "createdAt" : "2024-12-25T22:26:02Z"
+  "targetLocationGroup" : "ERR_/0001/0000/0000/0000",
+  "createdAt" : "2025-05-20T21:41:26Z"
 }</code></pre>
 </div>
 </div>
@@ -650,6 +648,11 @@ Content-Length: 354
 <td class="tableblock halign-left valign-top"><p class="tableblock">The target where to move the TransportUnit to</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>targetLocationGroup</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The target LocationGroup used to define in what area</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>createdAt</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Timestamp when the Movement has been created</p></td>
@@ -675,10 +678,9 @@ Host: localhost:8080</code></pre>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 1180
+Content-Length: 1240
 
 [ {
-  "ol" : 0,
   "pKey" : "1000",
   "transportUnitBk" : "4711",
   "type" : "INBOUND",
@@ -690,12 +692,12 @@ Content-Length: 1180
   "sourceLocation" : "HRL.10.20.2.0",
   "sourceLocationGroupName" : "STOCK",
   "target" : "WA_01",
-  "startedAt" : "2024-12-25T22:26:02Z",
-  "latestDueAt" : "2024-12-25T22:26:02Z",
-  "finishedAt" : "2024-12-25T22:26:02Z",
-  "createdAt" : "2024-12-25T22:26:02Z"
+  "targetLocationGroup" : "WA",
+  "startedAt" : "2025-05-20T21:41:26Z",
+  "latestDueAt" : "2025-05-20T21:41:26Z",
+  "finishedAt" : "2025-05-20T21:41:26Z",
+  "createdAt" : "2025-05-20T21:41:25Z"
 }, {
-  "ol" : 0,
   "pKey" : "1001",
   "transportUnitBk" : "4712",
   "type" : "OUTBOUND",
@@ -706,10 +708,10 @@ Content-Length: 1180
   "sourceLocation" : "HRL.10.21.2.0",
   "sourceLocationGroupName" : "STOCK",
   "target" : "WA_02",
-  "latestDueAt" : "2024-12-25T22:26:02Z",
-  "createdAt" : "2024-12-25T22:26:02Z"
+  "targetLocationGroup" : "WA",
+  "latestDueAt" : "2025-05-20T21:41:26Z",
+  "createdAt" : "2025-05-20T21:41:25Z"
 }, {
-  "ol" : 0,
   "pKey" : "1002",
   "transportUnitBk" : "4713",
   "type" : "REPLENISHMENT",
@@ -720,8 +722,9 @@ Content-Length: 1180
   "sourceLocation" : "HRL.10.22.2.0",
   "sourceLocationGroupName" : "STOCK",
   "target" : "WA_02",
-  "latestDueAt" : "2024-12-25T22:26:02Z",
-  "createdAt" : "2024-12-25T22:26:02Z"
+  "targetLocationGroup" : "WA",
+  "latestDueAt" : "2025-05-20T21:41:26Z",
+  "createdAt" : "2025-05-20T21:41:25Z"
 } ]</code></pre>
 </div>
 </div>
@@ -738,32 +741,9 @@ particular <code>types</code> for a <code>TransportUnit</code> identified by its
 Host: localhost:8080</code></pre>
 </div>
 </div>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Parameter</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>barcode</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The business key of the TransportUnit to search for</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>types</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The Movement types to search for</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>states</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The Movement states to search for</p></td>
-</tr>
-</tbody>
-</table>
+<div class="paragraph">
+<p>Unresolved directive in 2-movements.adoc - include::/home/runner/work/org.openwms.wms.movements.lib/org.openwms.wms.movements.lib/target/generated-snippets/move-find-tuTypesStates/request-parameters.adoc[]</p>
+</div>
 <div class="paragraph">
 <p>Returns an array of <code>Movements</code> or an empty array:</p>
 </div>
@@ -771,10 +751,9 @@ Host: localhost:8080</code></pre>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 461
+Content-Length: 481
 
 [ {
-  "ol" : 0,
   "pKey" : "1000",
   "transportUnitBk" : "4711",
   "type" : "INBOUND",
@@ -786,10 +765,11 @@ Content-Length: 461
   "sourceLocation" : "HRL.10.20.2.0",
   "sourceLocationGroupName" : "STOCK",
   "target" : "WA_01",
-  "startedAt" : "2024-12-25T22:26:03Z",
-  "latestDueAt" : "2024-12-25T22:26:03Z",
-  "finishedAt" : "2024-12-25T22:26:03Z",
-  "createdAt" : "2024-12-25T22:26:02Z"
+  "targetLocationGroup" : "WA",
+  "startedAt" : "2025-05-20T21:41:27Z",
+  "latestDueAt" : "2025-05-20T21:41:27Z",
+  "finishedAt" : "2025-05-20T21:41:27Z",
+  "createdAt" : "2025-05-20T21:41:26Z"
 } ]</code></pre>
 </div>
 </div>
@@ -863,6 +843,11 @@ Content-Length: 461
 <td class="tableblock halign-left valign-top"><p class="tableblock">The target where to move the TransportUnit to</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].targetLocationGroup</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The target LocationGroup used to define in what area</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].startedAt</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Timestamp when the Movement has been started</p></td>
@@ -897,32 +882,9 @@ particular <code>types</code> and at a given <code>source</code>.</p>
 Host: localhost:8080</code></pre>
 </div>
 </div>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Parameter</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>state</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The Movement states to search for</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>types</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The Movement types to search for</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>source</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Either the source Location or the name of the source LocationGroup to search Movements for</p></td>
-</tr>
-</tbody>
-</table>
+<div class="paragraph">
+<p>Unresolved directive in 2-movements.adoc - include::/home/runner/work/org.openwms.wms.movements.lib/org.openwms.wms.movements.lib/target/generated-snippets/move-find-stateTypesSource/request-parameters.adoc[]</p>
+</div>
 <div class="paragraph">
 <p>Returns an array of <code>Movements</code> or an empty array:</p>
 </div>
@@ -930,10 +892,9 @@ Host: localhost:8080</code></pre>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 720
+Content-Length: 760
 
 [ {
-  "ol" : 0,
   "pKey" : "1002",
   "transportUnitBk" : "4713",
   "type" : "REPLENISHMENT",
@@ -944,10 +905,10 @@ Content-Length: 720
   "sourceLocation" : "HRL.10.22.2.0",
   "sourceLocationGroupName" : "STOCK",
   "target" : "WA_02",
-  "latestDueAt" : "2024-12-25T22:26:03Z",
-  "createdAt" : "2024-12-25T22:26:02Z"
+  "targetLocationGroup" : "WA",
+  "latestDueAt" : "2025-05-20T21:41:27Z",
+  "createdAt" : "2025-05-20T21:41:26Z"
 }, {
-  "ol" : 0,
   "pKey" : "1002",
   "transportUnitBk" : "4713",
   "type" : "REPLENISHMENT",
@@ -958,8 +919,9 @@ Content-Length: 720
   "sourceLocation" : "HRL.10.22.2.0",
   "sourceLocationGroupName" : "STOCK",
   "target" : "WA_02",
-  "latestDueAt" : "2024-12-25T22:26:03Z",
-  "createdAt" : "2024-12-25T22:26:02Z"
+  "targetLocationGroup" : "WA",
+  "latestDueAt" : "2025-05-20T21:41:27Z",
+  "createdAt" : "2025-05-20T21:41:26Z"
 } ]</code></pre>
 </div>
 </div>
@@ -996,10 +958,9 @@ of the response body:</p>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/hal+json;charset=UTF-8
-Content-Length: 446
+Content-Length: 466
 
 {
-  "ol" : 0,
   "pKey" : "1000",
   "transportUnitBk" : "4711",
   "type" : "INBOUND",
@@ -1011,10 +972,11 @@ Content-Length: 446
   "sourceLocation" : "LOC2",
   "sourceLocationGroupName" : "STOCK",
   "target" : "WA_01",
-  "startedAt" : "2024-12-25T22:26:03Z",
-  "latestDueAt" : "2024-12-25T22:26:03Z",
-  "finishedAt" : "2024-12-25T22:26:03Z",
-  "createdAt" : "2024-12-25T22:26:02Z"
+  "targetLocationGroup" : "WA",
+  "startedAt" : "2025-05-20T21:41:27Z",
+  "latestDueAt" : "2025-05-20T21:41:27Z",
+  "finishedAt" : "2025-05-20T21:41:27Z",
+  "createdAt" : "2025-05-20T21:41:26Z"
 }</code></pre>
 </div>
 </div>
@@ -1061,10 +1023,9 @@ Host: localhost:8080</code></pre>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/hal+json;charset=UTF-8
-Content-Length: 458
+Content-Length: 478
 
 {
-  "ol" : 0,
   "pKey" : "1000",
   "transportUnitBk" : "4711",
   "type" : "INBOUND",
@@ -1076,10 +1037,11 @@ Content-Length: 458
   "sourceLocation" : "HRL.10.20.2.0",
   "sourceLocationGroupName" : "STOCK",
   "target" : "WA_01",
-  "startedAt" : "2024-12-25T22:26:03Z",
-  "latestDueAt" : "2024-12-25T22:26:03Z",
-  "finishedAt" : "2024-12-25T22:26:02Z",
-  "createdAt" : "2024-12-25T22:26:02Z"
+  "targetLocationGroup" : "WA",
+  "startedAt" : "2025-05-20T21:41:27Z",
+  "latestDueAt" : "2025-05-20T21:41:27Z",
+  "finishedAt" : "2025-05-20T21:41:26Z",
+  "createdAt" : "2025-05-20T21:41:26Z"
 }</code></pre>
 </div>
 </div>
@@ -1116,10 +1078,9 @@ Host: localhost:8080
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/hal+json;charset=UTF-8
-Content-Length: 452
+Content-Length: 474
 
 {
-  "ol" : 0,
   "pKey" : "1000",
   "transportUnitBk" : "4711",
   "type" : "INBOUND",
@@ -1131,10 +1092,11 @@ Content-Length: 452
   "sourceLocation" : "HRL.10.20.2.0",
   "sourceLocationGroupName" : "STOCK",
   "target" : "LOC2",
-  "startedAt" : "2024-12-25T22:26:02Z",
-  "latestDueAt" : "2024-12-25T22:26:02Z",
-  "finishedAt" : "2024-12-25T22:26:02Z",
-  "createdAt" : "2024-12-25T22:26:02Z"
+  "targetLocationGroup" : "LOC2",
+  "startedAt" : "2025-05-20T21:41:26Z",
+  "latestDueAt" : "2025-05-20T21:41:26Z",
+  "finishedAt" : "2025-05-20T21:41:26Z",
+  "createdAt" : "2025-05-20T21:41:26Z"
 }</code></pre>
 </div>
 </div>
@@ -1144,7 +1106,7 @@ Content-Length: 452
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-12-25 22:24:20 UTC
+Last updated 2025-05-20 21:40:08 UTC
 </div>
 </div>
 </body>

@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MovementServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">OpenWMS.org WMS: Movements Service Library</a> &gt; <a href="index.source.html" class="el_package">org.openwms.wms.movements.impl</a> &gt; <span class="el_source">MovementServiceImpl.java</span></div><h1>MovementServiceImpl.java</h1><pre class="source lang-java linenums">/*
+ * Copyright 2005-2025 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.openwms.wms.movements.impl;
+
+import jakarta.validation.Valid;
+import jakarta.validation.Validator;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import org.ameba.annotation.Measured;
+import org.ameba.annotation.TxService;
+import org.ameba.exception.BusinessRuntimeException;
+import org.ameba.exception.NotFoundException;
+import org.ameba.exception.ServiceLayerException;
+import org.ameba.i18n.Translator;
+import org.openwms.common.location.LocationPK;
+import org.openwms.common.location.api.LocationApi;
+import org.openwms.common.location.api.LocationGroupApi;
+import org.openwms.common.location.api.LocationGroupVO;
+import org.openwms.common.location.api.LocationVO;
+import org.openwms.common.transport.Barcode;
+import org.openwms.common.transport.api.TransportUnitApi;
+import org.openwms.wms.movements.MovementService;
+import org.openwms.wms.movements.api.MovementState;
+import org.openwms.wms.movements.api.MovementType;
+import org.openwms.wms.movements.api.MovementVO;
+import org.openwms.wms.movements.api.ValidationGroups;
+import org.openwms.wms.movements.spi.DefaultMovementState;
+import org.openwms.wms.movements.spi.MovementStateResolver;
+import org.openwms.wms.movements.spi.MovementTypeResolver;
+import org.openwms.wms.movements.spi.Validators;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.plugin.core.PluginRegistry;
+import org.springframework.validation.annotation.Validated;
+
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import static java.lang.String.format;
+import static org.ameba.system.ValidationUtil.validate;
+import static org.openwms.wms.movements.MovementsMessages.LOCATION_NOT_FOUND_BY_ERP_CODE;
+import static org.openwms.wms.movements.MovementsMessages.LOCATION_NOT_FOUND_BY_ID;
+import static org.openwms.wms.movements.MovementsMessages.MOVEMENT_COMPLETED_NOT_MOVED;
+import static org.openwms.wms.movements.MovementsMessages.MOVEMENT_NOT_FOUND;
+
+/**
+ * A MovementServiceImpl is a Spring managed transaction service that deals with {@link Movement}s.
+ *
+ * @author Heiko Scherrer
+ */
+@Validated
+@TxService
+@RefreshScope
+class MovementServiceImpl implements MovementService {
+
+<span class="fc" id="L78">    private static final Logger LOGGER = LoggerFactory.getLogger(MovementServiceImpl.class);</span>
+    private final ApplicationEventPublisher eventPublisher;
+    private final MovementMapper mapper;
+    private final Validator validator;
+    private final Translator translator;
+    private final MovementStateResolver movementStateResolver;
+    private final MovementRepository repository;
+    private final MovementTypeResolver movementTypeResolver;
+    private final PluginRegistry&lt;MovementHandler, MovementType&gt; handlers;
+    private final Validators validators;
+    private final TransportUnitApi transportUnitApi;
+    private final LocationApi locationApi;
+    private final LocationGroupApi locationGroupApi;
+
+    MovementServiceImpl(ApplicationEventPublisher eventPublisher, MovementMapper mapper, Validator validator, Translator translator,
+                        MovementStateResolver movementStateResolver, MovementRepository repository,
+                        @Autowired(required = false) MovementTypeResolver movementTypeResolver,
+                        PluginRegistry&lt;MovementHandler, MovementType&gt; handlers,
+<span class="fc" id="L96">                        Validators validators, TransportUnitApi transportUnitApi, LocationApi locationApi, LocationGroupApi locationGroupApi) {</span>
+<span class="fc" id="L97">        this.eventPublisher = eventPublisher;</span>
+<span class="fc" id="L98">        this.mapper = mapper;</span>
+<span class="fc" id="L99">        this.validator = validator;</span>
+<span class="fc" id="L100">        this.translator = translator;</span>
+<span class="fc" id="L101">        this.movementStateResolver = movementStateResolver;</span>
+<span class="fc" id="L102">        this.repository = repository;</span>
+<span class="fc" id="L103">        this.movementTypeResolver = movementTypeResolver;</span>
+<span class="fc" id="L104">        this.handlers = handlers;</span>
+<span class="fc" id="L105">        this.validators = validators;</span>
+<span class="fc" id="L106">        this.transportUnitApi = transportUnitApi;</span>
+<span class="fc" id="L107">        this.locationApi = locationApi;</span>
+<span class="fc" id="L108">        this.locationGroupApi = locationGroupApi;</span>
+<span class="fc" id="L109">    }</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Measured
+    @Validated(ValidationGroups.Movement.Create.class)
+    @Override
+    public @NotNull MovementVO create(
+            @NotBlank(groups = ValidationGroups.Movement.Create.class) String bk,
+            @NotNull(groups = ValidationGroups.Movement.Create.class) @Valid MovementVO vo) {
+<span class="fc" id="L120">        LOGGER.debug(&quot;Create a Movement for [{}] with data [{}]&quot;, bk, vo);</span>
+<span class="fc" id="L121">        validateAndResolveType(vo);</span>
+<span class="fc" id="L122">        var movementHandler = resolveHandler(vo.getType());</span>
+<span class="fc" id="L123">        resolveTransportUnit(bk);</span>
+<span class="fc" id="L124">        var sourceLocation = resolveLocation(vo.getSourceLocation());</span>
+<span class="fc" id="L125">        var movement = mapper.convertTo(vo);</span>
+        try {
+<span class="nc" id="L127">            resolveLocation(vo.getTarget());</span>
+<span class="fc" id="L128">        } catch ( NotFoundException nfe) {</span>
+<span class="fc" id="L129">            LOGGER.debug(&quot;The Movement has no valid target [{}] set, trying to resolve it later&quot;, vo.getTarget());</span>
+<span class="nc" id="L130">        }</span>
+<span class="fc" id="L131">        movement.setInitiatorOrDefault(movement.getInitiator(), &quot;n/a&quot;);</span>
+<span class="fc" id="L132">        movement.setSourceLocation(sourceLocation.getErpCode());</span>
+<span class="fc" id="L133">        movement.setSourceLocationGroupName(sourceLocation.getLocationGroupName());</span>
+<span class="fc" id="L134">        movement.setTransportUnitBk(Barcode.of(bk));</span>
+<span class="fc" id="L135">        movement.setState(movementStateResolver.getNewState());</span>
+<span class="fc" id="L136">        validate(validator, movement, ValidationGroups.Movement.Create.class);</span>
+<span class="fc" id="L137">        var result = movementHandler.create(movement);</span>
+<span class="fc" id="L138">        return convert(result);</span>
+    }
+
+    private MovementHandler resolveHandler(MovementType type) {
+<span class="fc" id="L142">        var movementHandler = handlers.getPluginFor(type);</span>
+<span class="pc bpc" id="L143" title="1 of 2 branches missed.">        if (movementHandler.isEmpty()) {</span>
+<span class="nc" id="L144">            throw new IllegalArgumentException(format(&quot;No handler registered for MovementType [%s]&quot;, type));</span>
+        }
+<span class="fc" id="L146">        return movementHandler.get();</span>
+    }
+
+    private void resolveTransportUnit(String bk) {
+        try {
+<span class="fc" id="L151">            transportUnitApi.findTransportUnit(bk);</span>
+<span class="fc" id="L152">        } catch (Exception ex) {</span>
+<span class="fc" id="L153">            throw new ServiceLayerException(ex.getMessage(), ex);</span>
+<span class="fc" id="L154">        }</span>
+<span class="fc" id="L155">    }</span>
+
+    private LocationVO resolveLocation(String locationIdentifier) {
+        Optional&lt;LocationVO&gt; optLocation;
+<span class="fc bfc" id="L159" title="All 2 branches covered.">        if (LocationPK.isValid(locationIdentifier)) {</span>
+            try {
+<span class="fc" id="L161">                optLocation = locationApi.findById(locationIdentifier);</span>
+<span class="nc" id="L162">            } catch (Exception ex) {</span>
+                // Any technical reasons
+<span class="nc" id="L164">                throw new ServiceLayerException(ex.getMessage(), ex);</span>
+<span class="fc" id="L165">            }</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">            if (optLocation.isEmpty()) {</span>
+<span class="fc" id="L167">                throw new NotFoundException(translator, LOCATION_NOT_FOUND_BY_ID, new String[]{locationIdentifier}, locationIdentifier);</span>
+            }
+        } else {
+            try {
+<span class="fc" id="L171">                optLocation = locationApi.findByErpCode(locationIdentifier);</span>
+<span class="nc" id="L172">            } catch (Exception ex) {</span>
+                // Any technical reasons
+<span class="nc" id="L174">                throw new ServiceLayerException(ex.getMessage(), ex);</span>
+<span class="fc" id="L175">            }</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">            if (optLocation.isEmpty()) {</span>
+<span class="fc" id="L177">                throw new NotFoundException(translator, LOCATION_NOT_FOUND_BY_ERP_CODE, new String[]{locationIdentifier}, locationIdentifier);</span>
+            }
+        }
+<span class="fc" id="L180">        return optLocation.get();</span>
+    }
+
+    private void validateAndResolveType(MovementVO vo) {
+<span class="fc bfc" id="L184" title="All 2 branches covered.">        if (vo.getType() == null) {</span>
+<span class="pc bpc" id="L185" title="1 of 2 branches missed.">            if (!vo.hasTarget()) {</span>
+<span class="nc" id="L186">                throw new IllegalArgumentException(&quot;Can't automatically resolve a MovementType because no target is set&quot;);</span>
+            }
+<span class="pc bpc" id="L188" title="1 of 2 branches missed.">            if (movementTypeResolver == null) {</span>
+<span class="nc" id="L189">                throw new IllegalStateException(&quot;No type is set and needs to be resolved but no MovementTypeResolver is configured&quot;);</span>
+            }
+<span class="fc" id="L191">            vo.setType(movementTypeResolver.resolve(vo.getTransportUnitBk(), vo.getTarget())</span>
+<span class="pc" id="L192">                    .orElseThrow(() -&gt; new IllegalArgumentException(format(&quot;Can't resolve MovementType for TransportUnit [%s] from target [%s]&quot;,</span>
+<span class="nc" id="L193">                            vo.getTransportUnitBk(), vo.getTarget()))));</span>
+        }
+<span class="fc" id="L195">    }</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Measured
+    @Override
+    public List&lt;MovementVO&gt; findFor(@NotNull MovementState state, @NotBlank String source, @NotEmpty MovementType... types) {
+<span class="fc" id="L203">        var sources = locationGroupApi.findByName(source)</span>
+<span class="pc" id="L204">                .map(lg -&gt; lg.streamLocationGroups().map(LocationGroupVO::getName).toList())</span>
+<span class="fc" id="L205">                .orElseGet(() -&gt; Collections.singletonList(source));</span>
+<span class="pc bpc" id="L206" title="1 of 2 branches missed.">        if (LOGGER.isDebugEnabled()) {</span>
+<span class="fc" id="L207">            LOGGER.debug(&quot;Search for Movements of types [{}] in state [{}] and in source [{}]&quot;, types, state, sources);</span>
+        }
+<span class="fc" id="L209">        return Arrays.stream(types)</span>
+<span class="fc" id="L210">                .parallel()</span>
+<span class="fc" id="L211">                .map(t -&gt; resolveHandler(t).findInStateAndSource(state, sources))</span>
+<span class="fc" id="L212">                .reduce(new ArrayList&lt;&gt;(), (a, b) -&gt; {</span>
+<span class="fc" id="L213">                    a.addAll(b);</span>
+<span class="fc" id="L214">                    return a;</span>
+<span class="fc" id="L215">                }).stream().map(this::convert).toList();</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Measured
+    @Override
+    public List&lt;String&gt; getPriorityList() {
+<span class="fc" id="L224">        return Arrays.stream(PriorityLevel.values())</span>
+<span class="fc" id="L225">                .filter(Objects::nonNull)</span>
+<span class="fc" id="L226">                .map(Enum::name)</span>
+<span class="fc" id="L227">                .toList();</span>
+    }
+
+    private Movement findInternal(String pKey) {
+<span class="fc" id="L231">        return repository.findBypKey(pKey)</span>
+<span class="pc" id="L232">                .orElseThrow(() -&gt; new NotFoundException(translator, MOVEMENT_NOT_FOUND, new String[]{pKey}, pKey));</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Validated(ValidationGroups.Movement.Move.class)
+    @Measured
+    @Override
+    public @NotNull MovementVO move(@NotBlank String pKey, @Valid @NotNull MovementVO vo) {
+<span class="fc" id="L242">        var movement = findInternal(pKey);</span>
+<span class="fc" id="L243">        movement = validators.onMove(movement, vo.getSourceLocation(), mapper.convertTo(vo));</span>
+<span class="fc bfc" id="L244" title="All 2 branches covered.">        if (movement.getState() == movementStateResolver.getCompletedState()) {</span>
+<span class="fc" id="L245">            throw new BusinessRuntimeException(translator, MOVEMENT_COMPLETED_NOT_MOVED, new String[]{pKey}, pKey);</span>
+        }
+<span class="fc" id="L247">        movement.setState(DefaultMovementState.valueOf(vo.getState()));</span>
+<span class="fc" id="L248">        movement.initStartDate(ZonedDateTime.now());</span>
+<span class="fc" id="L249">        var sourceLocation = resolveLocation(vo.getSourceLocation());</span>
+<span class="fc bfc" id="L250" title="All 2 branches covered.">        if (vo.hasTransportUnitBK()) {</span>
+<span class="fc" id="L251">            movement.setTransportUnitBk(Barcode.of(vo.getTransportUnitBk()));</span>
+        }
+<span class="fc" id="L253">        transportUnitApi.moveTU(movement.getTransportUnitBk().getValue(), sourceLocation.getLocationId());</span>
+<span class="fc" id="L254">        var previousLocation = movement.getSourceLocation();</span>
+<span class="fc" id="L255">        movement.setSourceLocation(sourceLocation.getErpCode());</span>
+<span class="fc" id="L256">        movement.setSourceLocationGroupName(sourceLocation.getLocationGroupName());</span>
+<span class="fc" id="L257">        LOGGER.debug(&quot;Moving Movement [{}]&quot;, movement);</span>
+<span class="fc" id="L258">        movement = repository.save(movement);</span>
+<span class="fc" id="L259">        eventPublisher.publishEvent(new MovementEvent(movement, MovementEvent.Type.MOVED, previousLocation));</span>
+<span class="fc" id="L260">        return convert(movement);</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Validated(ValidationGroups.Movement.Complete.class)
+    @Measured
+    @Override
+    public @NotNull MovementVO complete(@NotBlank String pKey, @Valid @NotNull MovementVO vo) {
+<span class="fc" id="L270">        LOGGER.debug(&quot;Got request to complete Movement with pKey [{}], [{}]&quot;, pKey, vo);</span>
+<span class="fc" id="L271">        var movement = findInternal(pKey);</span>
+<span class="fc" id="L272">        movement = validators.onMove(movement, vo.getTarget(), mapper.convertTo(vo));</span>
+<span class="pc bpc" id="L273" title="1 of 2 branches missed.">        if (movement.getState().ordinal() &lt; DefaultMovementState.DONE.ordinal()) {</span>
+<span class="fc" id="L274">            var location = resolveLocation(vo.getTarget());</span>
+<span class="fc bfc" id="L275" title="All 2 branches covered.">            transportUnitApi.moveTU(vo.hasTransportUnitBK()</span>
+<span class="fc" id="L276">                    ? vo.getTransportUnitBk()</span>
+<span class="fc" id="L277">                    : movement.getTransportUnitBk().getValue(), location.getLocationId());</span>
+<span class="fc" id="L278">            movement.setState(movementStateResolver.getCompletedState());</span>
+<span class="fc" id="L279">            movement.setEndDate(ZonedDateTime.now());</span>
+<span class="fc" id="L280">            var previousLocation = location.getErpCode();</span>
+<span class="fc" id="L281">            movement.setTargetLocation(vo.getTarget());</span>
+<span class="fc" id="L282">            movement.setTargetLocationGroup(vo.getTarget());</span>
+<span class="fc" id="L283">            movement = repository.save(movement);</span>
+<span class="fc" id="L284">            eventPublisher.publishEvent(new MovementEvent(movement, MovementEvent.Type.COMPLETED, previousLocation));</span>
+<span class="fc" id="L285">        } else {</span>
+<span class="nc" id="L286">            LOGGER.info(&quot;Movement [{}] is already in state [{}] and cannot be completed&quot;, pKey, movement.getState());</span>
+        }
+<span class="fc" id="L288">        return convert(movement);</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Measured
+    @Override
+    public @NotNull MovementVO cancel(@NotBlank String pKey) {
+<span class="fc" id="L297">        LOGGER.debug(&quot;Got request to cancel Movement with pKey [{}]&quot;, pKey);</span>
+<span class="fc" id="L298">        var movement = findInternal(pKey);</span>
+<span class="pc bpc" id="L299" title="1 of 2 branches missed.">        if (movement.getState().ordinal() &lt; DefaultMovementState.CANCELLED.ordinal()) {</span>
+<span class="fc" id="L300">            movement.setState(DefaultMovementState.CANCELLED);</span>
+<span class="fc" id="L301">            movement.setEndDate(ZonedDateTime.now());</span>
+<span class="fc" id="L302">            movement = repository.save(movement);</span>
+<span class="fc" id="L303">            eventPublisher.publishEvent(new MovementEvent(movement, MovementEvent.Type.CANCELLED));</span>
+        } else {
+<span class="nc" id="L305">            LOGGER.info(&quot;Movement [{}] is already in state [{}] and cannot be cancelled&quot;, pKey, movement.getState());</span>
+        }
+<span class="fc" id="L307">        return convert(movement);</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Measured
+    @Override
+    public @NotNull List&lt;MovementVO&gt; findAll() {
+<span class="fc" id="L316">        var all = repository.findAll();</span>
+<span class="pc bpc" id="L317" title="1 of 2 branches missed.">        if (all.isEmpty()) {</span>
+<span class="nc" id="L318">            return Collections.emptyList();</span>
+        }
+<span class="fc" id="L320">        return all.stream().map(this::convert).toList();</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Measured
+    @Override
+    public List&lt;MovementVO&gt; findForTuAndTypesAndStates(@NotBlank String barcode, @NotEmpty List&lt;MovementType&gt; types, @NotEmpty List&lt;String&gt; states) {
+<span class="fc" id="L329">        var all = repository.findByTransportUnitBkAndTypeInAndStateIn(</span>
+<span class="fc" id="L330">                Barcode.of(barcode),</span>
+                types,
+<span class="fc" id="L332">                states.stream().map(DefaultMovementState::valueOf).toList()</span>
+        );
+<span class="fc bfc" id="L334" title="All 2 branches covered.">        if (all.isEmpty()) {</span>
+<span class="fc" id="L335">            LOGGER.debug(&quot;No Movements for TU [{}] in states [{}]&quot;, barcode, states);</span>
+<span class="fc" id="L336">            return Collections.emptyList();</span>
+        }
+<span class="fc" id="L338">        LOGGER.debug(&quot;Movements for TU [{}] in states [{}] exist&quot;, barcode, states);</span>
+<span class="fc" id="L339">        return all.stream().map(this::convert).toList();</span>
+    }
+
+    private MovementVO convert(Movement eo) {
+<span class="fc" id="L343">        var vo = mapper.convertToVO(eo);</span>
+<span class="pc bpc" id="L344" title="1 of 4 branches missed.">        if (eo.getTargetLocation() != null &amp;&amp; !eo.getTargetLocation().isEmpty()) {</span>
+<span class="fc" id="L345">            vo.setTarget(eo.getTargetLocation());</span>
+        }
+<span class="fc" id="L347">        return vo;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
