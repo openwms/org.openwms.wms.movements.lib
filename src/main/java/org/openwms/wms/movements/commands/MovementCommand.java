@@ -15,7 +15,8 @@
  */
 package org.openwms.wms.movements.commands;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
+
 import java.io.Serializable;
 
 /**

@@ -15,21 +15,19 @@
  */
 package org.openwms.wms.movements.commands;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.ameba.annotation.Measured;
 import org.ameba.annotation.TxService;
-import org.ameba.mapping.BeanMapper;
 import org.openwms.core.SpringProfiles;
 import org.openwms.wms.movements.MovementService;
-import org.openwms.wms.movements.api.MovementVO;
+import org.openwms.wms.movements.impl.MovementMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.context.annotation.Profile;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.validation.annotation.Validated;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 /**
  * A MovementCommandListener.
@@ -42,11 +40,11 @@ import javax.validation.constraints.NotNull;
 class MovementCommandListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MovementCommandListener.class);
-    private final BeanMapper mapper;
+    private final MovementMapper movementMapper;
     private final MovementService movementService;
 
-    MovementCommandListener(BeanMapper mapper, MovementService movementService) {
-        this.mapper = mapper;
+    MovementCommandListener(MovementMapper movementMapper, MovementService movementService) {
+        this.movementMapper = movementMapper;
         this.movementService = movementService;
     }
 
@@ -56,7 +54,7 @@ class MovementCommandListener {
         if (command.getType() == MovementCommand.Type.CREATE) {
             var movement = command.getMovement();
             LOGGER.debug("Got command to create a Movement [{}]", movement);
-            movementService.create(movement.getTransportUnitBK(), mapper.map(movement, MovementVO.class));
+            movementService.create(movement.getTransportUnitBK(), movementMapper.convertToVO(movement));
         }
     }
 }

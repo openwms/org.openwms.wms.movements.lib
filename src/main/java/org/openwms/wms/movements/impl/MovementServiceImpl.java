@@ -15,13 +15,17 @@
  */
 package org.openwms.wms.movements.impl;
 
+import jakarta.validation.Valid;
+import jakarta.validation.Validator;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.ameba.annotation.Measured;
 import org.ameba.annotation.TxService;
 import org.ameba.exception.BusinessRuntimeException;
 import org.ameba.exception.NotFoundException;
 import org.ameba.exception.ServiceLayerException;
 import org.ameba.i18n.Translator;
-import org.ameba.mapping.BeanMapper;
 import org.openwms.common.location.LocationPK;
 import org.openwms.common.location.api.LocationApi;
 import org.openwms.common.location.api.LocationGroupApi;
@@ -33,6 +37,7 @@ import org.openwms.wms.movements.MovementService;
 import org.openwms.wms.movements.api.MovementState;
 import org.openwms.wms.movements.api.MovementType;
 import org.openwms.wms.movements.api.MovementVO;
+import org.openwms.wms.movements.api.ValidationGroups;
 import org.openwms.wms.movements.spi.DefaultMovementState;
 import org.openwms.wms.movements.spi.MovementStateResolver;
 import org.openwms.wms.movements.spi.MovementTypeResolver;
@@ -45,11 +50,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.plugin.core.PluginRegistry;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.Valid;
-import javax.validation.Validator;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,7 +77,7 @@ class MovementServiceImpl implements MovementService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MovementServiceImpl.class);
     private final ApplicationEventPublisher eventPublisher;
-    private final BeanMapper mapper;
+    private final MovementMapper mapper;
     private final Validator validator;
     private final Translator translator;
     private final MovementStateResolver movementStateResolver;
@@ -89,7 +89,7 @@ class MovementServiceImpl implements MovementService {
     private final LocationApi locationApi;
     private final LocationGroupApi locationGroupApi;
 
-    MovementServiceImpl(ApplicationEventPublisher eventPublisher, BeanMapper mapper, Validator validator, Translator translator,
+    MovementServiceImpl(ApplicationEventPublisher eventPublisher, MovementMapper mapper, Validator validator, Translator translator,
                         MovementStateResolver movementStateResolver, MovementRepository repository,
                         @Autowired(required = false) MovementTypeResolver movementTypeResolver,
                         PluginRegistry<MovementHandler, MovementType> handlers,
@@ -122,7 +122,7 @@ class MovementServiceImpl implements MovementService {
         var movementHandler = resolveHandler(vo.getType());
         resolveTransportUnit(bk);
         var sourceLocation = resolveLocation(vo.getSourceLocation());
-        var movement = mapper.map(vo, Movement.class);
+        var movement = mapper.convertTo(vo);
         try {
             resolveLocation(vo.getTarget());
         } catch ( NotFoundException nfe) {
@@ -240,7 +240,7 @@ class MovementServiceImpl implements MovementService {
     @Override
     public @NotNull MovementVO move(@NotBlank String pKey, @Valid @NotNull MovementVO vo) {
         var movement = findInternal(pKey);
-        movement = validators.onMove(movement, vo.getSourceLocation(), mapper.map(vo, Movement.class));
+        movement = validators.onMove(movement, vo.getSourceLocation(), mapper.convertTo(vo));
         if (movement.getState() == movementStateResolver.getCompletedState()) {
             throw new BusinessRuntimeException(translator, MOVEMENT_COMPLETED_NOT_MOVED, new String[]{pKey}, pKey);
         }
@@ -269,7 +269,7 @@ class MovementServiceImpl implements MovementService {
     public @NotNull MovementVO complete(@NotBlank String pKey, @Valid @NotNull MovementVO vo) {
         LOGGER.debug("Got request to complete Movement with pKey [{}], [{}]", pKey, vo);
         var movement = findInternal(pKey);
-        movement = validators.onMove(movement, vo.getTarget(), mapper.map(vo, Movement.class));
+        movement = validators.onMove(movement, vo.getTarget(), mapper.convertTo(vo));
         if (movement.getState().ordinal() < DefaultMovementState.DONE.ordinal()) {
             var location = resolveLocation(vo.getTarget());
             transportUnitApi.moveTU(vo.hasTransportUnitBK()
@@ -340,7 +340,7 @@ class MovementServiceImpl implements MovementService {
     }
 
     private MovementVO convert(Movement eo) {
-        var vo = mapper.map(eo, MovementVO.class);
+        var vo = mapper.convertToVO(eo);
         if (eo.getTargetLocation() != null && !eo.getTargetLocation().isEmpty()) {
             vo.setTarget(eo.getTargetLocation());
         }

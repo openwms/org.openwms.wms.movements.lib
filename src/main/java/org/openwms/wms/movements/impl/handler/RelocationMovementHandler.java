@@ -15,6 +15,8 @@
  */
 package org.openwms.wms.movements.impl.handler;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.ameba.annotation.Measured;
 import org.ameba.annotation.TxService;
 import org.openwms.wms.movements.api.MovementState;
@@ -23,8 +25,6 @@ import org.openwms.wms.movements.impl.Movement;
 import org.openwms.wms.movements.impl.MovementRepository;
 import org.springframework.context.ApplicationEventPublisher;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**

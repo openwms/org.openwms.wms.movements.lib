@@ -30,16 +30,17 @@ import org.openwms.wms.movements.api.MovementVO;
 import org.openwms.wms.movements.spi.common.AsyncTransportUnitApi;
 import org.openwms.wms.movements.spi.common.putaway.PutawayApi;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -57,7 +58,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -73,17 +74,17 @@ class MovementDocumentation {
     protected MockMvc mockMvc;
     @Autowired
     protected ObjectMapper objectMapper;
-    @MockBean
+    @MockitoBean
     protected TransportUnitApi transportUnitApi;
-    @MockBean
+    @MockitoBean
     protected LocationApi locationApi;
-    @MockBean
+    @MockitoBean
     protected LocationGroupApi locationGroupApi;
-    @MockBean
+    @MockitoBean
     protected PutawayApi putawayApi;
-    @MockBean
+    @MockitoBean
     protected AsyncTransactionApi asyncTransactionApi;
-    @MockBean
+    @MockitoBean
     protected AsyncTransportUnitApi asyncTransportUnitApi;
 
     /**
@@ -116,6 +117,9 @@ class MovementDocumentation {
         sourceLocation.setErpCode("WE_01");
         sourceLocation.setLocationGroupName("WE");
         given(locationApi.findByErpCode("WE_01")).willReturn(Optional.of(sourceLocation));
+        var sourceLocationGroupNames = new ArrayList<String>();
+        sourceLocationGroupNames.add("CLEARING");
+        given(putawayApi.findAndAssignNextInLocGroup("ERP", sourceLocationGroupNames, "4711", 2)).willReturn(sourceLocation);
 
         var m = new MovementVO();
         m.setInitiator("ERP");
@@ -135,7 +139,6 @@ class MovementDocumentation {
                                 fieldWithPath("target").description("The target where to move the TransportUnit to")
                         ),
                         responseFields(
-                                fieldWithPath("ol").ignored(),
                                 fieldWithPath("pKey").description("The persistent technical key of the Movement"),
                                 fieldWithPath("transportUnitBk").description("The business key of the TransportUnit to create"),
                                 fieldWithPath("type").description("The type of Movement"),
@@ -146,6 +149,7 @@ class MovementDocumentation {
                                 fieldWithPath("sourceLocation").description("The source Location where the TransportUnit shall be picked up"),
                                 fieldWithPath("sourceLocationGroupName").description("The name of the LocationGroup the sourceLocation belongs to"),
                                 fieldWithPath("target").description("The target where to move the TransportUnit to"),
+                                fieldWithPath("targetLocationGroup").description("The target LocationGroup used to define in what area"),
                                 fieldWithPath("createdAt").description("Timestamp when the Movement has been created")
                         )
                 ))
@@ -174,13 +178,12 @@ class MovementDocumentation {
                 )
                 .andDo(document("move-find-tuTypesStates",
                         preprocessResponse(prettyPrint()),
-                        requestParameters(
+                        queryParameters(
                                 parameterWithName("barcode").description("The business key of the TransportUnit to search for"),
                                 parameterWithName("types").description("The Movement types to search for"),
                                 parameterWithName("states").description("The Movement states to search for")
                         ),
                         responseFields(
-                                fieldWithPath("[].ol").ignored(),
                                 fieldWithPath("[].pKey").description("The persistent technical key of the Movement"),
                                 fieldWithPath("[].transportUnitBk").description("The business key of the TransportUnit to move"),
                                 fieldWithPath("[].type").description("The type of Movement"),
@@ -192,6 +195,7 @@ class MovementDocumentation {
                                 fieldWithPath("[].sourceLocation").description("The source Location where the TransportUnit shall be picked up"),
                                 fieldWithPath("[].sourceLocationGroupName").description("The name of the LocationGroup the sourceLocation belongs to"),
                                 fieldWithPath("[].target").description("The target where to move the TransportUnit to"),
+                                fieldWithPath("[].targetLocationGroup").description("The target LocationGroup used to define in what area"),
                                 fieldWithPath("[].startedAt").description("Timestamp when the Movement has been started"),
                                 fieldWithPath("[].latestDueAt").description("Timestamp until when the Movement must be done"),
                                 fieldWithPath("[].finishedAt").description("Timestamp when the Movement has been finished"),
@@ -216,7 +220,7 @@ class MovementDocumentation {
                 )
                 .andDo(document("move-find-stateTypesSource",
                         preprocessResponse(prettyPrint()),
-                        requestParameters(
+                        queryParameters(
                                 parameterWithName("state").description("The Movement states to search for"),
                                 parameterWithName("types").description("The Movement types to search for"),
                                 parameterWithName("source").description("Either the source Location or the name of the source LocationGroup to search Movements for")

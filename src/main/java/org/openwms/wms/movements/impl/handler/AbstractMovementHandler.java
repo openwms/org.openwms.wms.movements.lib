@@ -15,6 +15,7 @@
  */
 package org.openwms.wms.movements.impl.handler;
 
+import jakarta.validation.constraints.NotNull;
 import org.ameba.annotation.Measured;
 import org.openwms.wms.movements.api.MovementState;
 import org.openwms.wms.movements.api.MovementType;
@@ -24,7 +25,6 @@ import org.openwms.wms.movements.impl.MovementHandler;
 import org.openwms.wms.movements.impl.MovementRepository;
 import org.springframework.context.ApplicationEventPublisher;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -51,7 +51,7 @@ abstract class AbstractMovementHandler implements MovementHandler {
         if (movement.emptyTargetLocation() && movement.emptyTargetLocationGroup()) {
             throw new IllegalArgumentException("Movement has no target set and cannot be created");
         }
-        Movement saved = repository.save(movement);
+        var saved = repository.save(movement);
         publisher.publishEvent(new MovementEvent(saved, MovementEvent.Type.CREATED));
         return saved;
     }

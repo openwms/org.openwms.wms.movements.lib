@@ -15,6 +15,7 @@
  */
 package org.openwms.wms.movements.spi;
 
+import jakarta.validation.constraints.NotEmpty;
 import org.ameba.annotation.Measured;
 import org.openwms.wms.movements.MovementProperties;
 import org.openwms.wms.movements.api.MovementType;
@@ -23,7 +24,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.constraints.NotEmpty;
 import java.util.Optional;
 
 /**

@@ -17,6 +17,7 @@ package org.openwms.wms.movements.api;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -26,14 +27,13 @@ import lombok.Setter;
 import lombok.ToString;
 import org.ameba.http.AbstractBase;
 
-import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 
 import static org.openwms.wms.movements.MovementConstants.DATE_TIME_WITH_TIMEZONE;
-import static org.openwms.wms.movements.impl.ValidationGroups.Movement.Complete;
-import static org.openwms.wms.movements.impl.ValidationGroups.Movement.Create;
-import static org.openwms.wms.movements.impl.ValidationGroups.Movement.Move;
+import static org.openwms.wms.movements.api.ValidationGroups.Movement.Complete;
+import static org.openwms.wms.movements.api.ValidationGroups.Movement.Create;
+import static org.openwms.wms.movements.api.ValidationGroups.Movement.Move;
 /**
  * A MovementVO encapsulates details about the actual request to move a {@code TransportUnit} to a target.
  *
@@ -95,7 +95,7 @@ public class MovementVO extends AbstractBase<MovementVO> implements Serializable
     @NotBlank(groups = {Create.class, Complete.class})
     private String target;
 
-    /** The target {@code LocationGroup} used to define in what area */
+    /** The target {@code LocationGroup} used to define in what area. */
     @JsonProperty("targetLocationGroup")
     private String targetLocationGroup;
 

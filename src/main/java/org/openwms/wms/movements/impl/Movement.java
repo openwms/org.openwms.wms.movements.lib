@@ -15,29 +15,30 @@
  */
 package org.openwms.wms.movements.impl;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
 import org.ameba.integration.jpa.ApplicationEntity;
 import org.openwms.common.transport.Barcode;
 import org.openwms.wms.movements.Message;
 import org.openwms.wms.movements.api.MovementType;
 import org.openwms.wms.movements.api.StartMode;
+import org.openwms.wms.movements.api.ValidationGroups;
 import org.openwms.wms.movements.spi.DefaultMovementState;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.Assert;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -154,6 +155,11 @@ public class Movement extends ApplicationEntity implements Serializable {
 
     /*~ ---------------- Methods ----------------- */
 
+    @Override
+    public void setPersistentKey(String pKey) {
+        super.setPersistentKey(pKey);
+    }
+
     /**
      * Add a new problem to the {@code Movement}s {@code problemHistory}.
      *
@@ -224,6 +230,10 @@ public class Movement extends ApplicationEntity implements Serializable {
         return type;
     }
 
+    public void setType(MovementType type) {
+        this.type = type;
+    }
+
     public String getInitiator() {
         return initiator;
     }
@@ -246,6 +256,10 @@ public class Movement extends ApplicationEntity implements Serializable {
 
     public PriorityLevel getPriority() {
         return priority;
+    }
+
+    public void setPriority(PriorityLevel priority) {
+        this.priority = priority;
     }
 
     public StartMode getMode() {

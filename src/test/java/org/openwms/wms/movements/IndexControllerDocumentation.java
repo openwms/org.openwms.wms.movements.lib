@@ -27,8 +27,8 @@ import org.openwms.transactions.api.commands.AsyncTransactionApi;
 import org.openwms.wms.movements.spi.common.AsyncTransportUnitApi;
 import org.openwms.wms.movements.spi.common.putaway.PutawayApi;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -50,17 +50,17 @@ class IndexControllerDocumentation {
     protected MockMvc mockMvc;
     @Autowired
     protected ObjectMapper objectMapper;
-    @MockBean
+    @MockitoBean
     protected TransportUnitApi transportUnitApi;
-    @MockBean
+    @MockitoBean
     protected LocationApi locationApi;
-    @MockBean
+    @MockitoBean
     protected LocationGroupApi locationGroupApi;
-    @MockBean
+    @MockitoBean
     protected PutawayApi putawayApi;
-    @MockBean
+    @MockitoBean
     protected AsyncTransactionApi asyncTransactionApi;
-    @MockBean
+    @MockitoBean
     protected AsyncTransportUnitApi asyncTransportUnitApi;
 
     /**

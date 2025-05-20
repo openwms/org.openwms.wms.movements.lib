@@ -15,12 +15,11 @@
  */
 package org.openwms.wms.movements.spi;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.openwms.wms.movements.impl.Movement;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 /**
  * A DefaultValidatorsImpl is used to instantiate concrete Spring Beans from the interface.

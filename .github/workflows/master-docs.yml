@@ -23,7 +23,7 @@ jobs:
         ports:
           - 5672:5672
       postgres:
-        image: openwms/postgres-image:latest
+        image: openwms/postgres-image:17
         env:
           POSTGRES_PASSWORD: postgres
         # Set health checks to wait until postgres has started
@@ -44,13 +44,13 @@ jobs:
         with:
           java-version: 21
       - name: Cache SonarQube packages
-        uses: actions/cache@v1
+        uses: actions/cache@v3
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
       - name: Cache Maven packages
-        uses: actions/cache@v1
+        uses: actions/cache@v3
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
@@ -75,12 +75,12 @@ jobs:
           -Dscmpublish.pubScmUrl=scm:git:https://openwms:$PUSHKEY@github.com/openwms/org.openwms.wms.movements.lib.git
           -DdeveloperConnectionUrl=scm:git:https://openwms:$PUSHKEY@github.com/openwms/org.openwms.wms.movements.lib.git
           -Dci.buildNumber=$GITHUB_RUN_NUMBER
-          -Pschemagen,release -B $MAVEN_OPTS
+          -Pschemagen,release,coverage -B $MAVEN_OPTS
         env:
           PUSHKEY: ${{ secrets.GITHUB_TOKEN }}
       - name: Sonar
         run: >
-          ./mvnw verify org.sonarsource.scanner.maven:sonar-maven-plugin:3.7.0.1746:sonar
+          ./mvnw clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:3.7.0.1746:sonar
           -DsurefireArgs="-Dspring.profiles.active=ASYNCHRONOUS,TEST"
           -Dspring.rabbitmq.host=localhost
           -Dsonar.login=$SONAR_TOKEN

@@ -15,15 +15,15 @@
  */
 package org.openwms.wms.movements.impl;
 
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import org.ameba.integration.jpa.ApplicationEntity;
 import org.openwms.wms.movements.Message;
 
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.Objects;
 

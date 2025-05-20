@@ -15,9 +15,9 @@
  */
 package org.openwms.common.location;
 
+import jakarta.validation.constraints.Max;
 import org.springframework.util.Assert;
 
-import javax.validation.constraints.Max;
 import java.io.Serializable;
 
 /**

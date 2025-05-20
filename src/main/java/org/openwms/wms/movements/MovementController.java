@@ -15,12 +15,14 @@
  */
 package org.openwms.wms.movements;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.ameba.http.MeasuredRestController;
 import org.openwms.core.http.AbstractWebController;
 import org.openwms.core.http.Index;
 import org.openwms.wms.movements.api.MovementType;
 import org.openwms.wms.movements.api.MovementVO;
-import org.openwms.wms.movements.impl.ValidationGroups;
+import org.openwms.wms.movements.api.ValidationGroups;
 import org.openwms.wms.movements.spi.DefaultMovementState;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.ResponseEntity;
@@ -33,8 +35,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import java.util.List;
 
 import static java.util.Arrays.asList;

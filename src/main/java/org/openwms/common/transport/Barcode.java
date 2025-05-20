@@ -15,9 +15,10 @@
  */
 package org.openwms.common.transport;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.validation.constraints.NotBlank;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.validation.constraints.NotBlank;
+
 import java.io.Serializable;
 import java.util.Objects;
 

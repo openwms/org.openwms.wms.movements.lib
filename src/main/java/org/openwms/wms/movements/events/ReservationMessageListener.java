@@ -34,11 +34,11 @@ import org.springframework.stereotype.Component;
  */
 @Profile(SpringProfiles.ASYNCHRONOUS_PROFILE)
 @Component
-public class ReservationMessageListener {
+class ReservationMessageListener {
 
     private final MovementService movementService;
 
-    public ReservationMessageListener(MovementService movementService) {
+    ReservationMessageListener(MovementService movementService) {
         this.movementService = movementService;
     }
 

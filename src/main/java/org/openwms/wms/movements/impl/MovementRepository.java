@@ -15,6 +15,7 @@
  */
 package org.openwms.wms.movements.impl;
 
+import org.ameba.annotation.Public;
 import org.openwms.common.transport.Barcode;
 import org.openwms.wms.movements.api.MovementState;
 import org.openwms.wms.movements.api.MovementType;
@@ -32,6 +33,7 @@ import java.util.Optional;
  *
  * @author Heiko Scherrer
  */
+@Public
 @Repository
 public interface MovementRepository extends JpaRepository<Movement, Long> {
 

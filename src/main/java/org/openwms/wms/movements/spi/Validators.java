@@ -15,10 +15,9 @@
  */
 package org.openwms.wms.movements.spi;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.openwms.wms.movements.impl.Movement;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 /**
  * A Validators.

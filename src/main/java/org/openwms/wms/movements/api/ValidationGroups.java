@@ -13,26 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openwms.wms.movements.spi;
-
-import jakarta.validation.constraints.NotEmpty;
-import org.openwms.wms.movements.api.MovementType;
-
-import java.util.Optional;
+package org.openwms.wms.movements.api;
 
 /**
- * A MovementTypeResolver tries to resolve the type of {@code Movement} from given parameters.
+ * A ValidationGroups is a marker interface collection to aggregate all types used for bean validation groups.
  *
  * @author Heiko Scherrer
  */
-public interface MovementTypeResolver {
+public interface ValidationGroups {
 
-    /**
-     * Resolve the type of {@code Movement}.
-     *
-     * @param transportUnitBK The current business key of the TransportUnit
-     * @param target The current target of the Movement
-     * @return The type of Movement
-     */
-    Optional<MovementType> resolve(@NotEmpty String transportUnitBK, @NotEmpty String target);
+    interface Movement {
+        interface Create {}
+        interface Move {}
+        interface Complete {}
+    }
 }

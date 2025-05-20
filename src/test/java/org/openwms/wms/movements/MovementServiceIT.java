@@ -15,6 +15,7 @@
  */
 package org.openwms.wms.movements;
 
+import jakarta.persistence.EntityManager;
 import org.ameba.exception.BusinessRuntimeException;
 import org.ameba.exception.NotFoundException;
 import org.ameba.exception.ServiceLayerException;
@@ -33,10 +34,9 @@ import org.openwms.wms.movements.spi.DefaultMovementState;
 import org.openwms.wms.movements.spi.common.AsyncTransportUnitApi;
 import org.openwms.wms.movements.spi.common.putaway.PutawayApi;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.jdbc.Sql;
 
-import javax.persistence.EntityManager;
 import java.util.Optional;
 
 import static java.util.Arrays.asList;
@@ -54,17 +54,17 @@ class MovementServiceIT {
 
     @Autowired
     private EntityManager em;
-    @MockBean
+    @MockitoBean
     protected TransportUnitApi transportUnitApi;
-    @MockBean
+    @MockitoBean
     protected LocationApi locationApi;
-    @MockBean
+    @MockitoBean
     protected LocationGroupApi locationGroupApi;
-    @MockBean
+    @MockitoBean
     protected PutawayApi putawayApi;
-    @MockBean
+    @MockitoBean
     protected AsyncTransactionApi asyncTransactionApi;
-    @MockBean
+    @MockitoBean
     protected AsyncTransportUnitApi asyncTransportUnitApi;
     @Autowired
     private MovementService testee;

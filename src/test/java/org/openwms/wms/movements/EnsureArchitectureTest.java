@@ -13,18 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openwms.wms.movements.impl;
+package org.openwms.wms.movements;
+
+import com.tngtech.archunit.core.importer.ImportOption;
+import com.tngtech.archunit.junit.AnalyzeClasses;
+import com.tngtech.archunit.junit.CacheMode;
 
 /**
- * A ValidationGroups is a marker interface collection to aggregate all types used for bean validation groups.
+ * A EnsureArchitectureTest.
  *
  * @author Heiko Scherrer
  */
-public interface ValidationGroups {
+@AnalyzeClasses(packages = "org.openwms", cacheMode = CacheMode.PER_CLASS, importOptions = {
+        ImportOption.DoNotIncludeTests.class,
+        ImportOption.DoNotIncludeJars.class,
+        ImportOption.DoNotIncludeArchives.class
+})
+class EnsureArchitectureTest {
 
-    interface Movement {
-        interface Create {}
-        interface Move {}
-        interface Complete {}
-    }
 }

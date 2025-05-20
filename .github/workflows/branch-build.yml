@@ -3,6 +3,7 @@ on:
   push:
     branches-ignore:
       - master
+      - gh-pages
       - 'release/**'
 
 env:
@@ -28,14 +29,14 @@ jobs:
         with:
           java-version: 21
       - name: Cache Maven packages
-        uses: actions/cache@v1
+        uses: actions/cache@v3
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Build
         run: >
-          ./mvnw clean verify
+          ./mvnw verify
           -DsurefireArgs=-Dspring.profiles.active=ASYNCHRONOUS,TEST
           -Dspring.rabbitmq.host=localhost
           -Dci.buildNumber=$GITHUB_RUN_NUMBER
