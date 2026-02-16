@@ -20,7 +20,6 @@
     <logger name="PRESENTATION_LAYER_EXCEPTION" level="ERROR"/>
     <logger name="SERVICE_LAYER_EXCEPTION" level="ERROR"/>
     <logger name="INTEGRATION_LAYER_EXCEPTION" level="ERROR"/>
-    <logger name="CORE_INTEGRATION_MESSAGING" level="OFF"/>
     <logger name="MEASURED" level="OFF"/>
 
     <root level="INFO">
