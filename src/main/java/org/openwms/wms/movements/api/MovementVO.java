@@ -114,11 +114,6 @@ public class MovementVO extends AbstractBase<MovementVO> implements Serializable
     @JsonFormat(pattern = DATE_TIME_WITH_TIMEZONE)
     private ZonedDateTime finishedAt;
 
-    /** When the {@code Movement} has been created. */
-    @JsonProperty("createdAt")
-    @JsonFormat(pattern = DATE_TIME_WITH_TIMEZONE)
-    private ZonedDateTime createdAt;
-
     /**
      * Checks whether a target is set or not.
      *

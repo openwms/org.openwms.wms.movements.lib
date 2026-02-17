@@ -150,7 +150,7 @@ class MovementDocumentation {
                                 fieldWithPath("sourceLocationGroupName").description("The name of the LocationGroup the sourceLocation belongs to"),
                                 fieldWithPath("target").description("The target where to move the TransportUnit to"),
                                 fieldWithPath("targetLocationGroup").description("The target LocationGroup used to define in what area"),
-                                fieldWithPath("createdAt").description("Timestamp when the Movement has been created")
+                                fieldWithPath("createDt").description("Timestamp when the Movement has been created")
                         )
                 ))
                 .andExpect(status().isCreated())
@@ -199,7 +199,7 @@ class MovementDocumentation {
                                 fieldWithPath("[].startedAt").description("Timestamp when the Movement has been started"),
                                 fieldWithPath("[].latestDueAt").description("Timestamp until when the Movement must be done"),
                                 fieldWithPath("[].finishedAt").description("Timestamp when the Movement has been finished"),
-                                fieldWithPath("[].createdAt").description("Timestamp when the Movement has been created")
+                                fieldWithPath("[].createDt").description("Timestamp when the Movement has been created")
                         )
                 ))
                 .andExpect(status().isOk())

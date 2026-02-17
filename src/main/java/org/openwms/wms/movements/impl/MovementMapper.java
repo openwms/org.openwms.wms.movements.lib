@@ -15,8 +15,10 @@
  */
 package org.openwms.wms.movements.impl;
 
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.openwms.wms.movements.api.MovementVO;
 import org.openwms.wms.movements.commands.MovementMO;
 
@@ -38,8 +40,11 @@ public abstract class MovementMapper {
     @Mapping(target = "startMode", source = "mode")
     @Mapping(target = "startedAt", source = "startDate")
     @Mapping(target = "finishedAt", source = "endDate")
-    @Mapping(target = "createdAt", expression = "java( java.time.LocalDateTime.now().atZone(java.time.ZoneOffset.UTC) )")
     public abstract MovementVO convertToVO(Movement eo);
+    @AfterMapping
+    void afterMapping(@MappingTarget MovementVO vo, Movement eo) {
+        vo.setCreateDt(eo.getCreateDt());
+    }
 
     @Mapping(target = "persistentKey", source = "persistentKey")
     @Mapping(target = "transportUnitBk", expression = "java( Barcode.of(vo.getTransportUnitBk()) )")
