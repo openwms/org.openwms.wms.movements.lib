@@ -33,6 +33,7 @@ import org.openwms.common.location.api.LocationGroupVO;
 import org.openwms.common.location.api.LocationVO;
 import org.openwms.common.transport.Barcode;
 import org.openwms.common.transport.api.TransportUnitApi;
+import org.openwms.common.transport.api.TransportUnitVO;
 import org.openwms.wms.movements.MovementService;
 import org.openwms.wms.movements.api.MovementState;
 import org.openwms.wms.movements.api.MovementType;
@@ -55,7 +56,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import static java.lang.String.format;
@@ -120,8 +120,8 @@ class MovementServiceImpl implements MovementService {
         LOGGER.debug("Create a Movement for [{}] with data [{}]", bk, vo);
         validateAndResolveType(vo);
         var movementHandler = resolveHandler(vo.getType());
-        resolveTransportUnit(bk);
-        var sourceLocation = resolveLocation(vo.getSourceLocation());
+        var transportUnit = resolveTransportUnit(bk);
+        var sourceLocation = transportUnit.getActualLocation();
         var movement = mapper.convertTo(vo);
         try {
             resolveLocation(vo.getTarget());
@@ -146,9 +146,9 @@ class MovementServiceImpl implements MovementService {
         return movementHandler.get();
     }
 
-    private void resolveTransportUnit(String bk) {
+    private TransportUnitVO resolveTransportUnit(String bk) {
         try {
-            transportUnitApi.findTransportUnit(bk);
+            return transportUnitApi.findTransportUnit(bk);
         } catch (Exception ex) {
             throw new ServiceLayerException(ex.getMessage(), ex);
         }
@@ -213,18 +213,6 @@ class MovementServiceImpl implements MovementService {
                     a.addAll(b);
                     return a;
                 }).stream().map(this::convert).toList();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Measured
-    @Override
-    public List<String> getPriorityList() {
-        return Arrays.stream(PriorityLevel.values())
-                .filter(Objects::nonNull)
-                .map(Enum::name)
-                .toList();
     }
 
     private Movement findInternal(String pKey) {

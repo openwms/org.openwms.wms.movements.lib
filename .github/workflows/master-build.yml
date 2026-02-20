@@ -126,7 +126,7 @@ jobs:
     steps:
       - name: Trigger
         run: |
-          curl -X POST https://api.github.com/repos/interface21-io/org.openwms.wms.movements.ui/dispatches \
+          curl --fail -X POST https://api.github.com/repos/interface21-io/org.openwms.wms.movements.ui/dispatches \
           -H 'Accept: application/vnd.github.everest-preview+json' \
           -H "Authorization: Bearer ${DISPATCH_TOKEN}" \
           --fail-with-body \

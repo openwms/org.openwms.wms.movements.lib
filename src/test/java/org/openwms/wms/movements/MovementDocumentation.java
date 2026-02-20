@@ -111,11 +111,13 @@ class MovementDocumentation {
     }
 
     @Test void shall_create_a_movement() throws Exception {
-        var transportUnit = TransportUnitVO.newBuilder().barcode("4711").build();
-        given(transportUnitApi.findTransportUnit("4711")).willReturn(transportUnit);
         var sourceLocation = new LocationVO("WE__/0001/0000/0000/0000");
         sourceLocation.setErpCode("WE_01");
         sourceLocation.setLocationGroupName("WE");
+        var transportUnit = TransportUnitVO.newBuilder().barcode("4711").build();
+        transportUnit.setActualLocation(sourceLocation);
+
+        given(transportUnitApi.findTransportUnit("4711")).willReturn(transportUnit);
         given(locationApi.findByErpCode("WE_01")).willReturn(Optional.of(sourceLocation));
         var sourceLocationGroupNames = new ArrayList<String>();
         sourceLocationGroupNames.add("CLEARING");

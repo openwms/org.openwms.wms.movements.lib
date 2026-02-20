@@ -55,13 +55,6 @@ public interface MovementService {
     List<MovementVO> findFor(@NotNull MovementState state, @NotBlank String source, @NotEmpty MovementType... types);
 
     /**
-     * Get all priorities as a list of strings.
-     *
-     * @return The list of priorities
-     */
-    List<String> getPriorityList();
-
-    /**
      * Move a {@code Movement} to a new location.
      *
      * @param pKey The persistent key of the Movement

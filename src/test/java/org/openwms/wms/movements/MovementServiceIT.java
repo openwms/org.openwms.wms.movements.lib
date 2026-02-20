@@ -113,42 +113,17 @@ class MovementServiceIT {
     }
 
     @Test
-    void test_create_with_unknown_SourceLocationId() {
-        given(transportUnitApi.findTransportUnit("4711")).willReturn(new TransportUnitVO("4711"));
-        given(locationApi.findById("UNKN/UNKN/UNKN/UNKN/UNKN")).willReturn(Optional.empty());
-        var vo = new MovementVO();
-        vo.setType(MovementType.INBOUND);
-        vo.setSourceLocation("UNKN/UNKN/UNKN/UNKN/UNKN");
-        vo.setTarget("KNOWN");
-        assertThatThrownBy(() -> testee.create("4711", vo))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessageContaining("Location with locationId [UNKN/UNKN/UNKN/UNKN/UNKN] does not exist");
-    }
-
-    @Test
-    void test_create_with_unknown_SourceErpCode() {
-        given(transportUnitApi.findTransportUnit("4711")).willReturn(new TransportUnitVO("4711"));
-        given(locationApi.findByErpCode("UNKNOWN")).willReturn(Optional.empty());
-        var vo = new MovementVO();
-        vo.setType(MovementType.INBOUND);
-        vo.setSourceLocation("UNKNOWN");
-        vo.setTarget("KNOWN");
-        assertThatThrownBy(() -> testee.create("4711", vo))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessageContaining("Location with erpCode [UNKNOWN] does not exist");
-    }
-
-    @Test
     void test_create_with_success() {
         //arrange
         var sourceLocation = new LocationVO("PASS/PASS/PASS/PASS/PASS");
         sourceLocation.setErpCode("PASS");
-        given(transportUnitApi.findTransportUnit("4711")).willReturn(new TransportUnitVO("4711"));
+        var tu = new TransportUnitVO("4711");
+        tu.setActualLocation(sourceLocation);
+        given(transportUnitApi.findTransportUnit("4711")).willReturn(tu);
         given(locationApi.findById("PASS/PASS/PASS/PASS/PASS")).willReturn(Optional.of(sourceLocation));
         var vo = new MovementVO();
         vo.setInitiator("test");
         vo.setType(MovementType.INBOUND);
-        vo.setSourceLocation("PASS/PASS/PASS/PASS/PASS");
         vo.setTarget("KNOWN");
 
         // act
@@ -184,12 +159,6 @@ class MovementServiceIT {
         assertThat(result).isEmpty();
         result = testee.findForTuAndTypesAndStates("4713", asList(MovementType.INBOUND), asList("DONE"));
         assertThat(result).isEmpty();
-    }
-
-    @Test
-    void test_getPriorityList() {
-        var list = testee.getPriorityList();
-        assertThat(list).hasSize(5);
     }
 
     @Test

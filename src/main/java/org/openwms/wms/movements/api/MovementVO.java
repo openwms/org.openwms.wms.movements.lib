@@ -83,7 +83,7 @@ public class MovementVO extends AbstractBase<MovementVO> implements Serializable
 
     /** The source {@code Location} where the {@code TransportUnit} shall be picked up. */
     @JsonProperty("sourceLocation")
-    @NotBlank(groups = {Create.class, Move.class})
+    @NotBlank(groups = {Move.class})
     private String sourceLocation;
 
     /** The name of the {@code LocationGroup} the {@code sourceLocation} belongs to. */
