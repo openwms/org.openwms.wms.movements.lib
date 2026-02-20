@@ -86,11 +86,15 @@ class MovementServiceIT {
         return inboundMove;
     }
 
-    @Test void test_create_with_empty_Barcode() {
+    @Test void test_create_with_blank_barcode() {
         var inboundMove = createInvalidMovement();
         assertThatThrownBy(() -> testee.create(" ", inboundMove))
                 .isInstanceOf(ServiceLayerException.class)
                 .hasMessageMatching("create.[a-zA-Z0-9]*: must not be blank.*");
+    }
+
+    @Test void test_create_with_null_barcode() {
+        var inboundMove = createInvalidMovement();
         assertThatThrownBy(() -> testee.create(null, inboundMove))
                 .isInstanceOf(ServiceLayerException.class)
                 .hasMessageMatching("create.[a-zA-Z0-9]*: must not be blank.*");
@@ -131,6 +135,9 @@ class MovementServiceIT {
 
         // assert
         assertThat(result.getPersistentKey()).isNotEmpty();
+        assertThat(result.getTransportUnitBk()).isEqualTo("4711");
+        assertThat(result.getInitiator()).isEqualTo("test");
+        assertThat(result.getState()).isEqualTo("INACTIVE");
         assertThat(result.getSourceLocation()).isEqualTo("PASS");
         assertThat(result.getTarget()).isEqualTo("KNOWN");
         assertThat(result.getType()).isEqualTo(MovementType.INBOUND);
@@ -163,40 +170,47 @@ class MovementServiceIT {
 
     @Test
     void test_move_fails_without_state() {
-        // arrange
-        var vo = MovementVO.builder()
-                .build();
-
-        // act & assert
+        var vo = MovementVO.builder().build();
         assertThatThrownBy(() -> testee.move("1000", vo))
                 .isInstanceOf(ServiceLayerException.class)
                 .hasMessageContaining("state: must not be blank");
+    }
 
-        var vo2 = MovementVO.builder()
+    @Test
+    void test_move_fails_without_source_location() {
+        var vo = MovementVO.builder()
                 .state("INACTIVE")
                 .build();
-
-        // act & assert
-        assertThatThrownBy(() -> testee.move("1000", vo2))
+        assertThatThrownBy(() -> testee.move("1000", vo))
                 .isInstanceOf(ServiceLayerException.class)
                 .hasMessageContaining("sourceLocation: must not be blank");
+    }
 
-        var vo3 = MovementVO.builder()
+    @Sql(scripts = "classpath:import-TEST.sql")
+    @Test
+    void test_move_fails_with_unknown_source_location() {
+        var vo = MovementVO.builder()
                 .sourceLocation("PASS/PASS/PASS/PASS/PASS")
                 .state("INACTIVE")
                 .build();
-
-        // act & assert
-        assertThatThrownBy(() -> testee.move("1000", vo3))
+        assertThatThrownBy(() -> testee.move("1000", vo))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessageContaining("Location with locationId [PASS/PASS/PASS/PASS/PASS] does not exist");
+    }
 
+    @Sql(scripts = "classpath:import-TEST.sql")
+    @Test
+    void test_move_fails_when_already_completed() {
         var sourceLocation = new LocationVO("PASS/PASS/PASS/PASS/PASS");
         sourceLocation.setErpCode("PASS");
         sourceLocation.setLocationGroupName("LG");
         given(locationApi.findById("PASS/PASS/PASS/PASS/PASS")).willReturn(Optional.of(sourceLocation));
-        // act & assert
-        assertThatThrownBy(() -> testee.move("1002", vo3))
+
+        var vo = MovementVO.builder()
+                .sourceLocation("PASS/PASS/PASS/PASS/PASS")
+                .state("INACTIVE")
+                .build();
+        assertThatThrownBy(() -> testee.move("1002", vo))
                 .isInstanceOf(BusinessRuntimeException.class)
                 .hasMessageContaining("Movement [1002] cant be moved it is already completed");
     }
@@ -274,5 +288,31 @@ class MovementServiceIT {
         var entity = em.find(Movement.class, 1000L);
         assertThat(entity.getTargetLocation()).isEqualTo("ERPCODE");
         assertThat(entity.getTargetLocationGroup()).isEqualTo("ERPCODE");
+    }
+
+    @Sql(scripts = "classpath:import-TEST.sql")
+    @Test
+    void test_cancel() {
+        // act
+        var result = testee.cancel("1000");
+
+        // assert
+        assertThat(result.getPersistentKey()).isEqualTo("1000");
+        assertThat(result.getState()).isEqualTo("CANCELLED");
+
+        var entity = em.find(Movement.class, 1000L);
+        assertThat(entity.getState()).isEqualTo(DefaultMovementState.CANCELLED);
+        assertThat(entity.getEndDate()).isNotNull();
+    }
+
+    @Sql(scripts = "classpath:import-TEST.sql")
+    @Test
+    void test_cancel_when_already_done() {
+        // act
+        var result = testee.cancel("1002");
+
+        // assert: already DONE (ordinal > CANCELLED), so state must not change
+        assertThat(result.getPersistentKey()).isEqualTo("1002");
+        assertThat(result.getState()).isEqualTo("DONE");
     }
 }

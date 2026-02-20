@@ -166,6 +166,7 @@ class MovementDocumentation {
                     get(API_MOVEMENTS)
                 )
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()", is(3)))
                 .andDo(document("move-find-all"))
         ;
     }
@@ -239,6 +240,7 @@ class MovementDocumentation {
                         delete(API_MOVEMENTS + "/1000")
                 )
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.state", is("CANCELLED")))
                 .andDo(document("move-cancel"))
         ;
     }
